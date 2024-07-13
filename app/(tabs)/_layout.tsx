@@ -1,34 +1,39 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
-
-import { TabBarIcon } from '@/components/navigation/TabBarIcon';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { Tabs } from "expo-router";
+import { Foundation, FontAwesome5 } from "@expo/vector-icons";
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
+  
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
-      }}>
+      }}
+    >
       <Tabs.Screen
-        name="index"
+        name="casos"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
+          title: "Casos",
+          tabBarIcon: ({ color }) => (
+            <FontAwesome5 name="edit" size={24}  />
           ),
         }}
       />
       <Tabs.Screen
-        name="explore"
+        // Esta ruta será la principal porque index es la primer ruta que busca en la carpeta
+        name="index"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
+          title: "Familia",
+          tabBarIcon: ({ color }) => (
+            <Foundation name="home" size={24}  />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="adopciones"
+        options={{
+          title: "Adopciones",
+          tabBarIcon: ({ color }) => (
+            <FontAwesome5 name="edit" size={24}  />
           ),
         }}
       />

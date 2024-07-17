@@ -1,20 +1,31 @@
 import { Tabs } from "expo-router";
-import { Foundation, FontAwesome5 } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { View } from "react-native";
 
 export default function TabLayout() {
   
   return (
     <Tabs
       screenOptions={{
-        headerShown: false,
+        tabBarInactiveTintColor: "#006064",
+        tabBarActiveTintColor: "black",
+        headerStyle: { backgroundColor: "#006064" },
+        headerTitleAlign: "center",
+        headerTintColor: "white",
+        headerLeftContainerStyle: { marginLeft: 10 },
+        headerLeft: ({tintColor}) => <MaterialIcons name="menu" size={24} color={tintColor} />,
+        headerRightContainerStyle: { marginRight: 10 },
+        headerRight: ({tintColor}) => <Ionicons name="person-circle-outline" size={24} color={tintColor} />,
       }}
     >
       <Tabs.Screen
         name="casos"
         options={{
           title: "Casos",
-          tabBarIcon: ({ color }) => (
-            <FontAwesome5 name="edit" size={24}  />
+          tabBarIcon: ({ color, focused }) => (
+            <View style={focused ?{ backgroundColor: "#00606435", paddingHorizontal: 18, paddingVertical: 3, borderRadius: 18 } : null}>
+              <MaterialIcons name="crisis-alert" size={24} color={"#006064"} />
+            </View>
           ),
         }}
       />
@@ -23,8 +34,10 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "Familia",
-          tabBarIcon: ({ color }) => (
-            <Foundation name="home" size={24}  />
+          tabBarIcon: ({ color, focused }) => (
+            <View style={focused ?{ backgroundColor: "#00606435", paddingHorizontal: 18, paddingVertical: 3, borderRadius: 18 } : null}>
+              <MaterialIcons name="pets" size={24} color={"#006064"} />
+            </View>
           ),
         }}
       />
@@ -32,8 +45,10 @@ export default function TabLayout() {
         name="adopciones"
         options={{
           title: "Adopciones",
-          tabBarIcon: ({ color }) => (
-            <FontAwesome5 name="edit" size={24}  />
+          tabBarIcon: ({ color, focused }) => (
+            <View style={focused ?{ backgroundColor: "#00606435", paddingHorizontal: 18, paddingVertical: 3, borderRadius: 18 } : null}>
+              <MaterialIcons name="favorite" size={24} color={"#006064"} />
+            </View>
           ),
         }}
       />

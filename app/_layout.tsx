@@ -1,16 +1,25 @@
-//import { Stack } from "expo-router";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { Drawer } from "expo-router/drawer";
+import { Stack } from "expo-router";
 
-export default function RootLayout() {
+// export default function RootLayout() {
+//   return (
+//       <Stack>
+//         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+//       </Stack>
+//   );
+// }
+
+import Head from "expo-router/head";
+
+export default function Layout() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <Drawer>
-        <Drawer.Screen name="(tabs)" options={{ headerShown: false }} />
-      </Drawer>
-      {/* <Stack>
+    <>
+      <Head>
+        <title>Expo Router Layouts Demo</title>
+        <meta name="description" content="Expo Router Layouts Demo" />
+      </Head>
+      <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      </Stack> */}
-    </GestureHandlerRootView>
+      </Stack>
+    </>
   );
 }

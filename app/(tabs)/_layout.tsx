@@ -1,57 +1,57 @@
-import { Tabs } from "expo-router";
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
-import { View } from "react-native";
 
-export default function TabLayout() {
+import { MaterialBottomTabs } from "@/layouts/material-bottom-tabs";
+import { MaterialIcons } from "@expo/vector-icons";
+import { Header } from "react-native/Libraries/NewAppScreen";
+
+
+export const unstable_settings = {
+  initialRouteName: "index",
+};
+
+export default function Layout() {
   
   return (
-    <Tabs
-      screenOptions={{
-        tabBarInactiveTintColor: "#006064",
-        tabBarActiveTintColor: "black",
-        headerStyle: { backgroundColor: "#006064" },
-        headerTitleAlign: "center",
-        headerTintColor: "white",
-        headerLeftContainerStyle: { marginLeft: 10 },
-        headerLeft: ({tintColor}) => <MaterialIcons name="menu" size={24} color={tintColor} />,
-        headerRightContainerStyle: { marginRight: 10 },
-        headerRight: ({tintColor}) => <Ionicons name="person-circle-outline" size={24} color={tintColor} />,
-      }}
+    <MaterialBottomTabs
+      safeAreaInsets={{ bottom: 0 }}
+      screenOptions={
+        {
+          // API Reference: https://reactnavigation.org/docs/material-bottom-tab-navigator#options
+        }
+      }
     >
-      <Tabs.Screen
+      <MaterialBottomTabs.Screen
         name="casos"
         options={{
-          title: "Casos",
-          tabBarIcon: ({ color, focused }) => (
-            <View style={focused ?{ backgroundColor: "#00606435", paddingHorizontal: 18, paddingVertical: 3, borderRadius: 18 } : null}>
+          tabBarLabel: "Casos",
+          tabBarIcon(props) {
+            return (
               <MaterialIcons name="crisis-alert" size={24} color={"#006064"} />
-            </View>
-          ),
+            );
+          },
         }}
       />
-      <Tabs.Screen
-        // Esta ruta será la principal porque index es la primer ruta que busca en la carpeta
+      <MaterialBottomTabs.Screen
         name="index"
         options={{
-          title: "Familia",
-          tabBarIcon: ({ color, focused }) => (
-            <View style={focused ?{ backgroundColor: "#00606435", paddingHorizontal: 18, paddingVertical: 3, borderRadius: 18 } : null}>
+          tabBarLabel: "Familia",
+          tabBarIcon(props) {
+            return (
               <MaterialIcons name="pets" size={24} color={"#006064"} />
-            </View>
-          ),
+            );
+          },
         }}
       />
-      <Tabs.Screen
+      <MaterialBottomTabs.Screen
         name="adopciones"
         options={{
-          title: "Adopciones",
-          tabBarIcon: ({ color, focused }) => (
-            <View style={focused ?{ backgroundColor: "#00606435", paddingHorizontal: 18, paddingVertical: 3, borderRadius: 18 } : null}>
+          tabBarLabel: "Adopciones",
+          tabBarIcon(props) {
+            return (
               <MaterialIcons name="favorite" size={24} color={"#006064"} />
-            </View>
-          ),
+            );
+          },
         }}
       />
-    </Tabs>
+    </MaterialBottomTabs>
   );
 }

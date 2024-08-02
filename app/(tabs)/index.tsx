@@ -2,16 +2,17 @@ import { useRouter } from "expo-router";
 import { StyleSheet, ScrollView, Image,Text, View, Pressable } from "react-native";
 import { FlatList } from "react-native-reanimated/lib/typescript/Animated";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTheme } from 'react-native-paper'; // Probando ando
 
 export default function Index() {
-
+  const theme = useTheme();  
   const router = useRouter();
 
   return (
     
     <SafeAreaView>
       <ScrollView
-        style={styles.scrollview}
+        style={{...styles.scrollview, backgroundColor: theme.colors.primary}}
         contentContainerStyle={{ alignItems: "center" }}
       >
         {/* <FlatList

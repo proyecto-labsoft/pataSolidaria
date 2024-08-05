@@ -2,13 +2,14 @@ import { useRouter } from "expo-router";
 import { StyleSheet, ScrollView, Image,Text, View, Pressable } from "react-native";
 import { FlatList } from "react-native-reanimated/lib/typescript/Animated";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useTheme } from 'react-native-paper'; // Probando ando
 import { useNavigation } from '@react-navigation/native';
+import { Avatar, Button, Card, Text as PaperText, useTheme } from 'react-native-paper';
 
 export default function VistaFamilia() {
   const theme = useTheme();  
   const router = useRouter();
   const navigation = useNavigation();
+  
 
   return (
     
@@ -26,7 +27,7 @@ export default function VistaFamilia() {
           )}
 
         > */}
-          <Pressable
+          {/* <Pressable
             onPress={() => navigation.navigate("Familiar")}
             style={({pressed}) => [
               {
@@ -43,9 +44,24 @@ export default function VistaFamilia() {
               />
               <Text>Chili</Text>
             </View>
+          </Pressable> */}
+          <Pressable
+            onPress={() => navigation.navigate("Familiar")}
+            style={({pressed}) => [
+              {
+                ...styles.cardAnimal,
+                backgroundColor: pressed ? 'rgb(210, 230, 255)' : 'white',
+              },
+            ]}
+            
+          >
+            <Card >
+              <Card.Cover  style={ styles.fotoAnimal } source={{ uri: 'https://static.fundacion-affinity.org/cdn/farfuture/PVbbIC-0M9y4fPbbCsdvAD8bcjjtbFc0NSP3lRwlWcE/mtime:1643275542/sites/default/files/los-10-sonidos-principales-del-perro.jpg' }} />
+              <Card.Title title="Chili" subtitle="(componete card)" titleVariant="titleLarge"  />
+            </Card>
           </Pressable>
-        
       </ScrollView>
+      <Text >Lo azul es el Scrollview</Text>
     </SafeAreaView>
   );
 }

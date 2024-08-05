@@ -3,10 +3,12 @@ import { StyleSheet, ScrollView, Image,Text, View, Pressable } from "react-nativ
 import { FlatList } from "react-native-reanimated/lib/typescript/Animated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from 'react-native-paper'; // Probando ando
+import { useNavigation } from '@react-navigation/native';
 
-export default function Index() {
+export default function VistaFamilia() {
   const theme = useTheme();  
   const router = useRouter();
+  const navigation = useNavigation();
 
   return (
     
@@ -25,7 +27,7 @@ export default function Index() {
 
         > */}
           <Pressable
-            onPress={() => router.push("/vista-familiar")}
+            onPress={() => navigation.navigate("Familiar")}
             style={({pressed}) => [
               {
                 backgroundColor: pressed ? 'rgb(210, 230, 255)' : 'white',

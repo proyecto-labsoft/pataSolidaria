@@ -1,9 +1,12 @@
-import { Tabs } from "expo-router";
+import { Tabs, useRouter } from "expo-router";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { View } from "react-native";
+import { IconButton } from "react-native-paper";
+
 
 export default function TabLayout() {
-  
+  const router = useRouter();
+
   return (
     <Tabs
       screenOptions={{
@@ -15,7 +18,7 @@ export default function TabLayout() {
         headerLeftContainerStyle: { marginLeft: 10 },
         headerLeft: ({tintColor}) => <MaterialIcons name="menu" size={24} color={tintColor} />,
         headerRightContainerStyle: { marginRight: 10 },
-        headerRight: ({tintColor}) => <Ionicons name="person-circle-outline" size={24} color={tintColor} />,
+        headerRight: ({tintColor}) => <IconButton icon="account" size={24} iconColor={tintColor} onPress={() => router.push("/perfil")} />,
       }}
     >
       <Tabs.Screen

@@ -15,6 +15,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Home from "./home";
 import VistaFamiliar from "./vista-familiar";
+import Perfil from "./perfil";
 
 // Basandose en colores de la pagina de ARAF
 // primario: 0f7599
@@ -50,9 +51,10 @@ export default function Layout() {
     <PaperProvider theme={theme}>
       <SafeAreaProvider>
       <NavigationContainer independent={true}>
-        <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false}}>
+        <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Home" component={Home} />
           <Stack.Screen name="Familiar" component={VistaFamiliar} />
+          <Stack.Screen name="Perfil" component={Perfil} options={{ headerShown: true }} />
         </Stack.Navigator>
       </NavigationContainer>
       </SafeAreaProvider>

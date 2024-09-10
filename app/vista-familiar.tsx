@@ -1,11 +1,29 @@
 import { View, Image,StyleSheet, Text as TextNative, ScrollView } from 'react-native'
-import {useState} from 'react'
+import {useMemo,useState} from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Divider, SegmentedButtons,ActivityIndicator,Text as TextPaper, TextInput, Checkbox, Surface, Avatar, Button, IconButton } from 'react-native-paper'
-
+import { Divider, SegmentedButtons,ActivityIndicator,Text as TextPaper, TextInput, Checkbox, Surface, Avatar, Button, IconButton, Icon } from 'react-native-paper'
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import ItemFamiliar from './componentes/itemFamiliar';
+import FormularioEditarFamiliar from './componentes/formularios/formularioEditarFamiliar ';
 const VistaFamiliar = () => {
-  const [value, setValue] = useState('');
-  const [text, setText] = useState("");
+  const [edicion, setEdicion] = useState(false);
+  const [datosFamiliar, setDatosFamiliar] = useState({
+    nombre: 'Chili',
+    especie: 'Perro',
+    raza: 'callejero',
+    tamanio: 'grande',
+    colores: 'tricolor',
+    fechanac: '14/04/2021',
+    observaciones: 'compañero y sociable',
+    sexo: 'macho',
+    esterilizado: true,
+    identificado: false,
+    domicilio: 'Puerto español 844'
+  });
+
+  // const datos = useMemo(() => {
+
+  // },[])
 
   return (
     
@@ -18,106 +36,33 @@ const VistaFamiliar = () => {
             />          
             <View style={{ flexDirection: 'row'}}>
               <TextPaper variant="headlineMedium" style={ styles.nombreFamiliar }>Chili</TextPaper>
-              <IconButton icon='pencil' size={30} mode="contained" onPress={() => console.log('Pressed')}/>
+              <IconButton icon='pencil' size={32} mode={edicion ? "contained" : "contained-tonal"} onPress={() => setEdicion(!edicion)}/>
             </View>
             <Divider style={{ width: '40%', height: 3, backgroundColor: 'black', borderRadius: 20 }} bold/>
-            <ScrollView style={{ width:'100%' }}>        
-              <View style={{ width:'100%' , marginVertical: 16, alignItems: 'center'}}>
-                <TextInput
-                  style={ styles.input }
-                  label="Nombre"
-                  value={text}
-                  onChangeText={text => setText(text)}
-                />
-                <TextInput
-                  style={ styles.input }
-                  label="Especie"
-                  value={text}
-                  onChangeText={text => setText(text)}
-                />
-                <TextInput
-                  style={ styles.input }
-                  label="Raza"
-                  value={text}
-                  onChangeText={text => setText(text)}
-                />
-                <TextInput
-                  style={ styles.input }
-                  label="Sexo"
-                  value={text}
-                  onChangeText={text => setText(text)}
-                />
-                <TextInput
-                  style={ styles.input }
-                  label="Tamaño"
-                  value={text}
-                  onChangeText={text => setText(text)}
-                />
-                <TextInput
-                  style={ styles.input }
-                  label="Colores"
-                  value={text}
-                  onChangeText={text => setText(text)}
-                />
-                <TextInput
-                  style={ styles.input }
-                  label="Domicilio"
-                  value={text}
-                  onChangeText={text => setText(text)}
-                />
-                <TextInput
-                  style={ styles.input }
-                  label="Fecha de nacimiento"
-                  value={text}
-                  onChangeText={text => setText(text)}
-                />
-                <TextInput
-                  style={ styles.input }
-                  label="Descripción adicional"
-                  value={text}
-                  multiline
-                  numberOfLines={5}
-                  onChangeText={text => setText(text)}
-                />
-                <TextPaper variant="titleLarge">Sexo</TextPaper>
-                <SegmentedButtons
-                  style={ styles.input }
-                  value={value}
-                  onValueChange={setValue}
-                  buttons={[{value:'hembra',label:'Hembra'},{value:'macho',label:'Macho'}]}
-                  // {value:'hembra',label:'Hembra',icon: {icono}}
-                />
+            <ScrollView  style={styles.scrollView} 
+        contentContainerStyle={styles.containerScroll}>        
+              <View style={{ flex:1, marginVertical: 16, marginHorizontal: 32,}}>
+                {!edicion ? 
+                (  
+                  <>
+                    <ItemFamiliar label='Nombre' data={datosFamiliar?.nombre} icono='pen-clip' />
+                    <ItemFamiliar label='Especie' data={datosFamiliar?.especie} icono='hippo' />
+                    <ItemFamiliar label='Raza' data={datosFamiliar?.raza} icono='hippo' />
+                    <ItemFamiliar label='Tamaño' data={datosFamiliar?.tamanio} icono='weight-hanging' />
+                    <ItemFamiliar label='Colores' data={datosFamiliar?.colores} icono='palette' />
+                    <ItemFamiliar label='Fecha de nacimiento' data={datosFamiliar?.fechanac} icono='cake-candles' />
+                    <ItemFamiliar label='Observaciones' data={datosFamiliar?.observaciones} icono='circle-info' />
+                    <ItemFamiliar label='Genero' data={datosFamiliar?.sexo} icono='venus-mars' />
+                    <ItemFamiliar label='Esterilizado' data={datosFamiliar?.esterilizado}  />
+                    <ItemFamiliar label='Identificado' data={datosFamiliar?.identificado} />
+                    <ItemFamiliar label='Domicilio' data={datosFamiliar?.domicilio} icono='house' />
+                  </>
+                ) :(
+                  <FormularioEditarFamiliar data={datosFamiliar} />
+                )}     
                 
-                <View style={{ justifyContent: 'flex-start' , width: '80%' }}>
-                  <View style={{flexDirection:'row', marginVertical: 8, alignItems:'center'}}>
-                    <TextPaper variant="titleLarge">Esterilizado</TextPaper>
-                    <Checkbox
-                      status={'checked'}
-                      // onPress={() => {
-                      //   setChecked(!checked);
-                      // }}
-                    />
-                  </View>
-                  <View style={{flexDirection:'row', marginVertical: 8, alignItems:'center'}}>
-                    <TextPaper variant="titleLarge">Identificación</TextPaper>
-                    <Checkbox
-                      status={'checked'}
-                      // onPress={() => {
-                      //   setChecked(!checked);
-                      // }}
-                    />
-                  </View>
-                </View>        
-                <TextPaper variant="titleLarge">Domicilio del familiar</TextPaper>
-                <Image style={{  marginVertical: 8, width: '80%',borderColor:'black',borderRadius:20,borderWidth:1, height: 100 }} source={{uri: "https://i.pinimg.com/736x/8b/a8/81/8ba8814f2ffdbd3178ccd69e26989653.jpg"}} />
-                <Button icon="map-marker" style={{width: '80%',borderRadius:10}} uppercase mode="contained" onPress={() => console.log('Pressed')}>
-                  Cargar otra ubicación
-                </Button>      
-
-                <Button style={{  marginVertical: 8, width: '80%',borderRadius:10}} uppercase mode="contained" onPress={() => console.log('Pressed')}>
-                  Guardar cambios
-                </Button>
-
+                
+                {/* <Image style={{  marginVertical: 8, width: '100%',borderColor:'black',borderRadius:20,borderWidth:1, height: 100 }} source={{uri: "https://i.pinimg.com/736x/8b/a8/81/8ba8814f2ffdbd3178ccd69e26989653.jpg"}} /> */}
               </View>
             </ScrollView>
             
@@ -127,13 +72,20 @@ const VistaFamiliar = () => {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        height: 'auto',
+        height: '100%',
         alignItems: "center",
+    },
+    scrollView: {
+      width: '100%',
+    },
+    containerScroll: {
+      paddingBottom: 20,
+      borderRadius: 10,
+      margin: 12,
+      backgroundColor: '#0f7599'
     },
     input:{
       marginBottom: 16,
-      width: '80%'
     },
     fotoFamiliar: {
         marginTop: 35,

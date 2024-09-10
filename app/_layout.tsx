@@ -48,7 +48,7 @@ export default function Layout() {
   const Stack = createNativeStackNavigator();
 
    return (   
-    <PaperProvider theme={theme}>
+    <PaperProvider theme={theme} >
       <SafeAreaProvider>
       <NavigationContainer independent={true}>
         <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>

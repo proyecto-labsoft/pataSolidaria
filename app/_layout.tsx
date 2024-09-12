@@ -10,17 +10,17 @@ import {
   Appbar ,
   BottomNavigation
 } from 'react-native-paper';
-import lightheme from '../assets/light-theme.json'
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Home from "./home";
 import VistaFamiliar from "./vista-familiar";
 import Perfil from "./perfil";
 
-// Basandose en colores de la pagina de ARAF
+// Basandose en ores de la pagina de ARAF
 // primario: 0f7599
 // secundario: e28325
 // terciario: efefef
+import lightheme from '../assets/light-theme.json'
 const theme = {
   ...DefaultTheme,
   colors: lightheme.colors,
@@ -47,16 +47,16 @@ export default function Layout() {
   //  );
   const Stack = createNativeStackNavigator();
 
-   return (   
+  return (   
     <PaperProvider theme={theme} >
       <SafeAreaProvider>
-      <NavigationContainer independent={true}>
-        <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="Home" component={Home} />
-          <Stack.Screen name="Familiar" component={VistaFamiliar} />
-          <Stack.Screen name="Perfil" component={Perfil} options={{ headerShown: true }} />
-        </Stack.Navigator>
-      </NavigationContainer>
+        <NavigationContainer independent={true}>
+          <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="Home" component={Home} />
+            <Stack.Screen name="Familiar" component={VistaFamiliar} />
+            <Stack.Screen name="Perfil" component={Perfil} options={{ headerShown: true }} />
+          </Stack.Navigator>
+        </NavigationContainer>
       </SafeAreaProvider>
     </PaperProvider>
   );

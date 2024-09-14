@@ -7,9 +7,10 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 interface Props {
     data: string | boolean,
     label: string,
-    icono: React.ReactNode
+    icono?: React.ReactNode
 }
 const ItemFamiliar = ({data,label,icono} : Props) => {
+    
     return (
         <View style={{ alignItems: 'flex-start', marginVertical:8, flexDirection: typeof data === 'boolean' ? 'row': 'column'}}>
             <TextPaper variant='titleMedium' style={{color: '#efefef'}}>{label}</TextPaper>

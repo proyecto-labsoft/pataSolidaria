@@ -1,28 +1,15 @@
 import { View, Image,StyleSheet, Text as TextNative, ScrollView } from 'react-native'
 import {useMemo,useState} from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Divider, SegmentedButtons,ActivityIndicator,Text as TextPaper, TextInput, Checkbox, Surface, Avatar, Button, IconButton, Icon } from 'react-native-paper'
+import { Divider,useTheme, SegmentedButtons,ActivityIndicator,Text as TextPaper, TextInput, Checkbox, Surface, Avatar, Button, IconButton, Icon } from 'react-native-paper'
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import ItemFamiliar from './componentes/itemFamiliar';
 import FormularioEditarFamiliar from './componentes/formularios/formularioEditarFamiliar ';
-import { useTheme } from '@react-navigation/native';
-import {
-  MD3LightTheme as DefaultTheme,
-  PaperProvider,
-  Appbar ,
-  BottomNavigation
-} from 'react-native-paper';
 
 // Basandose en colores de la pagina de ARAF
 // primario: 0f7599
 // secundario: e28325
 // terciario: efefef
-import lightheme from '../assets/light-theme.json'
-const abc = {
-  ...DefaultTheme,
-  colors: lightheme.colors,
-};
-
 
 const VistaFamiliar = () => {
   const theme = useTheme();
@@ -44,11 +31,11 @@ const VistaFamiliar = () => {
   // const datos = useMemo(() => {
 
   // },[])
-  console.log('theme2: ',theme)
+  
   return (
     
       <SafeAreaView style={ styles.container }>          
-            <View style={{ flexDirection: 'row', marginTop: 30,marginHorizontal: 30,borderRadius:20,backgroundColor: theme.colors.primary}} >
+            <View style={{ flexDirection: 'row', marginTop: 30,marginHorizontal: 30,borderRadius:20}} >
               <View style={{ width:'100%', alignItems: 'center'}}>
                 <View style={{  width:'50%',alignItems:'center'}}>
                   <Avatar.Image
@@ -57,15 +44,15 @@ const VistaFamiliar = () => {
                     onProgress={() => (<ActivityIndicator animating/>)}
                     size={150}
                   />
-                  <TextPaper variant="headlineMedium" style={ styles.nombreFamiliar }>Chili</TextPaper>
-                  <Divider style={{ width: '100%', height: 3, backgroundColor: 'black', borderRadius: 20 }} bold/>
+                  <TextPaper variant="headlineMedium" style={ {...styles.nombreFamiliar, color:theme.colors.primary} }>Chili</TextPaper>
+                  <Divider style={{ width: '100%', height: 3, backgroundColor: theme.colors.secondary, borderRadius: 20 }} bold/>
                 </View>
               </View>
               {/* <View style={{ flex: 1 , justifyContent: 'center',alignItems:'flex-start' }}>
                 <IconButton icon='pencil' size={32} mode={edicion ? "contained" : "contained-tonal"} onPress={() => setEdicion(!edicion)}/>
               </View> */}
             </View>
-            <ScrollView style={styles.scrollView} contentContainerStyle={ {...styles.containerScroll, backgroundColor: (edicion ? '#efefef' : '#0f7599')}}>        
+            <ScrollView style={styles.scrollView} contentContainerStyle={ {...styles.containerScroll, backgroundColor: (edicion ? '#efefef' : theme.colors.tertiary)}}>        
               
                 {!edicion ? 
                 (  

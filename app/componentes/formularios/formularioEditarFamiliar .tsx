@@ -1,7 +1,7 @@
 import { View, Image,StyleSheet, Text as TextNative, ScrollView } from 'react-native'
 import {useMemo,useState} from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Divider, SegmentedButtons,ActivityIndicator,Text as TextPaper, TextInput, Checkbox, Surface, Avatar, Button, IconButton, Icon } from 'react-native-paper'
+import { Divider, SegmentedButtons,ActivityIndicator,Text as TextPaper, TextInput, Checkbox, Surface, Avatar, Button, IconButton, Icon, useTheme } from 'react-native-paper'
 interface Props {
     onSumbit: Function,
     data: {
@@ -19,6 +19,7 @@ interface Props {
     }
 }
 export default function FormularioEditarFamiliar({data,onSumbit} : Props) {
+    const theme = useTheme()
     return(
         <View style={{marginVertical: 16,justifyContent: 'center',flexDirection:'column'}}>
             <TextInput
@@ -51,7 +52,7 @@ export default function FormularioEditarFamiliar({data,onSumbit} : Props) {
                 label="Domicilio"
                 value={data?.domicilio}
             />
-            <Button icon="map-marker" style={{width: '100%', marginBottom: 24,borderRadius:10}} uppercase mode="contained" onPress={() => console.log('Pressed')}>
+            <Button icon="map-marker" buttonColor={theme.colors.tertiary} style={{width: '100%', marginBottom: 24,borderRadius:10}} uppercase mode="contained" onPress={() => console.log('Pressed')}>
                 Cargar otra ubicación
             </Button>
             <TextInput
@@ -95,13 +96,15 @@ export default function FormularioEditarFamiliar({data,onSumbit} : Props) {
                 </View>
             </View>
                 
-
-            <Button style={{  marginVertical: 8, width: '100%',borderRadius:10}} uppercase mode="contained" onPress={() => onSumbit((e)=>!e)}>
-                Guardar cambios
-            </Button>
-            <Button  buttonColor='red' style={{ marginVertical: 8, width: '100%',borderRadius:10}} uppercase mode="contained" onPress={() => onSumbit((e)=>!e)}>
-                Descartar cambios
-            </Button>
+            <View style={{ flexDirection:'row', justifyContent:'space-evenly', width: '100%'}}>
+                <Button  buttonColor={theme.colors.error} style={{  marginVertical: 8 ,borderRadius:10}} uppercase mode="contained" onPress={() => onSumbit((e)=>!e)}>
+                    Cancelar
+                </Button>
+                <Button buttonColor={theme.colors.tertiary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={() => onSumbit((e)=>!e)}>
+                    Guardar
+                </Button>
+            </View>
+            
         </View>
     )
 }

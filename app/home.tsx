@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import VistaFamilia from "./(tabs)";
-import VistaCasos from "./(tabs)/casos";
-import VistaAdopcionnes from "./(tabs)/adopciones";
+import VistaFamilia from "./bottomNavs/familia";
+import VistaCasos from "./bottomNavs/casos";
+import VistaAdopcionnes from "./bottomNavs/adopciones";
 import {
   Appbar,
-  BottomNavigation
+  BottomNavigation,
+  useTheme
 } from 'react-native-paper';
+import BotonAlerta from "./componentes/botonAlerta";
 
 
 export default function Home() {
+  const theme = useTheme()
   const [index, setIndex] = useState(1);
   const [routes] = useState([
     { key: 'adopciones', title: 'Adopciones', focusedIcon: 'album' },
@@ -26,11 +29,16 @@ export default function Home() {
   
   return (
     <>
-      <Appbar.Header>
-        <Appbar.Content title={routes[index].title} titleStyle={{ textAlign: "center" }} />
-        <Appbar.Action icon="account" onPress={() => navigation.navigate("Perfil")} />
+      <Appbar.Header style={{ backgroundColor: theme.colors.tertiary }} >
+        <Appbar.Content title={routes[index].title} titleStyle={{ color: theme.colors.onSecondary, textAlign: "center" }} />
+        <Appbar.Action icon="account" iconColor={theme.colors.onSecondary} onPress={() => navigation.navigate("Perfil")} />
       </Appbar.Header>
+      <BotonAlerta tipo="multiple"/>
       <BottomNavigation
+        barStyle={{ backgroundColor: theme.colors.tertiary }}
+        inactiveColor={ theme.colors.onSecondary}
+        activeColor={ theme.colors.primary}
+        activeIndicatorStyle={{ backgroundColor: theme.colors.onTertiary}}
         navigationState={{ index, routes }}
         onIndexChange={setIndex}
         renderScene={renderScene}

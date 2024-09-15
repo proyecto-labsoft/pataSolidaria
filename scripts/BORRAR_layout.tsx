@@ -1,5 +1,5 @@
 import { Tabs, useRouter } from "expo-router";
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 import { View } from "react-native";
 import { IconButton } from "react-native-paper";
 

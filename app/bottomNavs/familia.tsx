@@ -1,17 +1,10 @@
-import { useRouter } from "expo-router";
 import { StyleSheet, ScrollView, Image,Text, View, Pressable } from "react-native";
-import { FlatList } from "react-native-reanimated/lib/typescript/Animated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-
-import { Avatar, Button, Card, Text as PaperText, useTheme } from 'react-native-paper';
-import { useNavigation } from "@react-navigation/native";
 import CardFamiliar from "../componentes/cardFamiliar";
 import BotonAlerta from "../componentes/botonAlerta";
 
 export default function VistaFamilia() {
-  const theme = useTheme();  
-  const router = useRouter();
 
   return (
     

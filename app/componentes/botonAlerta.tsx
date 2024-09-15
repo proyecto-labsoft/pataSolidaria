@@ -1,4 +1,5 @@
-import {useState} from 'react';
+import { useNavigation } from "@react-navigation/native";
+import {useEffect, useState} from 'react';
 import { StyleSheet } from 'react-native';
 import { FAB, Portal, PaperProvider } from 'react-native-paper';
 interface Props {
@@ -6,7 +7,18 @@ interface Props {
 }
 export default function BotonAlerta ({tipo} : Props) {
     const [state, setState] = useState({ open: false });
+    // const [visible, setVisible] = useState(true);
+    // const navigation = useNavigation();
 
+    // useEffect(() => {
+    //     console.log(navigation)
+    //     if(navigation.getState()?.index === 0){
+    //         setVisible(true)
+    //     }else{
+    //         setVisible(false)
+    //     }
+    // },[navigation])
+    
     const handleChange = ({ open } ) => setState({ open });
 
     const { open } = state;
@@ -16,7 +28,7 @@ export default function BotonAlerta ({tipo} : Props) {
         <Portal>
         <FAB.Group
             open={open}
-            visible
+            visible={false}
             icon={open ? 'alert' : 'alert'}
             actions={[
                 {

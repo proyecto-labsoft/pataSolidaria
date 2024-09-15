@@ -1,10 +1,11 @@
 import { View, Image,StyleSheet, Text as TextNative, ScrollView } from 'react-native'
 import {useMemo,useState} from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Divider,useTheme, SegmentedButtons,ActivityIndicator,Text as TextPaper, TextInput, Checkbox, Surface, Avatar, Button, IconButton, Icon } from 'react-native-paper'
+import { Divider,useTheme,ActivityIndicator,Text as TextPaper, TextInput, Checkbox, Avatar, Button, IconButton, Icon } from 'react-native-paper'
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import ItemFamiliar from './componentes/itemFamiliar';
 import FormularioEditarFamiliar from './componentes/formularios/formularioEditarFamiliar ';
+import { useGlobalSearchParams } from 'expo-router';
 
 // Basandose en colores de la pagina de ARAF
 // primario: 0f7599
@@ -35,7 +36,7 @@ const VistaFamiliar = () => {
   return (
     
       <SafeAreaView style={ styles.container }>          
-            <View style={{ flexDirection: 'row', marginTop: 30,marginHorizontal: 30,borderRadius:20}} >
+            <View style={{ flexDirection: 'row',marginHorizontal: 30,borderRadius:20}} >
               <View style={{ width:'100%', alignItems: 'center'}}>
                 <View style={{  width:'50%',alignItems:'center'}}>
                   <Avatar.Image
@@ -44,8 +45,8 @@ const VistaFamiliar = () => {
                     onProgress={() => (<ActivityIndicator animating/>)}
                     size={150}
                   />
-                  <TextPaper variant="headlineMedium" style={ {...styles.nombreFamiliar, color:theme.colors.primary} }>Chili</TextPaper>
-                  <Divider style={{ width: '100%', height: 3, backgroundColor: theme.colors.secondary, borderRadius: 20 }} bold/>
+                  <TextPaper variant="headlineMedium" style={ {...styles.nombreFamiliar, color:theme.colors.tertiary} }>Chili</TextPaper>
+                  <Divider style={{ width: '100%', height: 3, backgroundColor: theme.colors.tertiary, borderRadius: 20 }} bold/>
                 </View>
               </View>
               {/* <View style={{ flex: 1 , justifyContent: 'center',alignItems:'flex-start' }}>
@@ -56,7 +57,7 @@ const VistaFamiliar = () => {
               
                 {!edicion ? 
                 (  
-                  <View style={{marginVertical: 16, marginHorizontal: 32,justifyContent: 'flex-end',flexDirection:'row'}}>
+                  <View style={{marginVertical: 16, marginHorizontal: 32,justifyContent: 'space-between',flexDirection:'row'}}>
                     <View>
                       <ItemFamiliar label='Nombre' data={datosFamiliar?.nombre} icono='pen-clip' />
                       <ItemFamiliar label='Especie' data={datosFamiliar?.especie} icono='hippo' />

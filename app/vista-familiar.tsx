@@ -1,11 +1,12 @@
 import { View, Image,StyleSheet, Text as TextNative, ScrollView } from 'react-native'
 import {useMemo,useState} from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Divider,useTheme,ActivityIndicator,Text as TextPaper, TextInput, Checkbox, Avatar, Button, IconButton, Icon } from 'react-native-paper'
+import { Divider,useTheme,ActivityIndicator,Text as TextPaper,   Appbar, Avatar, Button, IconButton, Icon } from 'react-native-paper'
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import ItemFamiliar from './componentes/itemFamiliar';
 import FormularioEditarFamiliar from './componentes/formularios/formularioEditarFamiliar ';
 import { useGlobalSearchParams } from 'expo-router';
+import { useNavigation } from '@react-navigation/native';
 
 // Basandose en colores de la pagina de ARAF
 // primario: 0f7599
@@ -29,13 +30,16 @@ const VistaFamiliar = () => {
     domicilio: 'Puerto español 844'
   });
 
-  // const datos = useMemo(() => {
-
-  // },[])
+  const navigation = useNavigation();
   
   return (
     
       <SafeAreaView style={ styles.container }>          
+        <Appbar.Header style={{ backgroundColor: theme.colors.tertiary, width: '100%', justifyContent:'space-between', height:'4%'}} >
+          <Appbar.Action icon="arrow-left-bold" iconColor={theme.colors.onSecondary} onPress={() => navigation.goBack()} />
+          <Appbar.Content title="Mi familiar" titleStyle={{ color: theme.colors.onSecondary }} />
+          <Appbar.Action icon="account" iconColor={theme.colors.onSecondary} onPress={() => navigation.navigate("Perfil")} />
+        </Appbar.Header>
             <View style={{ flexDirection: 'row',marginHorizontal: 30,borderRadius:20}} >
               <View style={{ width:'100%', alignItems: 'center'}}>
                 <View style={{  width:'50%',alignItems:'center'}}>

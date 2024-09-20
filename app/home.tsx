@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import VistaFamilia from "./bottomNavs/familia";
 import VistaCasos from "./bottomNavs/casos";

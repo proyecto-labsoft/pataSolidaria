@@ -1,15 +1,11 @@
-import Head from "expo-router/head";
-import { Stack } from "expo-router";
-import { useEffect, useState } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 // Usar tema Material https://callstack.github.io/react-native-paper/docs/guides/theming#using-schemes
 import {
   MD3LightTheme as DefaultTheme,
   PaperProvider,
-  Appbar ,
-  BottomNavigation
 } from 'react-native-paper';
+
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Home from "./home";
@@ -52,9 +48,9 @@ export default function Layout() {
       <SafeAreaProvider>
         <NavigationContainer independent={true}>
           <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="Home" component={Home} />
-            <Stack.Screen name="Familiar" component={VistaFamiliar} />
-            <Stack.Screen name="Perfil" component={Perfil} options={{ headerShown: true }} />
+            <Stack.Screen name="Home" component={Home} options={{ headerShown:false }} />
+            <Stack.Screen name="Familiar" component={VistaFamiliar} options={{ headerShown:false }}/>
+            <Stack.Screen name="Perfil" component={Perfil} options={{ headerShown:false }} />
           </Stack.Navigator>
         </NavigationContainer>
       </SafeAreaProvider>

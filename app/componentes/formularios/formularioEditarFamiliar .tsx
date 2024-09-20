@@ -21,7 +21,7 @@ interface Props {
 export default function FormularioEditarFamiliar({data,onSumbit} : Props) {
     const theme = useTheme()
     return(
-        <View style={{marginVertical: 16,justifyContent: 'center',flexDirection:'column'}}>
+        <View style={{marginVertical: 16,justifyContent: 'center'}}>
             <TextInput
                 style={ styles.input }
                 label="Nombre"
@@ -127,4 +127,4 @@ const styles = StyleSheet.create({
         width: 150,
         padding: 15,
     }
-  });
+});

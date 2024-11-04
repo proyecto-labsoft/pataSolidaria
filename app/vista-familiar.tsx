@@ -5,6 +5,7 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import ItemFamiliar from './componentes/itemFamiliar';
 import FormularioEditarFamiliar from './componentes/formularios/formularioEditarFamiliar ';
 import { useNavigation } from '@react-navigation/native';
+import { TakePictureBtn } from '@/src/components/TakePictureBtn';
 
 // Basandose en colores de la pagina de ARAF
 // primario: 0f7599
@@ -27,6 +28,7 @@ const VistaFamiliar = () => {
     identificado: false,
     domicilio: 'Puerto español 844'
   });
+  const [foto, setFoto] = useState<string | null>('https://static.fundacion-affinity.org/cdn/farfuture/PVbbIC-0M9y4fPbbCsdvAD8bcjjtbFc0NSP3lRwlWcE/mtime:1643275542/sites/default/files/los-10-sonidos-principales-del-perro.jpg');
 
   const navigation = useNavigation();
   
@@ -43,11 +45,12 @@ const VistaFamiliar = () => {
               
                 <View style={{  width:'100%',alignItems:'center'}}>
                   <Avatar.Image
-                    source={{ uri: "https://static.fundacion-affinity.org/cdn/farfuture/PVbbIC-0M9y4fPbbCsdvAD8bcjjtbFc0NSP3lRwlWcE/mtime:1643275542/sites/default/files/los-10-sonidos-principales-del-perro.jpg" }}
+                    source={{ uri: foto }}
                     style={ styles.fotoFamiliar }
                     onProgress={() => (<ActivityIndicator animating/>)}
                     size={150}
                   />
+                  <TakePictureBtn setImagen={setFoto} />
                   <TextPaper variant="headlineMedium" style={ {...styles.nombreFamiliar, color:theme.colors.tertiary} }>Chili</TextPaper>
                   <Divider style={{ width: '50%', height: 3, backgroundColor: theme.colors.tertiary, borderRadius: 20 }} bold/>
                 </View>

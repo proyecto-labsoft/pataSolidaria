@@ -1,7 +1,7 @@
 import { StyleSheet, ScrollView, Image,Text, View, Pressable } from "react-native";
 import { FlatList } from "react-native-reanimated/lib/typescript/Animated";
 import { SafeAreaView } from "react-native-safe-area-context";
-
+import { useEffect, useState } from "react";
 
 import { Avatar, Button, Card, Text as PaperText, useTheme } from 'react-native-paper';
 import { useNavigation } from "@react-navigation/native";
@@ -12,16 +12,17 @@ interface Props {
         especie: string,
     },
     style: object
+    navigateTo: string
     
 }
-export default function CardFamiliar({data,style} : Props) {
+export default function CardFamiliar({data,navigateTo,style} : Props) {
 
     const theme = useTheme();  
     const navigation = useNavigation();
-
+    
     return(
         <Pressable
-            onPress={() => navigation.navigate('Familiar')}
+            onPress={() => navigation.navigate(navigateTo)}
             style={({pressed}) => [
             {
                 ...styles.cardAnimal,

@@ -40,13 +40,13 @@ export default function VistaFamilia() {
                 <Text>Chili</Text>
               </View>
             </Pressable> */}
-            <CardFamiliar style={ styles.cardFamiliar } data={{nombre: 'Chili', especie: 'Canino'}} />
-            <CardFamiliar style={ styles.cardFamiliar } data={{nombre: 'Duque', especie: 'Canino'}} />
-            <CardFamiliar style={ styles.cardFamiliar } data={{nombre: 'Draco', especie: 'Canino'}} />
-            <CardFamiliar style={ styles.cardFamiliar } data={{nombre: 'Sur', especie: 'Felino'}} />
+            <CardFamiliar style={ styles.cardFamiliar } navigateTo="Familiar" data={{nombre: 'Chili', especie: 'Canino'}} />
+            <CardFamiliar style={ styles.cardFamiliar } navigateTo="Familiar" data={{nombre: 'Duque', especie: 'Canino'}} />
+            <CardFamiliar style={ styles.cardFamiliar } navigateTo="Familiar" data={{nombre: 'Draco', especie: 'Canino'}} />
+            <CardFamiliar style={ styles.cardFamiliar } navigateTo="Familiar" data={{nombre: 'Sur', especie: 'Felino'}} />
             
         </ScrollView>
-        <BotonAlerta tipo="multiple"/>
+
       </View>
     </SafeAreaView>
   );

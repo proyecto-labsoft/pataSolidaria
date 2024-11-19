@@ -11,7 +11,7 @@ export default function Index() {
       <Appbar.Header style={{ backgroundColor: theme.colors.tertiary, width: '100%', justifyContent:'space-between'}} >
           <Appbar.Action icon="arrow-left-bold" iconColor={theme.colors.onSecondary} onPress={() => navigation.goBack()} />
           <Appbar.Content title="Mi familiar" titleStyle={{ color: theme.colors.onSecondary }} />
-          <Appbar.Action icon="account" iconColor={theme.colors.onSecondary} onPress={() => navigation.navigate("Perfil")} />
+          {/* <Appbar.Action icon="account" iconColor={theme.colors.onSecondary} onPress={() => navigation.navigate("Perfil")} /> */}
         </Appbar.Header>
       <View
         style={{

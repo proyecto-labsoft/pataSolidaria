@@ -11,25 +11,25 @@ export default function VistaCasos() {
           contentContainerStyle={{ alignItems: "center"  ,width: '100%'}}
         >
           <View style={{flexDirection: 'row'}}>
-            <CardFamiliar style={ styles.cardFamiliar } data={{nombre: 'Chili', especie: 'Canino'}} />
-            <CardFamiliar style={ styles.cardFamiliar } data={{nombre: 'Duque', especie: 'Canino'}} />
+            <CardFamiliar style={ styles.cardFamiliar } navigateTo="Familiar"  data={{nombre: 'Chili', especie: 'Canino'}} />
+            <CardFamiliar style={ styles.cardFamiliar } navigateTo="Familiar"  data={{nombre: 'Duque', especie: 'Canino'}} />
             
           </View>
           <View style={{flexDirection: 'row', width:'100%'}}>
-            <CardFamiliar style={ styles.cardFamiliar } data={{nombre: 'Draco', especie: 'Canino'}} />
-            <CardFamiliar style={ styles.cardFamiliar } data={{nombre: 'Sur', especie: 'Felino'}} />
+            <CardFamiliar style={ styles.cardFamiliar } navigateTo="Familiar"  data={{nombre: 'Draco', especie: 'Canino'}} />
+            <CardFamiliar style={ styles.cardFamiliar } navigateTo="Familiar"  data={{nombre: 'Sur', especie: 'Felino'}} />
           </View>
           <View style={{flexDirection: 'row', width:'100%'}}>
-            <CardFamiliar style={ styles.cardFamiliar } data={{nombre: 'Draco', especie: 'Canino'}} />
-            <CardFamiliar style={ styles.cardFamiliar } data={{nombre: 'Sur', especie: 'Felino'}} />
+            <CardFamiliar style={ styles.cardFamiliar } navigateTo="Familiar"  data={{nombre: 'Draco', especie: 'Canino'}} />
+            <CardFamiliar style={ styles.cardFamiliar } navigateTo="Familiar"  data={{nombre: 'Sur', especie: 'Felino'}} />
           </View>
           <View style={{flexDirection: 'row', width:'100%'}}>
-            <CardFamiliar style={ styles.cardFamiliar } data={{nombre: 'Draco', especie: 'Canino'}} />
-            <CardFamiliar style={ styles.cardFamiliar } data={{nombre: 'Sur', especie: 'Felino'}} />
+            <CardFamiliar style={ styles.cardFamiliar } navigateTo="Familiar"  data={{nombre: 'Draco', especie: 'Canino'}} />
+            <CardFamiliar style={ styles.cardFamiliar } navigateTo="Familiar"  data={{nombre: 'Sur', especie: 'Felino'}} />
           </View>
           <View style={{flexDirection: 'row', width:'100%'}}>
-            <CardFamiliar style={ styles.cardFamiliar } data={{nombre: 'Draco', especie: 'Canino'}} />
-            <CardFamiliar style={ styles.cardFamiliar } data={{nombre: 'Sur', especie: 'Felino'}} />
+            <CardFamiliar style={ styles.cardFamiliar } navigateTo="Familiar"  data={{nombre: 'Draco', especie: 'Canino'}} />
+            <CardFamiliar style={ styles.cardFamiliar } navigateTo="Familiar"  data={{nombre: 'Sur', especie: 'Felino'}} />
           </View>
         </ScrollView>
       

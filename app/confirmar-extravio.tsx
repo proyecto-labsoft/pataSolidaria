@@ -37,8 +37,8 @@ export default function ConfirmarExtravio() {
                 <Appbar.Content title="Confirmar datos" titleStyle={{ color: theme.colors.onSecondary }} />
             </Appbar.Header>
             <SafeAreaView style={{ alignItems: "center",flex:1}}>
-            <View style={{marginHorizontal:10}}>
-                <ScrollView style={styles.scrollView} contentContainerStyle={ {...styles.containerScroll}}>
+            <View style={{marginHorizontal:10,width: "100%"}}>
+                <ScrollView contentContainerStyle={ {...styles.containerScroll}}>
                     <FormularioConfirmarExtravio data={datosFamiliar} onSumbit={setEdicion}  />
                 </ScrollView>
             </View>
@@ -53,15 +53,9 @@ const styles = StyleSheet.create({
         alignItems: "center",
         flex:1
     },
-    scrollView: {
-    width: '90%',
-    marginTop: 5,
-    
-    },
     containerScroll: {
-    paddingBottom: 20,
-    borderRadius: 10,
-    margin: 12,
+        paddingBottom: 20,
+        paddingHorizontal: '5%'
     },
     input:{
     marginBottom: 16,

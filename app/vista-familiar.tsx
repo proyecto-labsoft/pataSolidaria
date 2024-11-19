@@ -6,6 +6,7 @@ import ItemFamiliar from './componentes/itemFamiliar';
 import FormularioEditarFamiliar from './componentes/formularios/formularioEditarFamiliar ';
 import { useNavigation } from '@react-navigation/native';
 import { TakePictureBtn } from '@/src/components/TakePictureBtn';
+import BotonEditar from './componentes/botones/botonEditar';
 
 // Basandose en colores de la pagina de ARAF
 // primario: 0f7599
@@ -41,7 +42,7 @@ const VistaFamiliar = () => {
           <Appbar.Action icon="account" iconColor={theme.colors.onSecondary} onPress={() => navigation.navigate("Perfil")} />
         </Appbar.Header>
 
-            <View style={{ flexDirection: 'row',borderRadius:20, width:'100%', alignItems: 'center'}} >
+            {/* <View style={{ flexDirection: 'row',borderRadius:20, width:'100%', alignItems: 'center'}} >
               
                 <View style={{  width:'100%',alignItems:'center'}}>
                   <Avatar.Image
@@ -50,44 +51,55 @@ const VistaFamiliar = () => {
                     onProgress={() => (<ActivityIndicator animating/>)}
                     size={150}
                   />
+                  <IconButton icon='pencil' size={32} mode={edicion ? "contained" : "contained-tonal"} onPress={() => setEdicion(!edicion)}/>
                   <TakePictureBtn setImagen={setFoto} />
                   <TextPaper variant="headlineMedium" style={ {...styles.nombreFamiliar, color:theme.colors.tertiary} }>Chili</TextPaper>
                   <Divider style={{ width: '50%', height: 3, backgroundColor: theme.colors.tertiary, borderRadius: 20 }} bold/>
                 </View>
               
-              {/* <View style={{ flex: 1 , justifyContent: 'center',alignItems:'flex-start' }}>
+              {<View style={{ flex: 1 , justifyContent: 'center',alignItems:'flex-start' }}>
                 <IconButton icon='pencil' size={32} mode={edicion ? "contained" : "contained-tonal"} onPress={() => setEdicion(!edicion)}/>
-              </View> */}
-            </View>
-            <View style={{ alignItems: 'center', flex:1}}>
-            <ScrollView style={styles.scrollView} contentContainerStyle={ {...styles.containerScroll, backgroundColor: (edicion ? '#efefef' : theme.colors.tertiary)}}>        
-              
-                {!edicion ? 
-                (  
-                  <View style={{marginVertical: 16, marginHorizontal: 32,justifyContent: 'space-between',flexDirection:'row'}}>
-                    <View>
-                      <ItemFamiliar label='Nombre' data={datosFamiliar?.nombre} icono='pen-clip' />
-                      <ItemFamiliar label='Especie' data={datosFamiliar?.especie} icono='hippo' />
-                      <ItemFamiliar label='Raza' data={datosFamiliar?.raza} icono='hippo' />
-                      <ItemFamiliar label='Tamaño' data={datosFamiliar?.tamanio} icono='weight-hanging' />
-                      <ItemFamiliar label='Colores' data={datosFamiliar?.colores} icono='palette' />
-                      <ItemFamiliar label='Fecha de nacimiento' data={datosFamiliar?.fechanac} icono='cake-candles' />
-                      <ItemFamiliar label='Observaciones' data={datosFamiliar?.observaciones} icono='circle-info' />
-                      <ItemFamiliar label='Genero' data={datosFamiliar?.sexo} icono='venus-mars' />
-                      <ItemFamiliar label='Esterilizado' data={datosFamiliar?.esterilizado}  />
-                      <ItemFamiliar label='Identificado' data={datosFamiliar?.identificado} />
-                      <ItemFamiliar label='Domicilio' data={datosFamiliar?.domicilio} icono='house' />
-                      
-                    </View>
-                    <IconButton icon='pencil' size={32} mode={edicion ? "contained" : "contained-tonal"} onPress={() => setEdicion(!edicion)}/>
+              </View>
+            </View>  */}
+            <View style={{flex:1}}>
+              <ScrollView style={styles.scrollView} contentContainerStyle={ {...styles.containerScroll}}>        
+              <View style={{  width:'100%',alignItems:'center'}}>
+                  <Avatar.Image
+                      source={{ uri: foto }}
+                      style={ styles.fotoFamiliar }
+                      onProgress={() => (<ActivityIndicator animating/>)}
+                      size={150}
+                    />
+                    {/* <IconButton icon='pencil' size={32} mode={edicion ? "contained" : "contained-tonal"} onPress={() => setEdicion(!edicion)}/> */}
+                    <TakePictureBtn setImagen={setFoto} />
+                    <TextPaper variant="headlineMedium" style={ {...styles.nombreFamiliar, color:theme.colors.tertiary} }>Chili</TextPaper>
+                    <Divider style={{ width: '50%', height: 3, backgroundColor: theme.colors.tertiary, borderRadius: 20 }} bold/>
                   </View>
-                ) :(
-                  <FormularioEditarFamiliar data={datosFamiliar} onSumbit={setEdicion} />
-                )}     
-                {/* <Image style={{  marginVertical: 8, width: '100%',borderColor:'black',borderRadius:20,borderWidth:1, height: 100 }} source={{uri: "https://i.pinimg.com/736x/8b/a8/81/8ba8814f2ffdbd3178ccd69e26989653.jpg"}} /> } */}
-              
-            </ScrollView>
+                  {!edicion ? 
+                  (  
+                    <View style={{marginVertical: 16,borderRadius: 10,padding: "5%",justifyContent: 'space-between', backgroundColor: theme.colors.tertiary}}>
+                      
+                        <ItemFamiliar label='Nombre' data={datosFamiliar?.nombre} icono='pen-clip' />
+                        <ItemFamiliar label='Especie' data={datosFamiliar?.especie} icono='hippo' />
+                        <ItemFamiliar label='Raza' data={datosFamiliar?.raza} icono='hippo' />
+                        <ItemFamiliar label='Tamaño' data={datosFamiliar?.tamanio} icono='weight-hanging' />
+                        <ItemFamiliar label='Colores' data={datosFamiliar?.colores} icono='palette' />
+                        <ItemFamiliar label='Fecha de nacimiento' data={datosFamiliar?.fechanac} icono='cake-candles' />
+                        <ItemFamiliar label='Observaciones' data={datosFamiliar?.observaciones} icono='circle-info' />
+                        <ItemFamiliar label='Genero' data={datosFamiliar?.sexo} icono='venus-mars' />
+                        <ItemFamiliar label='Esterilizado' data={datosFamiliar?.esterilizado}  />
+                        <ItemFamiliar label='Identificado' data={datosFamiliar?.identificado} />
+                        <ItemFamiliar label='Domicilio' data={datosFamiliar?.domicilio} icono='house' />
+                    </View>
+                  ) :(
+                    <FormularioEditarFamiliar data={datosFamiliar} onSumbit={setEdicion} />
+                  )}     
+                  {/* <Image style={{  marginVertical: 8, width: '100%',borderColor:'black',borderRadius:20,borderWidth:1, height: 100 }} source={{uri: "https://i.pinimg.com/736x/8b/a8/81/8ba8814f2ffdbd3178ccd69e26989653.jpg"}} /> } */}
+                
+              </ScrollView>
+              <BotonEditar showButton={!edicion} onPress={(e: boolean) => setEdicion(e)} />
             </View>
+            
         </>
   )
 }
@@ -98,14 +110,11 @@ const styles = StyleSheet.create({
         flex:1
     },
     scrollView: {
-      width: '90%',
       marginTop: 5,
-      
     },
     containerScroll: {
+      paddingHorizontal: "5%",
       paddingBottom: 20,
-      borderRadius: 10,
-      margin: 12,
     },
     input:{
       marginBottom: 16,

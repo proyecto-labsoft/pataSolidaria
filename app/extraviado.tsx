@@ -37,17 +37,17 @@ export default function Extravio() {
                 <Appbar.Content title="Seleccione un familiar" titleStyle={{ color: theme.colors.onSecondary }} />
             </Appbar.Header>
             <SafeAreaView style={{ alignItems: "center",flex:1}}>
-            <View style={{marginHorizontal:10}}>
-                <ScrollView
-                    style={ styles.scrollView }
-                    contentContainerStyle={{ alignItems: "center" }}
-                >
-                    <CardFamiliar style={ styles.cardFamiliar } navigateTo="ConfirmarExtravio" data={{nombre: 'Chili', especie: 'Canino'}} />
-                    <CardFamiliar style={ styles.cardFamiliar } navigateTo="ConfirmarExtravio" data={{nombre: 'Duque', especie: 'Canino'}} />
-                    <CardFamiliar style={ styles.cardFamiliar } navigateTo="ConfirmarExtravio" data={{nombre: 'Draco', especie: 'Canino'}} />
-                    <CardFamiliar style={ styles.cardFamiliar } navigateTo="ConfirmarExtravio" data={{nombre: 'Sur', especie: 'Felino'}} />
-                </ScrollView>
-            </View>
+                <View style={{marginHorizontal:10}}>
+                    <ScrollView
+                        style={ styles.scrollView }
+                        contentContainerStyle={{ alignItems: "center" }}
+                    >
+                        <CardFamiliar style={ styles.cardFamiliar } navigateTo="ConfirmarExtravio" data={{nombre: 'Chili', especie: 'Canino'}} />
+                        <CardFamiliar style={ styles.cardFamiliar } navigateTo="ConfirmarExtravio" data={{nombre: 'Duque', especie: 'Canino'}} />
+                        <CardFamiliar style={ styles.cardFamiliar } navigateTo="ConfirmarExtravio" data={{nombre: 'Draco', especie: 'Canino'}} />
+                        <CardFamiliar style={ styles.cardFamiliar } navigateTo="ConfirmarExtravio" data={{nombre: 'Sur', especie: 'Felino'}} />
+                    </ScrollView>
+                </View>
             </SafeAreaView>
         
         </>
@@ -60,8 +60,7 @@ const styles = StyleSheet.create({
         flex:1
     },
     scrollView: {
-    width: '90%',
-    marginTop: 5,
+        marginTop:5,
     
     },
     containerScroll: {

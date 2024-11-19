@@ -21,7 +21,7 @@ interface Props {
 export default function FormularioConfirmarExtravio({data,onSumbit} : Props) {
     const theme = useTheme()
     return(
-        <View style={{marginVertical: 16,justifyContent: 'center'}}>
+        <View>
             <TextInput
                 style={ styles.input }
                 label="Nombre"
@@ -110,21 +110,7 @@ export default function FormularioConfirmarExtravio({data,onSumbit} : Props) {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        height: 'auto',
-        alignItems: "center",
-    },
     input:{
         marginBottom: 16,
     },
-    fotoFamiliar: {
-        marginTop: 35,
-    },
-    nombreFamiliar: {
-        // borderBottomWidth: 1,
-        // borderEndColor: 'black',
-        textAlign: 'center',
-        width: 150,
-        padding: 15,
-    }
 });

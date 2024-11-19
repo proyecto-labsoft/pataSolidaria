@@ -8,15 +8,16 @@ export default function Index() {
 
   return (
     <>
-      <Appbar.Header style={{ backgroundColor: theme.colors.tertiary, width: '100%', justifyContent:'space-between'}} >
-          <Appbar.Action icon="arrow-left-bold" iconColor={theme.colors.onSecondary} onPress={() => navigation.goBack()} />
-          <Appbar.Content title="Mi familiar" titleStyle={{ color: theme.colors.onSecondary }} />
+      <Appbar.Header style={{ backgroundColor: theme.colors.surface, width: '100%', justifyContent:'space-between'}} >
+          <Appbar.Action icon="arrow-left-bold" iconColor={theme.colors.primary} onPress={() => navigation.goBack()} />
+          <Appbar.Content title="Perfil del usuario" titleStyle={{ color: theme.colors.primary }} />
           {/* <Appbar.Action icon="account" iconColor={theme.colors.onSecondary} onPress={() => navigation.navigate("Perfil")} /> */}
         </Appbar.Header>
       <View
         style={{
           flex: 1,
           justifyContent: "center",
+          backgroundColor:theme.colors.surface
         }}
       >
         <Text>Acá va el perfil de usuario.</Text>

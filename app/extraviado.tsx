@@ -32,11 +32,11 @@ export default function Extravio() {
     
     return (
         < >          
-            <Appbar.Header style={{ backgroundColor: theme.colors.tertiary, width: '100%', justifyContent:'space-between'}} >
-                <Appbar.Action icon="arrow-left-bold" iconColor={theme.colors.onSecondary} onPress={() => navigation.goBack()} />
-                <Appbar.Content title="Seleccione un familiar" titleStyle={{ color: theme.colors.onSecondary }} />
+            <Appbar.Header style={{ backgroundColor: theme.colors.surface, width: '100%', justifyContent:'space-between'}} >
+                <Appbar.Action icon="arrow-left-bold" iconColor={theme.colors.primary} onPress={() => navigation.goBack()} />
+                <Appbar.Content title="Seleccione un familiar" titleStyle={{ color: theme.colors.primary }} />
             </Appbar.Header>
-            <SafeAreaView style={{ alignItems: "center",flex:1}}>
+            <SafeAreaView style={{ alignItems: "center",flex:1,backgroundColor: theme.colors.surface}}>
                 <View style={{marginHorizontal:10}}>
                     <ScrollView
                         style={ styles.scrollView }

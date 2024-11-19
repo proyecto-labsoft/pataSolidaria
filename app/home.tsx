@@ -28,15 +28,15 @@ export default function Home() {
 
   return (
     <>
-      <Appbar.Header style={{ backgroundColor: theme.colors.tertiary }} >
-        <Appbar.Content title={routes[index].title} titleStyle={{ color: theme.colors.onSecondary, textAlign: "center" }} />
-        <Appbar.Action icon="account" iconColor={theme.colors.onSecondary} onPress={() => navigation.navigate("Perfil")} />
+      <Appbar.Header style={{ backgroundColor: theme.colors.surface }} >
+        <Appbar.Content title={routes[index].title} titleStyle={{ color: theme.colors.primary, textAlign: "center" }} />
+        <Appbar.Action icon="account" iconColor={theme.colors.primary} onPress={() => navigation.navigate("Perfil")} />
       </Appbar.Header>
       <BottomNavigation
-        barStyle={{ backgroundColor: theme.colors.tertiary }}
-        inactiveColor={ theme.colors.onSecondary}
+        barStyle={{ backgroundColor: theme.colors.surface }}
+        inactiveColor={ theme.colors.primary}
         activeColor={ theme.colors.primary}
-        activeIndicatorStyle={{ backgroundColor: theme.colors.onTertiary}}
+        activeIndicatorStyle={{ backgroundColor: theme.colors.inversePrimary}}
         navigationState={{ index, routes }}
         onIndexChange={setIndex}
         renderScene={renderScene}

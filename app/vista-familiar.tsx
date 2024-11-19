@@ -36,10 +36,10 @@ const VistaFamiliar = () => {
   return (
     
       < >          
-        <Appbar.Header style={{ backgroundColor: theme.colors.tertiary, width: '100%', justifyContent:'space-between'}} >
-          <Appbar.Action icon="arrow-left-bold" iconColor={theme.colors.onSecondary} onPress={() => navigation.goBack()} />
-          <Appbar.Content title="Mi familiar" titleStyle={{ color: theme.colors.onSecondary }} />
-          <Appbar.Action icon="account" iconColor={theme.colors.onSecondary} onPress={() => navigation.navigate("Perfil")} />
+        <Appbar.Header style={{ backgroundColor: theme.colors.surface, width: '100%', justifyContent:'space-between'}} >
+          <Appbar.Action icon="arrow-left-bold" iconColor={theme.colors.primary} onPress={() => navigation.goBack()} />
+          <Appbar.Content title="Familiares" titleStyle={{ color: theme.colors.primary }} />
+          <Appbar.Action icon="account" iconColor={theme.colors.primary} onPress={() => navigation.navigate("Perfil")} />
         </Appbar.Header>
 
             {/* <View style={{ flexDirection: 'row',borderRadius:20, width:'100%', alignItems: 'center'}} >
@@ -61,7 +61,7 @@ const VistaFamiliar = () => {
                 <IconButton icon='pencil' size={32} mode={edicion ? "contained" : "contained-tonal"} onPress={() => setEdicion(!edicion)}/>
               </View>
             </View>  */}
-            <View style={{flex:1}}>
+            <View style={{flex:1,backgroundColor: theme.colors.surface}}>
               <ScrollView style={styles.scrollView} contentContainerStyle={ {...styles.containerScroll}}>        
               <View style={{  width:'100%',alignItems:'center'}}>
                   <Avatar.Image
@@ -77,8 +77,7 @@ const VistaFamiliar = () => {
                   </View>
                   {!edicion ? 
                   (  
-                    <View style={{marginVertical: 16,borderRadius: 10,padding: "5%",justifyContent: 'space-between', backgroundColor: theme.colors.tertiary}}>
-                      
+                    <View>
                         <ItemFamiliar label='Nombre' data={datosFamiliar?.nombre} icono='pen-clip' />
                         <ItemFamiliar label='Especie' data={datosFamiliar?.especie} icono='hippo' />
                         <ItemFamiliar label='Raza' data={datosFamiliar?.raza} icono='hippo' />

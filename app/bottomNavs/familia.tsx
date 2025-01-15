@@ -1,15 +1,15 @@
-import { StyleSheet, ScrollView, Image,Text, View, Pressable } from "react-native";
+import { StyleSheet, ScrollView, View, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Divider,useTheme,ActivityIndicator,Text,   Appbar, Avatar, IconButton } from 'react-native-paper'
 
 import CardFamiliar from "../componentes/cardFamiliar";
 import BotonAlerta from "../componentes/botonAlerta";
 
 export default function VistaFamilia() {
-
+  const theme = useTheme()
   return (
-    
-    <SafeAreaView style={{ alignItems: "center",flex:1}}>
       <View style={{marginHorizontal:10}}>
+        <Text style={{textAlign: 'center',color:theme.colors.secondary}}>Aquí podrás ver la información de tus familiares</Text>
         <ScrollView
           style={ styles.scrollView }
           contentContainerStyle={{ alignItems: "center" }}
@@ -48,7 +48,6 @@ export default function VistaFamilia() {
         </ScrollView>
 
       </View>
-    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
@@ -61,7 +60,7 @@ const styles = StyleSheet.create({
     margin: 12,
   },
   cardFamiliar: {
-    marginVertical: 5,
+    marginVertical: 15,
   },
   
 });

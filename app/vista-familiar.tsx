@@ -64,16 +64,15 @@ const VistaFamiliar = () => {
             <View style={{flex:1,backgroundColor: theme.colors.surface}}>
               <ScrollView style={styles.scrollView} contentContainerStyle={ {...styles.containerScroll}}>        
               <View style={{  width:'100%',alignItems:'center'}}>
-                  <Avatar.Image
+                    <Avatar.Image
                       source={{ uri: foto }}
-                      style={ styles.fotoFamiliar }
+                      style={ {...styles.fotoFamiliar, overflow:'hidden',borderColor: theme.colors.secondary,borderWidth:2} }
                       onProgress={() => (<ActivityIndicator animating/>)}
                       size={150}
                     />
                     {/* <IconButton icon='pencil' size={32} mode={edicion ? "contained" : "contained-tonal"} onPress={() => setEdicion(!edicion)}/> */}
                     <TakePictureBtn setImagen={setFoto} />
                     <TextPaper variant="headlineMedium" style={ {...styles.nombreFamiliar, color:theme.colors.tertiary} }>Chili</TextPaper>
-                    <Divider style={{ width: '50%', height: 3, backgroundColor: theme.colors.tertiary, borderRadius: 20 }} bold/>
                   </View>
                   {!edicion ? 
                   (  
@@ -84,11 +83,11 @@ const VistaFamiliar = () => {
                         <ItemFamiliar label='Tamaño' data={datosFamiliar?.tamanio} icono='weight-hanging' />
                         <ItemFamiliar label='Colores' data={datosFamiliar?.colores} icono='palette' />
                         <ItemFamiliar label='Fecha de nacimiento' data={datosFamiliar?.fechanac} icono='cake-candles' />
-                        <ItemFamiliar label='Observaciones' data={datosFamiliar?.observaciones} icono='circle-info' />
                         <ItemFamiliar label='Genero' data={datosFamiliar?.sexo} icono='venus-mars' />
-                        <ItemFamiliar label='Esterilizado' data={datosFamiliar?.esterilizado}  />
-                        <ItemFamiliar label='Identificado' data={datosFamiliar?.identificado} />
+                        <ItemFamiliar label='¿Está esterilizado?' data={datosFamiliar?.esterilizado}  />
+                        <ItemFamiliar label='¿Está chipeado?' data={datosFamiliar?.identificado} />
                         <ItemFamiliar label='Domicilio' data={datosFamiliar?.domicilio} icono='house' />
+                        <ItemFamiliar label='Observaciones' data={datosFamiliar?.observaciones} icono='circle-info' />
                     </View>
                   ) :(
                     <FormularioEditarFamiliar data={datosFamiliar} onSumbit={setEdicion} />

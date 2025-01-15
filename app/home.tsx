@@ -14,8 +14,8 @@ export default function Home() {
   const [index, setIndex] = useState(1);
   const [routes] = useState([
     { key: 'adopciones', title: 'Adopciones', focusedIcon: 'album' },
-    { key: 'familia', title: 'Mi familia', focusedIcon: 'heart', unfocusedIcon: 'heart-outline'},
     { key: 'casos', title: 'Casos', focusedIcon: 'history' },
+    { key: 'familia', title: 'Mi familia', focusedIcon: 'heart', unfocusedIcon: 'heart-outline'},
   ]);
 
   const renderScene = BottomNavigation.SceneMap({
@@ -28,12 +28,12 @@ export default function Home() {
 
   return (
     <>
-      <Appbar.Header style={{ backgroundColor: theme.colors.surface }} >
+      <Appbar.Header style={{ backgroundColor: theme.colors.surface}} >
         <Appbar.Content title={routes[index].title} titleStyle={{ color: theme.colors.primary, textAlign: "center" }} />
         <Appbar.Action icon="account" iconColor={theme.colors.primary} onPress={() => navigation.navigate("Perfil")} />
       </Appbar.Header>
       <BottomNavigation
-        barStyle={{ backgroundColor: theme.colors.surface }}
+        barStyle={{ width:'100%',backgroundColor: theme.colors.surface,borderColor: theme.colors.tertiary,borderTopWidth:1,overflow:'hidden'}}
         inactiveColor={ theme.colors.primary}
         activeColor={ theme.colors.primary}
         activeIndicatorStyle={{ backgroundColor: theme.colors.inversePrimary}}

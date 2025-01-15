@@ -60,8 +60,8 @@ export const TakePictureBtn: FC<TakePictureBtnProps> = ({ setImagen }) => {
       <Foundation
         name="camera"
         size={30}
-        color="white"
-        backgroundColor={theme.colors.primary}
+        color={theme.colors.background}
+        backgroundColor={theme.colors.tertiary}
         style={{ borderRadius: 40, marginTop: -50, marginRight: -105, padding: 10 }}
         onPress={handleOpenCamera}
       />

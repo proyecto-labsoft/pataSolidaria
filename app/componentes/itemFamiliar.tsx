@@ -12,26 +12,24 @@ interface Props {
 const ItemFamiliar = ({data,label,icono} : Props) => {
     const theme = useTheme()
     return (
-        <View style={{alignItems:'center' ,marginVertical:8,flexDirection: typeof data === 'boolean' ? 'row': 'column'}}>
+        <View style={{alignItems:'start',marginVertical:8,flexDirection: 'column'}}>
+            <View style={{flexDirection: 'row',backgroundColor:theme.colors.background,borderWidth:1,borderColor: theme.colors.tertiary, alignItems:'center',padding: 20 , borderTopEndRadius: 20,borderTopStartRadius: 20, paddingVertical: 8}}>
+                {!!icono && <FontAwesome6 name={icono} style={{color: theme.colors.tertiary, paddingRight: 15}} size={24} />}
+                <TextPaper variant='titleMedium' style={{width: '100%',color: theme.colors.tertiary}}>{label}</TextPaper>
+            </View>
+            {/* <Divider style={{ width: '50%', height: 1, backgroundColor: theme.colors.tertiary, borderRadius: 20 }} /> */}
+            <View style={{flexDirection: 'row',overflow:'hidden', alignItems:'center',borderBottomEndRadius: 20,borderBottomStartRadius: 20}}>
+                <TextPaper variant='titleMedium' style={{width: '100%', paddingLeft: 16,paddingVertical: 8,backgroundColor: theme.colors.tertiary,color: "white"}}>{typeof data === 'boolean' ? data ? "Sí" : "No" : data}</TextPaper>
+            </View>
             
-            { typeof data === 'boolean' 
-                ? ( 
-                    <View style={{flexDirection: 'row', alignItems:'center',padding: "5%",backgroundColor: theme.colors.tertiary, borderRadius: 20, paddingVertical: 8}}>
-                        <TextPaper variant='titleMedium' style={{color: '#efefef'}}>{label}</TextPaper>
-                        <FontAwesome6 style={{ paddingTop: 2, paddingLeft: 8, color: data ? 'green' : 'red'}} name={ data ? 'circle-check' : 'circle-xmark'} size={24} />
-                    </View>
-                )
-                : (
-                <>
-                    <View style={{flexDirection: 'row', alignItems:'center',padding: "5%",backgroundColor: theme.colors.tertiary, borderRadius: 20, paddingVertical: 8}}>
-                        {!!icono && <FontAwesome6 name={icono} style={{color: "#efefef"}} size={24} />}
-                        <TextPaper variant='titleMedium' style={{color: '#efefef', marginLeft: "5%"}}>{label}</TextPaper>
-                    </View>
-                    <TextPaper variant='titleMedium' style={{paddingLeft:16,color: theme.colors.primary }}>{data}</TextPaper>
-                </>
-                )
-            }
         </View>
+        // <View style={{justifyContent:'space-between',alignItems: "center",marginVertical:8,paddingHorizontal: 25,flexDirection: 'row'}}>    
+        //     <View style={{flexDirection: 'row', alignItems:'center',padding: 20 ,backgroundColor: theme.colors.tertiary, borderRadius: 20, paddingVertical: 8}}>
+        //         {!!icono && <FontAwesome6 name={icono} style={{color: "#efefef", paddingRight: 15}} size={24} />}
+        //         <TextPaper variant='titleMedium' style={{color: '#efefef'}}>{label}</TextPaper>
+        //     </View>
+        //     <TextPaper variant='titleMedium' style={{paddingLeft:25,color: theme.colors.primary }}>{typeof data === 'boolean' ? data ? "Sí" : "No" : data}</TextPaper>
+        // </View>
     )
 }
 

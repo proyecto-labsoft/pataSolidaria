@@ -1,7 +1,7 @@
 import { View, Image,StyleSheet, Text as TextNative, ScrollView } from 'react-native'
 import {useMemo,useState} from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Divider, SegmentedButtons,ActivityIndicator,Text as TextPaper, TextInput, Checkbox, Surface, Avatar, Button, IconButton, Icon, useTheme } from 'react-native-paper'
+import { SegmentedButtons,Text as TextPaper, TextInput, Checkbox, Button, useTheme } from 'react-native-paper'
 interface Props {
     onSumbit: Function,
     data: {

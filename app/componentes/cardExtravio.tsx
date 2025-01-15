@@ -15,7 +15,7 @@ interface Props {
     navigateTo: string
     
 }
-export default function CardAdopcion({data,navigateTo,style} : Props) {
+export default function CardExtravio({data,navigateTo,style} : Props) {
 
     const theme = useTheme();  
     const navigation = useNavigation();

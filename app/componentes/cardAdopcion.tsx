@@ -31,9 +31,9 @@ export default function CardAdopcion({data,navigateTo,style} : Props) {
             },
         ]}
         >
-            <Card style={{backgroundColor: theme.colors.tertiary}}>
+            <Card style={{backgroundColor: theme.colors.primary}}>
                 <Card.Cover  style={ styles.fotoAnimal } source={{ uri: 'https://static.fundacion-affinity.org/cdn/farfuture/PVbbIC-0M9y4fPbbCsdvAD8bcjjtbFc0NSP3lRwlWcE/mtime:1643275542/sites/default/files/los-10-sonidos-principales-del-perro.jpg' }} />
-                <Card.Title title={data.nombre} subtitle={data.especie} titleVariant="titleLarge" titleStyle={{ color: theme.colors.onSecondary}} subtitleStyle={{ color: theme.colors.onSecondary}}/>
+                <Card.Title title={data.nombre} subtitle={data.especie} titleVariant="titleLarge" titleStyle={{ color: theme.colors.onPrimary}} subtitleStyle={{ color: theme.colors.onSecondary}}/>
             </Card>
         </Pressable>
     )

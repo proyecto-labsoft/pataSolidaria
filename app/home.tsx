@@ -33,10 +33,10 @@ export default function Home() {
         <Appbar.Action icon="account" iconColor={theme.colors.primary} onPress={() => navigation.navigate("Perfil")} />
       </Appbar.Header>
       <BottomNavigation
-        barStyle={{ width:'100%',backgroundColor: theme.colors.surface,borderColor: theme.colors.tertiary,borderTopWidth:1,overflow:'hidden'}}
+        barStyle={{ width:'100%',backgroundColor: theme.colors.surface,overflow:'hidden'}}
         inactiveColor={ theme.colors.primary}
         activeColor={ theme.colors.primary}
-        activeIndicatorStyle={{ backgroundColor: theme.colors.inversePrimary}}
+        activeIndicatorStyle={{ backgroundColor: theme.colors.primaryContainer}}
         navigationState={{ index, routes }}
         onIndexChange={setIndex}
         renderScene={renderScene}

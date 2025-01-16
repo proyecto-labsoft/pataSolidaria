@@ -53,8 +53,8 @@ const VistaFamiliar = () => {
                   />
                   <IconButton icon='pencil' size={32} mode={edicion ? "contained" : "contained-tonal"} onPress={() => setEdicion(!edicion)}/>
                   <TakePictureBtn setImagen={setFoto} />
-                  <TextPaper variant="headlineMedium" style={ {...styles.nombreFamiliar, color:theme.colors.tertiary} }>Chili</TextPaper>
-                  <Divider style={{ width: '50%', height: 3, backgroundColor: theme.colors.tertiary, borderRadius: 20 }} bold/>
+                  <TextPaper variant="headlineMedium" style={ {...styles.nombreFamiliar, color:theme.colors.primary} }>Chili</TextPaper>
+                  <Divider style={{ width: '50%', height: 3, backgroundColor: theme.colors.primary, borderRadius: 20 }} bold/>
                 </View>
               
               {<View style={{ flex: 1 , justifyContent: 'center',alignItems:'flex-start' }}>
@@ -72,7 +72,7 @@ const VistaFamiliar = () => {
                     />
                     {/* <IconButton icon='pencil' size={32} mode={edicion ? "contained" : "contained-tonal"} onPress={() => setEdicion(!edicion)}/> */}
                     <TakePictureBtn setImagen={setFoto} />
-                    <TextPaper variant="headlineMedium" style={ {...styles.nombreFamiliar, color:theme.colors.tertiary} }>Chili</TextPaper>
+                    <TextPaper variant="headlineMedium" style={ {...styles.nombreFamiliar, color:theme.colors.primary} }>Chili</TextPaper>
                   </View>
                   {!edicion ? 
                   (  

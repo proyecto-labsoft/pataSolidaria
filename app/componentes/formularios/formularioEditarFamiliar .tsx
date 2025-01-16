@@ -52,7 +52,7 @@ export default function FormularioEditarFamiliar({data,onSumbit} : Props) {
                 label="Domicilio"
                 value={data?.domicilio}
             />
-            <Button icon="map-marker" buttonColor={theme.colors.tertiary} style={{width: '100%', marginBottom: 24,borderRadius:10}} uppercase mode="contained" onPress={() => console.log('Pressed')}>
+            <Button icon="map-marker" buttonColor={theme.colors.primary} style={{width: '100%', marginBottom: 24,borderRadius:10}} uppercase mode="contained" onPress={() => console.log('Pressed')}>
                 Cargar otra ubicación
             </Button>
             <TextInput
@@ -96,12 +96,12 @@ export default function FormularioEditarFamiliar({data,onSumbit} : Props) {
                 </View>
             </View>
                 
-            <View style={{ flexDirection:'row', justifyContent:'space-evenly', width: '100%'}}>
-                <Button  buttonColor={theme.colors.error} style={{  marginVertical: 8 ,borderRadius:10}} uppercase mode="contained" onPress={() => onSumbit((e)=>!e)}>
-                    Cancelar
+            <View style={{ flexDirection:'column', justifyContent:'space-evenly', width: '100%'}}>
+                <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={() => onSumbit((e)=>!e)}>
+                    <TextPaper variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Guardar</TextPaper>
                 </Button>
-                <Button buttonColor={theme.colors.tertiary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={() => onSumbit((e)=>!e)}>
-                    Guardar
+                <Button  buttonColor={theme.colors.secondary} style={{  marginVertical: 8 ,borderRadius:10}} uppercase mode="contained" onPress={() => onSumbit((e)=>!e)}>
+                    <TextPaper variant='labelLarge' style={{color: theme.colors.onSecondary, marginLeft: "5%"}}>Cancelar</TextPaper>
                 </Button>
             </View>
             

@@ -20,6 +20,7 @@ import lightheme from '../assets/light-theme.json'
 import BotonAlerta from "./componentes/botonAlerta";
 import Extravio from "./extraviado";
 import ConfirmarExtravio from "./confirmar-extravio";
+
 const theme = {
   ...DefaultTheme,
   colors: lightheme.colors,
@@ -47,7 +48,7 @@ export default function Layout() {
   const Stack = createNativeStackNavigator();
   
   const [visible, setVisible] = useState(true);
-
+  
   const navigationRef = useNavigationContainerRef();
 
   return (   

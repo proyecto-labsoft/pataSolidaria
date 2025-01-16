@@ -2,13 +2,15 @@ import {ScrollView,StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CardFamiliar from "../componentes/cardFamiliar";
 import CardExtravio from "../componentes/cardExtravio";
-import { Divider, Text, useTheme } from "react-native-paper";
+import { Banner, Divider, Text, useTheme } from "react-native-paper";
 
 export default function VistaCasos() {
   const theme = useTheme()
   return (
     <View>
-        <Text style={{textAlign: 'center',color:theme.colors.secondary}}>Aquí podrás todos los casos de compañeros perdidos y avistados</Text>
+          <Banner visible style={{margin: 10, borderRadius: 20,backgroundColor: theme.colors.tertiaryContainer}}>
+            <Text style={{textAlign: 'center',color:theme.colors.onTertiaryContainer}}>Aquí podrás todos los casos de compañeros perdidos y avistados</Text>
+          </Banner>
           <ScrollView
             style={{width: '100%'}}
             contentContainerStyle={{ alignItems: "center"  ,width: '100%'}}

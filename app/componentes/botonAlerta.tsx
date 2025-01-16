@@ -1,7 +1,7 @@
 import { createNavigationContainerRef, useNavigation } from "@react-navigation/native";
 import {useEffect, useState} from 'react';
 import { StyleSheet } from 'react-native';
-import { FAB, Portal, PaperProvider } from 'react-native-paper';
+import { FAB, Portal, PaperProvider ,useTheme} from 'react-native-paper';
 interface Props {
     onPress: any
     showButton: boolean
@@ -9,6 +9,7 @@ interface Props {
 export default function BotonAlerta ({onPress,showButton} : Props) {
     const [state, setState] = useState({ open: false });
     
+    const theme = useTheme()
     const navigation = useNavigation(); 
 
     const handleChange = ({ open } ) => setState({ open });
@@ -22,17 +23,18 @@ export default function BotonAlerta ({onPress,showButton} : Props) {
             open={open}
             visible={showButton}
             icon={open ? 'arrow-up-bold-outline' : 'alert'}
+            color={theme?.colors.onSecondaryContainer}
             actions={[
                 {
                     icon: 'eye-outline',
-                    style: { ...styles.fabItem, backgroundColor: "green"},
+                    style: { ...styles.fabItem, backgroundColor: theme?.colors.secondaryContainer},
                     label: 'Encontré un animal perdido',
                     labelStyle: { ...styles.fabItem },
                     onPress: () => onPress("Encontrado"),
                     // onPress: () => {if (navigationRef.isReady()) (navigationRef.navigate("Encontrado"))},
                 },
                 {
-                    style: { ...styles.fabItem, backgroundColor: "red" },
+                    style: { ...styles.fabItem, backgroundColor: theme?.colors.secondaryContainer},
                     icon: 'alert-box',
                     label: 'Mi animal se extravió',
                     labelStyle: { ...styles.fabItem },
@@ -41,7 +43,7 @@ export default function BotonAlerta ({onPress,showButton} : Props) {
                 }
                 ]}
             onStateChange={handleChange}
-            fabStyle={styles.fab}
+            fabStyle={{...styles.fab, backgroundColor: open ? theme?.colors.inversePrimary : theme?.colors.primaryContainer}}
             style={styles.fabGroup}
             variant='secondary'
             // onPress={() => {

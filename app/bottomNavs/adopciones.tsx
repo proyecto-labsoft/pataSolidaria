@@ -2,13 +2,15 @@ import {ScrollView,StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CardFamiliar from "../componentes/cardFamiliar";
 import CardAdopcion from "../componentes/cardAdopcion";
-import { Text, useTheme } from "react-native-paper";
+import { Banner, Text, useTheme } from "react-native-paper";
 
 export default function VistaAdopcionnes() {
   const theme = useTheme()
   return (
-    <View>
-        <Text style={{textAlign: 'center',color:theme.colors.secondary}}>Compañeros en adopción bajo el cuidado de la asociación</Text>
+    <View style={{height: "100%"}}>
+        <Banner icon="information"  visible style={{margin: 10, borderRadius: 20,backgroundColor: theme.colors.tertiaryContainer}}>
+          <Text style={{textAlign: 'center',color:theme.colors.onTertiaryContainer}}>Compañeros en adopción bajo el cuidado de la asociación</Text>
+        </Banner>
         <ScrollView
           style={ styles.scrollView }
           contentContainerStyle={{ alignItems: "center"  ,width: '100%'}}

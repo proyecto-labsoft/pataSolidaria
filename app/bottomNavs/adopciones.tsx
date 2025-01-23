@@ -4,7 +4,7 @@ import CardFamiliar from "../componentes/cardFamiliar";
 import CardAdopcion from "../componentes/cardAdopcion";
 import { Banner, Text, useTheme } from "react-native-paper";
 
-export default function VistaAdopcionnes() {
+export default function VistaAdopciones() {
   const theme = useTheme()
   return (
     <View style={{height: "100%"}}>

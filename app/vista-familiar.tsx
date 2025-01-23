@@ -34,8 +34,7 @@ const VistaFamiliar = () => {
   const navigation = useNavigation();
   
   return (
-    
-      < >          
+      <>          
         <Appbar.Header style={{ backgroundColor: theme.colors.surface, width: '100%', justifyContent:'space-between'}} >
           <Appbar.Action icon="arrow-left-bold" iconColor={theme.colors.primary} onPress={() => navigation.goBack()} />
           <Appbar.Content title="Familiares" titleStyle={{ color: theme.colors.primary }} />

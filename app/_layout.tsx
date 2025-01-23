@@ -10,7 +10,6 @@ import { NavigationContainer, useNavigation, useNavigationContainerRef } from '@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Home from "./home";
 import VistaFamiliar from "./vista-familiar";
-import Perfil from "./perfil";
 
 // Basandose en ores de la pagina de ARAF
 // primario: 0f7599
@@ -20,6 +19,8 @@ import lightheme from '../assets/light-theme.json'
 import BotonAlerta from "./componentes/botonAlerta";
 import Extravio from "./extraviado";
 import ConfirmarExtravio from "./confirmar-extravio";
+import Notificaciones from "./notificaciones";
+import Perfil from "./perfil";
 
 const theme = {
   ...DefaultTheme,
@@ -58,9 +59,9 @@ export default function Layout() {
           <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false}} >
             <Stack.Screen name="Home" component={Home} options={{ headerShown:false }} />
             <Stack.Screen name="Familiar" component={VistaFamiliar} options={{ headerShown:false }}/>
-            <Stack.Screen name="Perfil" component={Perfil} options={{ headerShown:false }} />
             <Stack.Screen name="Extravio" component={Extravio} options={{ headerShown:false }} />
-            <Stack.Screen name="Encontrado" component={Perfil} options={{ headerShown:false }} />
+            <Stack.Screen name="Perfil" component={Perfil} options={{ headerShown:false }} />
+            <Stack.Screen name="Notificaciones" component={Notificaciones} options={{ headerShown:false }} />
             <Stack.Screen name="ConfirmarExtravio" component={ConfirmarExtravio} options={{ headerShown:false }} />
           </Stack.Navigator>
         </NavigationContainer>

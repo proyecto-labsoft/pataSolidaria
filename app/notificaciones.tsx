@@ -14,7 +14,8 @@ export default function Notificaciones() {
   const navigation = useNavigation();
   const theme = useTheme()
   const [edicion, setEdicion] = useState(false);
-  const Item = ({label,data,icono}: Props) => {
+  
+  const Notificacion = ({label,data,icono}: Props) => {
     return (
       <View style={{alignItems: "flex-start",width:"100%"}}>  
         <TextPaper variant='titleSmall' style={{textAlign:"left",width:"100%", color: theme.colors.onSurface}}>{label}</TextPaper>

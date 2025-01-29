@@ -62,7 +62,7 @@ export const TakePictureBtn: FC<TakePictureBtnProps> = ({ setImagen }) => {
         size={30}
         color={theme.colors.onPrimary}
         backgroundColor={theme.colors.primary}
-        style={{ borderRadius: 40, marginTop: -50, marginRight: -105, padding: 10 }}
+        style={{ position: 'absolute', borderRadius: 50, top: 190, right: 15, padding: 10 }}
         onPress={handleOpenCamera}
       />
       <Modal

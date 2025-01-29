@@ -22,6 +22,7 @@ import ConfirmarExtravio from "./pantallas/confirmar-extravio";
 import Notificaciones from "./pantallas/notificaciones";
 import Perfil from "./pantallas/perfil";
 import FAQ from "./pantallas/faq";
+import VistaExtravio from "./pantallas/vista-extavio";
 
 const theme = {
   ...DefaultTheme,
@@ -65,6 +66,8 @@ export default function Layout() {
             <Stack.Screen name="Notificaciones" component={Notificaciones} options={{ headerShown:false }} />
             <Stack.Screen name="ConfirmarExtravio" component={ConfirmarExtravio} options={{ headerShown:false }} />
             <Stack.Screen name="Faq" component={FAQ} options={{ headerShown:false }} />
+            <Stack.Screen name="VistaExtravio" component={VistaExtravio} options={{ headerShown:false }} />
+            
           </Stack.Navigator>
         </NavigationContainer>
         <BotonAlerta showButton={visible} onPress={(ruta: string) => navigationRef.current && navigationRef.current.navigate(ruta)}/>

@@ -1,9 +1,10 @@
-import {useState} from "react"
+import React,{useEffect, useState} from "react"
 import { StyleSheet, ScrollView, View } from "react-native";
 import { useTheme } from 'react-native-paper';
 import CardFamiliar from "../componentes/cards/cardFamiliar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AppbarNav from "../componentes/navegacion/appbarNav";
+import { useNavigation } from "../types/react-navigation";
 
 export default function Extravio() {
     const theme = useTheme();
@@ -20,7 +21,7 @@ export default function Extravio() {
       identificado: false,
       domicilio: 'Puerto español 844'
     });
-    
+   
     return (
         <>
             <AppbarNav titulo="Seleccione un familiar" />     
@@ -31,10 +32,10 @@ export default function Extravio() {
                         style={ styles.scrollView }
                         contentContainerStyle={{ alignItems: "center" }}
                     >
-                        <CardFamiliar style={ styles.cardFamiliar } navigateTo="ConfirmarExtravio" data={{nombre: 'Chili', especie: 'Canino'}} />
-                        <CardFamiliar style={ styles.cardFamiliar } navigateTo="ConfirmarExtravio" data={{nombre: 'Duque', especie: 'Canino'}} />
-                        <CardFamiliar style={ styles.cardFamiliar } navigateTo="ConfirmarExtravio" data={{nombre: 'Draco', especie: 'Canino'}} />
-                        <CardFamiliar style={ styles.cardFamiliar } navigateTo="ConfirmarExtravio" data={{nombre: 'Sur', especie: 'Felino'}} />
+                        <CardFamiliar navigateTo="ConfirmarExtravio" data={{nombre: 'Chili', especie: 'Canino'}} />
+                        <CardFamiliar navigateTo="ConfirmarExtravio" data={{nombre: 'Duque', especie: 'Canino'}} />
+                        <CardFamiliar navigateTo="ConfirmarExtravio" data={{nombre: 'Draco', especie: 'Canino'}} />
+                        <CardFamiliar navigateTo="ConfirmarExtravio" data={{nombre: 'Sur', especie: 'Felino'}} />
                     </ScrollView>
                 </View>
             </SafeAreaView>

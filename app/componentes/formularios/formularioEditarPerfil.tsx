@@ -1,5 +1,5 @@
 import { View, StyleSheet } from 'react-native'
-import { TextInput, Button, useTheme } from 'react-native-paper'
+import { TextInput,Text as TextPaper, Button, useTheme } from 'react-native-paper'
 interface Props {
     onSumbit: Function,
     data: {
@@ -11,7 +11,7 @@ interface Props {
 export default function FormularioEditarPerfil({data, onSumbit} : Props) {
     const theme = useTheme()
     return(
-        <View style={{marginVertical: 16,justifyContent: 'center'}}>
+        <View style={{marginVertical: 16,justifyContent: 'center',paddingHorizontal: '5%'}}>
             <TextInput
                 style={ styles.input }
                 label="Nombre"
@@ -31,12 +31,12 @@ export default function FormularioEditarPerfil({data, onSumbit} : Props) {
                 Cargar otra ubicación
             </Button> */}
                 
-            <View style={{ flexDirection:'row', justifyContent:'space-evenly', width: '100%'}}>
-                <Button  buttonColor={theme.colors.error} style={{  marginVertical: 8 ,borderRadius:10}} uppercase mode="contained" onPress={() => onSumbit((e)=>!e)}>
-                    Cancelar
+                <View style={{ flexDirection:'column', justifyContent:'space-evenly', width: '100%'}}>
+                <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={() => onSumbit((e)=>!e)}>
+                    <TextPaper variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Guardar</TextPaper>
                 </Button>
-                <Button buttonColor={theme.colors.tertiary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={() => onSumbit((e)=>!e)}>
-                    Guardar
+                <Button  buttonColor={theme.colors.secondary} style={{  marginVertical: 8 ,borderRadius:10}} uppercase mode="contained" onPress={() => onSumbit((e)=>!e)}>
+                    <TextPaper variant='labelLarge' style={{color: theme.colors.onSecondary, marginLeft: "5%"}}>Cancelar</TextPaper>
                 </Button>
             </View>
             

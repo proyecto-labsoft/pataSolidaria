@@ -33,16 +33,15 @@ export default function VistaFamiliar() {
     identificado: false,
     domicilio: 'Puerto español 844'
   });
-
-  const navigation = useNavigation();
   
   const {width} = Dimensions.get('screen')
   const [foto, setFoto] = useState<string | null>('https://static.fundacion-affinity.org/cdn/farfuture/PVbbIC-0M9y4fPbbCsdvAD8bcjjtbFc0NSP3lRwlWcE/mtime:1643275542/sites/default/files/los-10-sonidos-principales-del-perro.jpg');
+  
   return (
       <View style={{height: '100%',width:width,backgroundColor: theme.colors.surface,alignItems:'center'}}>      
         <AppbarNav titulo={datosFamiliar?.nombre} />
 
-        <ScrollView contentContainerStyle={{marginVertical:12}} > 
+        <ScrollView contentContainerStyle={{margin:12}} > 
           
           <CarruselImagenes data={imagenes} />    
           {modoEdicion && <TakePictureBtn setImagen={setFoto} />}
@@ -74,19 +73,3 @@ export default function VistaFamiliar() {
       </View>
   )
 }
-
-const styles = StyleSheet.create({
-    input:{
-      marginBottom: 16,
-    },
-    arrowBtn: {},
-    arrowBtnText: {
-      fontSize: 42,
-      fontWeight: '600',
-    },
-    footer: {
-      flexDirection: 'row',
-      justifyContent: 'center',
-      marginTop: 10,
-    },
-  });

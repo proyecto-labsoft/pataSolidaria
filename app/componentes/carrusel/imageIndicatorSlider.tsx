@@ -12,7 +12,7 @@ export default function Indicator({scrollX,data} : Props) {
 
     return (
         <View style={{position:'absolute',flexDirection: 'row',top: 200}}>
-            { data.map((_,i) =>  {
+            { data.map((_: any,i: number) =>  {
                 const inputRange = [(i - 1) * width, i * width, (i + 1) * width]
                 
                 const scale = scrollX.interpolate({

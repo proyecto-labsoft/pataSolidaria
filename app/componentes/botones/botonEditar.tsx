@@ -1,7 +1,7 @@
-import { createNavigationContainerRef, useNavigation } from "@react-navigation/native";
-import {useEffect, useState} from 'react';
+import { useNavigation } from "@react-navigation/native";
+import { useState} from 'react';
 import { StyleSheet } from 'react-native';
-import { FAB, Portal, PaperProvider } from 'react-native-paper';
+import { FAB } from 'react-native-paper';
 interface Props {
     onPress: any
     showButton: boolean

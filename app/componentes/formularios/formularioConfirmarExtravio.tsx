@@ -97,10 +97,10 @@ export default function FormularioConfirmarExtravio({data,onSumbit} : Props) {
             </View>
                 
             <View style={{ flexDirection:'row', justifyContent:'space-evenly', width: '100%'}}>
-                <Button  buttonColor={theme.colors.error} style={{  marginVertical: 8 ,borderRadius:10}} uppercase mode="contained" onPress={() => onSumbit((e)=>!e)}>
+                <Button  buttonColor={theme.colors.error} style={{  marginVertical: 8 ,borderRadius:10}} uppercase mode="contained" onPress={() => onSumbit((e: any)=>!e)}>
                     Cancelar
                 </Button>
-                <Button buttonColor={theme.colors.tertiary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={() => onSumbit((e)=>!e)}>
+                <Button buttonColor={theme.colors.tertiary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={() => onSumbit((e: any)=>!e)}>
                     Confirmar
                 </Button>
             </View>

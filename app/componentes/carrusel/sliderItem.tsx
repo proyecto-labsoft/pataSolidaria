@@ -3,14 +3,14 @@ import {ActivityIndicator} from 'react-native-paper'
 
 type Props = {
     item: string,
-    index: number,
+    key: number,
 }
 const {width} = Dimensions.get('screen')
 
-export default function SliderItem({item,index}: Props) {
+export default function SliderItem({item,key}: Props) {
 
     return(
-        <View key={index} style={{justifyContent:'center'}}>
+        <View key={key} style={{justifyContent:'center'}}>
             <Image
                 source={item}
                 onProgress={() => (<ActivityIndicator animating/>)}

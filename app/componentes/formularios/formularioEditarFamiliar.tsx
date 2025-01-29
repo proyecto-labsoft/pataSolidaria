@@ -1,7 +1,5 @@
-import { View, Image,StyleSheet, Text as TextNative, ScrollView } from 'react-native'
-import {useMemo,useState} from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { Divider, SegmentedButtons,ActivityIndicator,Text as TextPaper, TextInput, Checkbox, Surface, Avatar, Button, IconButton, Icon, useTheme } from 'react-native-paper'
+import { View } from 'react-native'
+import { SegmentedButtons,Text, TextInput, Checkbox, Button, useTheme } from 'react-native-paper'
 interface Props {
     onSumbit: Function,
     data: {
@@ -60,7 +58,7 @@ export default function FormularioEditarFamiliar({data,onSumbit} : Props) {
                 multiline
                 numberOfLines={5}
             />
-            <TextPaper variant="titleLarge" style={{width: '100%', textAlign:'center'}}>Sexo</TextPaper>
+            <Text variant="titleLarge" style={{width: '100%', textAlign:'center'}}>Sexo</Text>
             <SegmentedButtons
                 value={data?.sexo}
                 buttons={[{value:'hembra',label:'Hembra',icon:'gender-female'},{value:'macho',label:'Macho',icon:'gender-male'}]}
@@ -68,44 +66,28 @@ export default function FormularioEditarFamiliar({data,onSumbit} : Props) {
             />
             <View style={{ justifyContent: 'flex-start' , width: '80%' }}>
                 <View style={{flexDirection:'row', marginVertical: 8, alignItems:'center'}}>
-                    <TextPaper variant="titleLarge">Esterilizado</TextPaper>
+                    <Text variant="titleLarge">Esterilizado</Text>
                     <Checkbox
                         status={data?.esterilizado ? 'checked' : 'unchecked'}
-                    // onPress={() => {
-                    //   setChecked(!checked);
-                    // }}
                     />
                 </View>
                 <View style={{flexDirection:'row', marginVertical: 8, alignItems:'center'}}>
-                    <TextPaper variant="titleLarge">Identificación</TextPaper>
+                    <Text variant="titleLarge">Identificación</Text>
                     <Checkbox
                         status={data?.identificado ? 'checked' : 'unchecked'}
-                    // onPress={() => {
-                    //   setChecked(!checked);
-                    // }}
                     />
                 </View>
             </View>
                 
             <View style={{ flexDirection:'column', justifyContent:'space-evenly', width: '100%'}}>
-                <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={() => onSumbit((e)=>!e)}>
-                    <TextPaper variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Guardar</TextPaper>
+                <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={() => onSumbit((e: any)=>!e)}>
+                    <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Guardar</Text>
                 </Button>
-                <Button  buttonColor={theme.colors.secondary} style={{  marginVertical: 8 ,borderRadius:10}} uppercase mode="contained" onPress={() => onSumbit((e)=>!e)}>
-                    <TextPaper variant='labelLarge' style={{color: theme.colors.onSecondary, marginLeft: "5%"}}>Cancelar</TextPaper>
+                <Button  buttonColor={theme.colors.secondary} style={{  marginVertical: 8 ,borderRadius:10}} uppercase mode="contained" onPress={() => onSumbit((e: any)=>!e)}>
+                    <Text variant='labelLarge' style={{color: theme.colors.onSecondary, marginLeft: "5%"}}>Cancelar</Text>
                 </Button>
             </View>
             
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    container: {
-        height: 'auto',
-        alignItems: "center",
-    },
-    fotoFamiliar: {
-        marginTop: 35,
-    },
-});

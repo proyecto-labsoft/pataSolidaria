@@ -28,17 +28,17 @@ export default function VistaExtravio({route}: any) {
                 <CarruselImagenes data={imagenes} />        
                 <View style={{gap: 20,paddingVertical:40,paddingHorizontal:20,alignItems: "center"}} >
                     <View style={{ flexDirection:'row', justifyContent:'space-between', width: '100%'}}>
-                        <View style={{ flexDirection:'row', justifyContent:'flex-start'}}>
+                        <View style={{ flexDirection:'row', justifyContent:'flex-start',alignItems:'center',gap:8}}>
                             <Icon
-                                source="map-marker-distance"
+                                source="clock-time-eight-outline"
                                 color={theme.colors.onSurface}
                                 size={20}
                             />
                             <Text variant='titleMedium' style={{color: theme.colors.onSurface}}>Hace 2 horas</Text>
                         </View>
-                        <View style={{ flexDirection:'row', justifyContent:'flex-start'}}>
+                        <View style={{ flexDirection:'row', justifyContent:'flex-start',alignItems:'center',gap:8}}>
                             <Icon
-                                source="clock-time-eight-outline"
+                                source="map-marker"
                                 color={theme.colors.onSurface}
                                 size={20}
                             />

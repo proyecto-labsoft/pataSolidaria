@@ -22,11 +22,12 @@ export default function CardAnimal({data,navigateTo} : Props) {
                     onPress={() => {
                         navigation.navigate(navigateTo,{data:data})
                     }}
-                    unstable_pressDelay={200}
+                    unstable_pressDelay={100}
                     style={({pressed}) => [
                     {
                         borderRadius: 10,
                         backgroundColor: pressed ? theme.colors.onPrimary : theme.colors.primary,
+                        opacity: pressed ? 0.8 : 1,
                     },
                     { padding: 5} 
                 ]}

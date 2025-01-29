@@ -10,7 +10,7 @@ export default function AppbarNav({titulo} : Props) {
     const navigation = useNavigation()
     const theme = useTheme()
     return (
-        <Appbar.Header style={{ backgroundColor: theme.colors.primary, width: '100%',marginHorizontal: 4}} >
+        <Appbar.Header style={{backgroundColor: theme.colors.primary, width: '100%',marginHorizontal: 4}} >
           {navigation.canGoBack() 
             ? <Appbar.BackAction iconColor={theme.colors.onPrimary} containerColor={theme.colors.primary} onPress={() => navigation.goBack()} />
             : <Appbar.Action icon="help-circle-outline" iconColor={theme.colors.onPrimary}  onPress={() => navigation.navigate("Faq")}/>

@@ -1,24 +1,16 @@
-import {Pressable } from "react-native";
-import { ActivityIndicator, Avatar, Card, useTheme } from 'react-native-paper';
+import { Pressable } from "react-native";
+import { useTheme,ActivityIndicator, Avatar, Card } from 'react-native-paper'
 import { useNavigation } from "@react-navigation/native";
 
-interface Props {
-    data: {
-        nombre: string,
-        especie: string,
-    },
-    navigateTo: string
-    
-}
-export default function CardFamiliar({data,navigateTo} : Props) {
-
+export default function CardUsuario() {
     const theme = useTheme();  
     const navigation = useNavigation();
-    
-    return(
-        <Card style={{width: '90%',marginHorizontal:5, backgroundColor: theme.colors.primary}} >
+
+
+    return (
+        <Card style={{width: '90%',backgroundColor: theme.colors.primary}} >
             <Pressable
-                onPress={() => navigation.navigate(navigateTo)}
+                onPress={() => navigation.navigate("Perfil")}
                 unstable_pressDelay={200}
                 style={({pressed}) => [
                     {
@@ -30,12 +22,10 @@ export default function CardFamiliar({data,navigateTo} : Props) {
             ]}
             >
                 <Card.Title 
-                    title={data.nombre} 
-                    subtitle={data.especie} 
+                    title="Mis datos"
                     style={{aspectRatio: 5}}
                     titleVariant="titleLarge" 
                     titleStyle={{ marginLeft: "20%", color: theme.colors.onPrimary}} 
-                    subtitleStyle={{ marginLeft: "20%",color: theme.colors.onSecondary}}
                     leftStyle={{alignItems: 'center'}}
                     left={() => (
                         <Avatar.Image

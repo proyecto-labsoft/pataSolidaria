@@ -2,8 +2,8 @@ import { StyleSheet, ScrollView, View, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Divider,useTheme,ActivityIndicator,Text,   Appbar, Avatar, IconButton, Button, Card, Banner } from 'react-native-paper'
 
-import CardFamiliar from "../componentes/cardFamiliar";
-import BotonAlerta from "../componentes/botonAlerta";
+import CardFamiliar from "../componentes/cards/cardFamiliar";
+import BotonAlerta from "../componentes/botones/botonAlerta";
 import { useNavigation } from "@react-navigation/native";
 
 export default function VistaFamilia() {
@@ -45,10 +45,7 @@ export default function VistaFamilia() {
         <Button icon="plus" mode="contained" onPress={() => console.log('Pressed')} style={{width: '90%'}}>
           Cargar nuevo familiar
         </Button>
-        <ScrollView
-
-          contentContainerStyle={{ alignItems: "center"}}
-        >
+        <ScrollView contentContainerStyle={{ alignItems: "center"}}>
           {/* <FlatList
             data={}
             keyExtractor={(item) => item.id.toString()}

@@ -1,7 +1,7 @@
 import {ScrollView,StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import CardFamiliar from "../componentes/cardFamiliar";
-import CardExtravio from "../componentes/cardExtravio";
+import CardFamiliar from "../componentes/cards/cardFamiliar";
+import CardExtravio from "../componentes/cards/cardExtravio";
 import { Banner, Divider, Text, useTheme } from "react-native-paper";
 
 export default function VistaCasos() {
@@ -41,9 +41,6 @@ export default function VistaCasos() {
 }
 
 const styles = StyleSheet.create({
-  scrollView: {
-    width: '100%'
-  },
   containerScroll: {
     paddingBottom: 20,
     borderRadius: 10,

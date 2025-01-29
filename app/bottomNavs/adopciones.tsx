@@ -1,7 +1,7 @@
 import {ScrollView,StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import CardFamiliar from "../componentes/cardFamiliar";
-import CardAdopcion from "../componentes/cardAdopcion";
+import CardFamiliar from "../componentes/cards/cardFamiliar";
+import CardAdopcion from "../componentes/cards/cardAdopcion";
 import { Banner, Text, useTheme } from "react-native-paper";
 
 export default function VistaAdopciones() {

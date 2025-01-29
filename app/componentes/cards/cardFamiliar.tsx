@@ -1,9 +1,5 @@
-import { StyleSheet, ScrollView, Image,Text, View, Pressable } from "react-native";
-import { FlatList } from "react-native-reanimated/lib/typescript/Animated";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useEffect, useState } from "react";
-
-import { ActivityIndicator, Avatar, Button, Card, Text as PaperText, useTheme } from 'react-native-paper';
+import {Pressable } from "react-native";
+import { ActivityIndicator, Avatar, Card, useTheme } from 'react-native-paper';
 import { useNavigation } from "@react-navigation/native";
 
 interface Props {
@@ -11,11 +7,10 @@ interface Props {
         nombre: string,
         especie: string,
     },
-    style: object
     navigateTo: string
     
 }
-export default function CardFamiliar({data,navigateTo,style} : Props) {
+export default function CardFamiliar({data,navigateTo} : Props) {
 
     const theme = useTheme();  
     const navigation = useNavigation();
@@ -25,13 +20,12 @@ export default function CardFamiliar({data,navigateTo,style} : Props) {
             onPress={() => navigation.navigate(navigateTo)}
             style={({pressed}) => [
             {
-                ...style,
-                width: '90%'
+                marginVertical: 15,
+                width: '90%',
             },
         ]}
         >
-            <Card contentStyle={{flexDirection: 'row'}} style={{backgroundColor: theme.colors.primary}} >
-                {/* <Card.Cover style={ styles.fotoAnimal } source={{ uri: 'https://static.fundacion-affinity.org/cdn/farfuture/PVbbIC-0M9y4fPbbCsdvAD8bcjjtbFc0NSP3lRwlWcE/mtime:1643275542/sites/default/files/los-10-sonidos-principales-del-perro.jpg' }} /> */}
+            <Card contentStyle={{flexDirection: 'row'}} style={{backgroundColor: theme.colors.primary,shadowColor: 'black'}} >
                 <Card.Title 
                     title={data.nombre} 
                     subtitle={data.especie} 
@@ -53,6 +47,3 @@ export default function CardFamiliar({data,navigateTo,style} : Props) {
         </Pressable>
     )
 }
-
-const styles = StyleSheet.create({
-});

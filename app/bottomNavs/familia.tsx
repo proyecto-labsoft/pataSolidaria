@@ -1,9 +1,6 @@
-import { StyleSheet, ScrollView, View, Pressable } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Divider,useTheme,ActivityIndicator,Text,   Appbar, Avatar, IconButton, Button, Card, Banner } from 'react-native-paper'
-
+import { ScrollView, View, Pressable } from "react-native";
+import { Divider,useTheme,ActivityIndicator,Text, Avatar, Button, Card, Banner } from 'react-native-paper'
 import CardFamiliar from "../componentes/cards/cardFamiliar";
-import BotonAlerta from "../componentes/botones/botonAlerta";
 import { useNavigation } from "@react-navigation/native";
 
 export default function VistaFamilia() {
@@ -23,7 +20,6 @@ export default function VistaFamilia() {
         ]}
         >
             <Card contentStyle={{flexDirection: 'row'}} style={{backgroundColor: theme.colors.primary}} >
-                {/* <Card.Cover style={ styles.fotoAnimal } source={{ uri: 'https://static.fundacion-affinity.org/cdn/farfuture/PVbbIC-0M9y4fPbbCsdvAD8bcjjtbFc0NSP3lRwlWcE/mtime:1643275542/sites/default/files/los-10-sonidos-principales-del-perro.jpg' }} /> */}
                 <Card.Title 
                     title="Mis datos"
                     style={{aspectRatio: 5}}
@@ -73,22 +69,16 @@ export default function VistaFamilia() {
               </View>
             </Pressable> */}
             
-            <CardFamiliar style={ styles.cardFamiliar } navigateTo="Familiar" data={{nombre: 'Chili', especie: 'Canino'}} />
-            <CardFamiliar style={ styles.cardFamiliar } navigateTo="Familiar" data={{nombre: 'Duque', especie: 'Canino'}} />
-            <CardFamiliar style={ styles.cardFamiliar } navigateTo="Familiar" data={{nombre: 'Draco', especie: 'Canino'}} />
-            <CardFamiliar style={ styles.cardFamiliar } navigateTo="Familiar" data={{nombre: 'Sur', especie: 'Felino'}} />
-            <CardFamiliar style={ styles.cardFamiliar } navigateTo="Familiar" data={{nombre: 'Duque', especie: 'Canino'}} />
-            <CardFamiliar style={ styles.cardFamiliar } navigateTo="Familiar" data={{nombre: 'Draco', especie: 'Canino'}} />
-            <CardFamiliar style={ styles.cardFamiliar } navigateTo="Familiar" data={{nombre: 'Sur', especie: 'Felino'}} />
+            <CardFamiliar navigateTo="Familiar" data={{nombre: 'Chili', especie: 'Canino'}} />
+            <CardFamiliar navigateTo="Familiar" data={{nombre: 'Duque', especie: 'Canino'}} />
+            <CardFamiliar navigateTo="Familiar" data={{nombre: 'Draco', especie: 'Canino'}} />
+            <CardFamiliar navigateTo="Familiar" data={{nombre: 'Sur', especie: 'Felino'}} />
+            <CardFamiliar navigateTo="Familiar" data={{nombre: 'Duque', especie: 'Canino'}} />
+            <CardFamiliar navigateTo="Familiar" data={{nombre: 'Draco', especie: 'Canino'}} />
+            <CardFamiliar navigateTo="Familiar" data={{nombre: 'Sur', especie: 'Felino'}} />
             
         </ScrollView>
 
       </View>
   );
 }
-const styles = StyleSheet.create({
-  cardFamiliar: {
-    marginVertical: 15,
-  },
-  
-});

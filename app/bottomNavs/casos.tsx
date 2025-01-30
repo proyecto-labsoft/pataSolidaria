@@ -1,15 +1,12 @@
 import { ScrollView, View } from "react-native";
 import CardAnimal from "../componentes/cards/cardAnimal";
-import { Banner, Text, useTheme } from "react-native-paper";
+import BannerInfo from "../componentes/bannerInfo";
 
 export default function VistaCasos() {
-  const theme = useTheme()
   
   return (
     <View style={{height: '100%'}}>
-          <Banner icon="information"  visible style={{margin: 10, borderRadius: 20,backgroundColor: theme.colors.tertiaryContainer}}>
-            <Text style={{textAlign: 'center',color:theme.colors.onTertiaryContainer}}>Aquí podrás todos los casos de compañeros perdidos y avistados</Text>
-          </Banner>
+          <BannerInfo texto="Aquí podrás todos los casos de compañeros perdidos y avistados" />
           <ScrollView
             contentContainerStyle={{justifyContent:'center', alignItems: "flex-start"}}
           >

@@ -5,6 +5,7 @@ import ItemDato from '../componentes/itemDato';
 import { ImageSlider } from '../testData/sliderData';
 import CarruselImagenes from '../componentes/carrusel/carruselImagenes';
 import AppbarNav from '../componentes/navegacion/appbarNav';
+import { useNavigation } from "@react-navigation/native";
 
 // Basandose en colores de la pagina de ARAF
 // primario: 0f7599
@@ -16,7 +17,7 @@ export default function VistaExtravio({route}: any) {
     
     const theme = useTheme();
     const [datosCaso] = useState(route.params?.data);
-    
+    const navigation = useNavigation()
     const {width} = Dimensions.get('screen')
     
     return (
@@ -47,7 +48,7 @@ export default function VistaExtravio({route}: any) {
                     </View>
                     
                     <View style={{ flexDirection:'column', justifyContent:'space-evenly', width: '100%'}}>
-                        <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:20}} uppercase mode="contained" >
+                        <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:20}} uppercase mode="contained" onPress={() => navigation.navigate('NuevoAvistamiento')}>
                             <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Ví / Encontra este animal</Text>
                         </Button>
                         <Button  buttonColor={theme.colors.secondary} style={{  marginVertical: 8 ,borderRadius:20}} uppercase mode="contained" >

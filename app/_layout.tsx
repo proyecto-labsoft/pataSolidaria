@@ -9,7 +9,7 @@ import {
 import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Home from "./pantallas/home";
-import VistaFamiliar from "./pantallas/vista-familiar";
+import VistaFamiliar from "./pantallas/vistaFamiliar";
 
 // Basandose en ores de la pagina de ARAF
 // primario: 0f7599
@@ -22,7 +22,8 @@ import ConfirmarExtravio from "./pantallas/confirmar-extravio";
 import Notificaciones from "./pantallas/notificaciones";
 import Perfil from "./pantallas/perfil";
 import FAQ from "./pantallas/faq";
-import VistaExtravio from "./pantallas/vista-extavio";
+import VistaExtravio from "./pantallas/vistaExtravio";
+import NuevoAvistamiento from "./pantallas/nuevoAvistamiento";
 
 const theme = {
   ...DefaultTheme,
@@ -67,7 +68,7 @@ export default function Layout() {
             <Stack.Screen name="ConfirmarExtravio" component={ConfirmarExtravio} options={{ headerShown:false }} />
             <Stack.Screen name="Faq" component={FAQ} options={{ headerShown:false }} />
             <Stack.Screen name="VistaExtravio" component={VistaExtravio} options={{ headerShown:false }} />
-            
+            <Stack.Screen name="NuevoAvistamiento" component={NuevoAvistamiento} options={{ headerShown:false }} />
           </Stack.Navigator>
         </NavigationContainer>
         <BotonAlerta showButton={visible} onPress={(ruta: string) => navigationRef.current && navigationRef.current.navigate(ruta)}/>

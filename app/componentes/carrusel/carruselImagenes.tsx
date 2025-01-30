@@ -28,8 +28,8 @@ export default function CarruselImagenes({data} : Props) {
                 {useNativeDriver: false}
                 )}
                 style={{width:width,backgroundColor:theme.colors.surfaceVariant}}
-                pagingEnabled 
-                renderItem={({item,index}) => <SliderItem item={item} key={index} />}
+                pagingEnabled
+                renderItem={({item,index}) => <SliderItem item={item} index={index} />}
             />
             <Indicator data={imagenes} scrollX={scrollX}/>
         </View>

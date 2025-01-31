@@ -1,14 +1,15 @@
 import { Dimensions, View } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 type Props = {
-    texto: string
+    texto: string,
+    tamanioTexto?: any
 }
-export default function DescripcionVista({texto} : Props) {
+export default function DescripcionVista({texto,tamanioTexto} : Props) {
     const {width} = Dimensions.get('screen')
     const theme = useTheme()
     return(
-        <View style={{marginVertical:10,width:width,backgroundColor: theme.colors.surface,alignItems:'center'}}>
-            <Text variant="titleMedium" style={{color: theme.colors.secondary}}>{texto}</Text>
+        <View style={{paddingHorizontal:'5%',marginVertical:10,width:width,backgroundColor: theme.colors.surface,alignItems:'center'}}>
+            <Text variant={tamanioTexto ? tamanioTexto : "titleMedium"} style={{textAlign: 'center',color: theme.colors.secondary}}>{texto}</Text>
         </View>
     )
 }

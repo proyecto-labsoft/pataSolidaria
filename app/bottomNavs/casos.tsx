@@ -1,36 +1,36 @@
 import { ScrollView, View } from "react-native";
 import CardAnimal from "../componentes/cards/cardAnimal";
-import BannerInfo from "../componentes/bannerInfo";
+import DescripcionVista from "../componentes/descripcionVista";
 
 export default function VistaCasos() {
   
   return (
     <View style={{height: '100%'}}>
-          <BannerInfo texto="Aquí podrás todos los casos de compañeros perdidos y avistados" />
-          <ScrollView
-            contentContainerStyle={{justifyContent:'center', alignItems: "flex-start"}}
-          >
-            <View style={{flexDirection: 'row', width: '100%'}}>
-              <CardAnimal navigateTo="VistaExtravio"  data={{nombre: 'Chili', especie: 'Canino'}} />
-              <CardAnimal navigateTo="VistaExtravio"  data={{nombre: 'Duque', especie: 'Canino'}} />
-            </View>
-            <View style={{flexDirection: 'row', width: '100%'}}>
-              <CardAnimal navigateTo="VistaExtravio"  data={{nombre: 'Draco', especie: 'Canino'}} />
-              <CardAnimal navigateTo="VistaExtravio"  data={{nombre: 'Sur', especie: 'Felino'}} />
-            </View>
-            <View style={{flexDirection: 'row', width: '100%'}}>
-              <CardAnimal navigateTo="VistaExtravio"  data={{nombre: 'Draco', especie: 'Canino'}} />
-              <CardAnimal navigateTo="VistaExtravio"  data={{nombre: 'Sur', especie: 'Felino'}} />
-            </View>
-            <View style={{flexDirection: 'row', width: '100%'}}>
-              <CardAnimal navigateTo="VistaExtravio"  data={{nombre: 'Draco', especie: 'Canino'}} />
-              <CardAnimal navigateTo="VistaExtravio"  data={{nombre: 'Sur', especie: 'Felino'}} />
-            </View>
-            <View style={{flexDirection: 'row', width: '100%'}}>
-              <CardAnimal navigateTo="VistaExtravio"  data={{nombre: 'Draco', especie: 'Canino'}} />
-              <CardAnimal navigateTo="VistaExtravio"  data={{nombre: 'Sur', especie: 'Felino'}} />
-            </View>
-          </ScrollView>
+      <DescripcionVista texto="Aquí podrás todos los casos de compañeros perdidos y avistados" />
+      <ScrollView
+        contentContainerStyle={{justifyContent:'center', alignItems: "flex-start"}}
+      >
+        <View key={1} style={{flexDirection: 'row', width: '100%'}}>
+          <CardAnimal navigateTo="VistaExtravio"  data={{nombre: 'Chili', especie: 'Canino'}} />
+          <CardAnimal navigateTo="VistaExtravio"  data={{nombre: 'Duque', especie: 'Canino'}} />
+        </View>
+        <View key={2} style={{flexDirection: 'row', width: '100%'}}>
+          <CardAnimal navigateTo="VistaExtravio"  data={{nombre: 'Draco', especie: 'Canino'}} />
+          <CardAnimal navigateTo="VistaExtravio"  data={{nombre: 'Sur', especie: 'Felino'}} />
+        </View>
+        <View key={3} style={{flexDirection: 'row', width: '100%'}}>
+          <CardAnimal navigateTo="VistaExtravio"  data={{nombre: 'Draco', especie: 'Canino'}} />
+          <CardAnimal navigateTo="VistaExtravio"  data={{nombre: 'Sur', especie: 'Felino'}} />
+        </View>
+        <View key={4} style={{flexDirection: 'row', width: '100%'}}>
+          <CardAnimal navigateTo="VistaExtravio"  data={{nombre: 'Draco', especie: 'Canino'}} />
+          <CardAnimal navigateTo="VistaExtravio"  data={{nombre: 'Sur', especie: 'Felino'}} />
+        </View>
+        <View key={5} style={{flexDirection: 'row', width: '100%'}}>
+          <CardAnimal navigateTo="VistaExtravio"  data={{nombre: 'Draco', especie: 'Canino'}} />
+          <CardAnimal navigateTo="VistaExtravio"  data={{nombre: 'Sur', especie: 'Felino'}} />
+        </View>
+      </ScrollView>
     </View> 
   );
 }

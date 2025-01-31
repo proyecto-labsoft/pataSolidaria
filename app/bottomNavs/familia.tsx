@@ -2,15 +2,14 @@ import { ScrollView, View } from "react-native";
 import { Divider,useTheme,Text, Button, Banner } from 'react-native-paper'
 import CardFamiliar from "../componentes/cards/cardFamiliar";
 import CardUsuario from "../componentes/cards/cardUsuarios";
+import DescripcionVista from "../componentes/descripcionVista";
 
 export default function VistaFamilia() {
   const theme = useTheme(); 
   
   return (
       <View style={{height: '100%'}}>
-        <Banner icon="information" visible style={{margin: 10,alignItems: "center",width: '100%' , borderRadius: 20,backgroundColor: theme.colors.tertiaryContainer}}>
-          <Text style={{textAlign: 'center',width: "100%",color:theme.colors.onTertiaryContainer}}>Aquí podrás ver la información de tus familiares</Text>
-        </Banner>
+          <DescripcionVista texto="Aquí podrás ver la información de tus familiares" />
         
           <ScrollView contentContainerStyle={{ alignItems: "center",gap:40,padding:20,width: '100%'}}>
           <CardUsuario />

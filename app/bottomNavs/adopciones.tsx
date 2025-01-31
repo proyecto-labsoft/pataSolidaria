@@ -1,15 +1,12 @@
 import { ScrollView, View } from "react-native";
 import CardAnimal from "../componentes/cards/cardAnimal";
-import { Banner, Text, useTheme } from "react-native-paper";
+import DescripcionVista from "../componentes/descripcionVista";
 
 export default function VistaAdopciones() {
-  const theme = useTheme()
   
   return (
     <View  style={{height: '100%'}}>
-        <Banner icon="information"  visible style={{margin: 10, borderRadius: 20,backgroundColor: theme.colors.tertiaryContainer}}>
-          <Text style={{textAlign: 'center',color:theme.colors.onTertiaryContainer}}>Compañeros en adopción bajo el cuidado de la asociación</Text>
-        </Banner>
+        <DescripcionVista texto="Compañeros en adopción bajo el cuidado de la asociación" />
         <ScrollView
           contentContainerStyle={{justifyContent:'center', alignItems: "flex-start"}}
         >

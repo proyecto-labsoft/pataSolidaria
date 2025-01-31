@@ -1,5 +1,7 @@
 import { View } from 'react-native'
 import { SegmentedButtons,Text, TextInput, Checkbox, Button, useTheme } from 'react-native-paper'
+import CampoTexto from './campos/campoTexto'
+import CampoTextoArea from './campos/campoTextoArea'
 interface Props {
     onSumbit: Function,
     data: {
@@ -20,43 +22,41 @@ export default function FormularioEditarFamiliar({data,onSumbit} : Props) {
     const theme = useTheme()
     return(
         <View style={{width:'100%',gap:20,justifyContent: 'center'}}>
-            <TextInput
+            <CampoTexto
                 label="Nombre"
                 value={data?.nombre}
             />
-            <TextInput
+            <CampoTexto
                 label="Especie"
                 value={data?.especie}
             />
-            <TextInput
+            <CampoTexto
                 label="Raza"
                 value={data?.raza}
             />
-            <TextInput
+            <CampoTexto
                 label="Tamaño"
                 value={data?.tamanio}
             />
-            <TextInput
+            <CampoTexto
                 label="Colores"
                 value={data?.colores}
             />
-            <TextInput
+            <CampoTexto
                 label="Domicilio"
                 value={data?.domicilio}
             />
             <Button icon="map-marker" buttonColor={theme.colors.primary} style={{width: '100%', marginBottom: 24,borderRadius:10}} uppercase mode="contained" onPress={() => console.log('Pressed')}>
                 Cargar otra ubicación
             </Button>
-            <TextInput
+            <CampoTexto
                 label="Fecha de nacimiento"
-                autoComplete='birthdate-day'
+                // autoComplete='birthdate-day'
                 value={data?.fechanac}
             />
-            <TextInput
+            <CampoTextoArea
                 label="Descripción adicional"
                 value={data?.observaciones}
-                multiline
-                numberOfLines={5}
             />
             <Text variant="titleLarge" style={{width: '100%', textAlign:'center'}}>Sexo</Text>
             <SegmentedButtons

@@ -1,5 +1,6 @@
 import { View, StyleSheet } from 'react-native'
 import { TextInput,Text as TextPaper, Button, useTheme } from 'react-native-paper'
+import CampoTexto from './campos/campoTexto'
 interface Props {
     onSumbit: Function,
     data: {
@@ -11,19 +12,16 @@ interface Props {
 export default function FormularioEditarPerfil({data, onSumbit} : Props) {
     const theme = useTheme()
     return(
-        <View style={{marginVertical: 16,justifyContent: 'center',paddingHorizontal: '5%'}}>
-            <TextInput
-                style={ styles.input }
+        <View style={{gap:20,marginVertical: 16,justifyContent: 'center',paddingHorizontal: '5%'}}>
+            <CampoTexto
                 label="Nombre"
                 value={data?.nombre}
             />
-            <TextInput
-                style={ styles.input }
+            <CampoTexto
                 label="Celular"
                 value={data?.celular}
             />
-            <TextInput
-                style={ styles.input }
+            <CampoTexto
                 label="Domicilio"
                 value={data?.domicilio}
             />
@@ -48,9 +46,6 @@ const styles = StyleSheet.create({
     container: {
         height: 'auto',
         alignItems: "center",
-    },
-    input:{
-        marginBottom: 16,
     },
     fotoFamiliar: {
         marginTop: 35,

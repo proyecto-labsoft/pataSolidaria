@@ -1,8 +1,7 @@
 import { FC } from "react";
 import { View, StyleSheet } from "react-native";
-import { Text, useTheme } from "react-native-paper";
+import { Text } from "react-native-paper";
 
-//const theme = useTheme();
 type CustomButtonProps = { label: string };
 export const CustomButton: FC<CustomButtonProps> = ({ label }) => {
   return (

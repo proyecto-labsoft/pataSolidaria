@@ -9,7 +9,7 @@ export default function CampoTexto({label,value,style}: Props) {
     return (
         <TextInput
             mode='outlined'
-            style={{ width:'100%',...style}}
+            style={{ width:'100%',backgroundColor:'transparent',...style}}
             label={ label }
             value={value}
         />

@@ -21,7 +21,7 @@ export default function VistaExtravio({route}: any) {
     const {width} = Dimensions.get('screen')
     
     return (
-        <View style={{height: '100%',width:width,backgroundColor: theme.colors.surface,alignItems:'center'}}>      
+        <View style={{height: '100%',width:width,alignItems:'center'}}>      
             <AppbarNav titulo={datosCaso?.nombre} />
 
             <ScrollView contentContainerStyle={{margin:12}} > 

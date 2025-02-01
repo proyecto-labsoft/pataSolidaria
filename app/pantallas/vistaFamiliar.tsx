@@ -2,13 +2,12 @@ import { View,StyleSheet, ScrollView, Dimensions } from 'react-native'
 import React, { useState} from 'react'
 import {useTheme} from 'react-native-paper'
 import FormularioEditarFamiliar from '../componentes/formularios/formularioEditarFamiliar';
-import { useNavigation } from '@react-navigation/native';
 import BotonEditar from '../componentes/botones/botonEditar';
 import ItemDato from '../componentes/itemDato';
 import { ImageSlider } from '../testData/sliderData';
 import CarruselImagenes from '../componentes/carrusel/carruselImagenes';
-import { TakePictureBtn } from '@/src/components/TakePictureBtn';
 import AppbarNav from '../componentes/navegacion/appbarNav';
+import { TakePictureBtn } from '../componentes/TakePictureBtn';
 
 // Basandose en colores de la pagina de ARAF
 // primario: 0f7599
@@ -18,7 +17,6 @@ const imagenes = ImageSlider[0].imagenes
 
 export default function VistaFamiliar() {
   
-  const theme = useTheme();
   const [modoEdicion, setModoEdicion] = useState(false);
   const [datosFamiliar, setDatosFamiliar] = useState({
     nombre: 'Chili',
@@ -38,7 +36,7 @@ export default function VistaFamiliar() {
   const [foto, setFoto] = useState<string | null>('https://static.fundacion-affinity.org/cdn/farfuture/PVbbIC-0M9y4fPbbCsdvAD8bcjjtbFc0NSP3lRwlWcE/mtime:1643275542/sites/default/files/los-10-sonidos-principales-del-perro.jpg');
   
   return (
-      <View style={{height: '100%',width:width,backgroundColor: theme.colors.surface,alignItems:'center'}}>      
+      <View style={{height: '100%',width:width,alignItems:'center'}}>      
         <AppbarNav titulo={datosFamiliar?.nombre} />
 
         <ScrollView contentContainerStyle={{margin:12}} > 

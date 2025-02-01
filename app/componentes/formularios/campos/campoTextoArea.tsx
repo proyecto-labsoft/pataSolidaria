@@ -10,7 +10,7 @@ export default function CampoTextoArea({label,value,style,cantLineas}: Props) {
     return (
         <TextInput
             mode='outlined'
-            style={{ width:'100%',...style}}
+            style={{ width:'100%',backgroundColor:'transparent',...style}}
             label={label}
             value={value}
             multiline

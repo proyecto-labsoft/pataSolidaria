@@ -8,7 +8,7 @@ export default function DescripcionVista({texto,tamanioTexto} : Props) {
     const {width} = Dimensions.get('screen')
     const theme = useTheme()
     return(
-        <View style={{paddingHorizontal:'5%',marginVertical:10,width:width,backgroundColor: theme.colors.surface,alignItems:'center'}}>
+        <View style={{paddingHorizontal:'5%',marginVertical:10,width:width,alignItems:'center'}}>
             <Text variant={tamanioTexto ? tamanioTexto : "titleMedium"} style={{textAlign: 'center',color: theme.colors.secondary}}>{texto}</Text>
         </View>
     )

@@ -7,12 +7,13 @@ import {
   useTheme
 } from 'react-native-paper';
 import AppbarNav from "../componentes/navegacion/appbarNav";
+import FondoGradiente from "../fondoGradiente";
 
 export default function Home() {
   const theme = useTheme()
   const [index, setIndex] = useState(1);
   const [routes] = useState([
-    { key: 'adopciones', title: 'Adopciones', focusedIcon: 'album' },
+    { key: 'adopciones', title: 'Adopciones', focusedIcon: 'album',color:'yellow'},
     { key: 'casos', title: 'Casos', focusedIcon: 'history' },
     { key: 'familia', title: 'Familia', focusedIcon: 'heart', unfocusedIcon: 'heart-outline'},
   ]);
@@ -24,11 +25,11 @@ export default function Home() {
   });
   
   return (
-    <>
+    <FondoGradiente>
       <AppbarNav titulo={routes[index].title} />
-      
       <BottomNavigation
-        barStyle={{ width:'100%',backgroundColor: theme.colors.surface,overflow:'hidden'}}
+        theme={{colors:{background:'transparent'}}}
+        barStyle={{ width:'100%',overflow:'hidden',backgroundColor:'transparent'}}
         inactiveColor={ theme.colors.primary}
         activeColor={ theme.colors.primary}
         activeIndicatorStyle={{ backgroundColor: theme.colors.primaryContainer}}
@@ -36,6 +37,6 @@ export default function Home() {
         onIndexChange={setIndex}
         renderScene={renderScene}
       />
-    </>
+    </FondoGradiente>
   );
 }

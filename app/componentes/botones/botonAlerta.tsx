@@ -1,5 +1,4 @@
-import { useNavigation } from "@react-navigation/native";
-import {useEffect, useState} from 'react';
+import { useState} from 'react';
 import { StyleSheet } from 'react-native';
 import { FAB, Portal ,useTheme} from 'react-native-paper';
 interface Props {
@@ -10,9 +9,8 @@ export default function BotonAlerta ({onPress,showButton} : Props) {
     const [state, setState] = useState({ open: false });
     
     const theme = useTheme()
-    const navigation = useNavigation(); 
 
-    const handleChange = ({ open } ) => setState({ open });
+    const handleChange = ({ open }:any ) => setState({ open });
 
     const { open } = state;
 
@@ -42,7 +40,7 @@ export default function BotonAlerta ({onPress,showButton} : Props) {
                 ]}
             onStateChange={handleChange}
             fabStyle={{...styles.fab, backgroundColor: open ? theme?.colors.inversePrimary : theme?.colors.primaryContainer}}
-            style={styles.fabGroup}
+            style={{...styles.fabGroup}}
             variant='secondary'
         />
         </Portal>
@@ -61,7 +59,6 @@ const styles = StyleSheet.create({
     },
     fabGroup:{
         right: 0,
-        
         bottom: 0,
     }
 })

@@ -7,12 +7,10 @@ export default function FAQ() {
     const navigation = useNavigation();
     const theme = useTheme()
     return (
-        <>
-        <AppbarNav titulo="FAQ" />
-        <View style={{justifyContent:'center',alignItems:'center'}}>
+        <View style={{flex:1,justifyContent: "flex-start",alignItems: "center",}}>
+            <AppbarNav titulo="FAQ" />
             <Text>Esto es el FAQ</Text>
         </View>
-        </>
         
     )
 }

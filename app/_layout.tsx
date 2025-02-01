@@ -24,6 +24,7 @@ import Perfil from "./pantallas/perfil";
 import FAQ from "./pantallas/faq";
 import VistaExtravio from "./pantallas/vistaExtravio";
 import NuevoAvistamiento from "./pantallas/nuevoAvistamiento";
+import FondoGradiente from "./fondoGradiente";
 
 const theme = {
   ...DefaultTheme,
@@ -31,24 +32,6 @@ const theme = {
 };
 
 export default function Layout() {
-  
-  //  return (   
-  //    <PaperProvider theme={theme}>
-  //      <SafeAreaProvider>
-  //        <Head>
-  //          <title>Expo Router Layouts Demo</title>
-  //          <meta name="description" content="Expo Router Layouts Demo" />
-  //        </Head>
-  //        <Stack>
-  //          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-  //          <Stack.Screen
-  //              name="vista-familiar"
-  //              options={{ headerShown: false }}
-  //          />
-  //        </Stack>
-  //      </SafeAreaProvider>
-  //    </PaperProvider>
-  //  );
   const Stack = createNativeStackNavigator();
   
   const [visible, setVisible] = useState(true);
@@ -57,9 +40,11 @@ export default function Layout() {
 
   return (   
     <PaperProvider theme={theme} >
+      
       <SafeAreaProvider>
+        <FondoGradiente>
         <NavigationContainer ref={navigationRef} independent={true} onStateChange={(state) => state?.routes.length && state.routes.length > 1 ? setVisible(false) : setVisible(true)}>
-          <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false}} >
+          <Stack.Navigator initialRouteName="Home" screenOptions={{ contentStyle:{backgroundColor:'transparent'},headerShown: false}} >
             <Stack.Screen name="Home" component={Home} options={{ headerShown:false }} />
             <Stack.Screen name="Familiar" component={VistaFamiliar} options={{ headerShown:false }}/>
             <Stack.Screen name="Extravio" component={Extravio} options={{ headerShown:false }} />
@@ -72,6 +57,7 @@ export default function Layout() {
           </Stack.Navigator>
         </NavigationContainer>
         <BotonAlerta showButton={visible} onPress={(ruta: string) => navigationRef.current && navigationRef.current.navigate(ruta)}/>
+        </FondoGradiente>
       </SafeAreaProvider>
     </PaperProvider>
   );

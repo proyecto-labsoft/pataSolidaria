@@ -1,8 +1,9 @@
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 import { useTheme, Text as TextPaper, Divider, Button } from "react-native-paper";
 import React,{ useState } from "react";
 import FormularioEditarPerfil from "../componentes/formularios/formularioEditarPerfil";
 import AppbarNav from "../componentes/navegacion/appbarNav";
+import { LinearGradient } from "expo-linear-gradient";
 
 interface Props {
   data: string | boolean,
@@ -35,19 +36,13 @@ export default function Perfil() {
         <TextPaper variant='titleMedium' style={{width:"100%",textAlign:"left",color: theme.colors.onSurface }}>{data}</TextPaper>
       </View>
     );
-  }
+  } 
 
   const handleChange = () => setEdicion(!edicion);
 
   return (
-    <>
-      <AppbarNav titulo="Mis datos" />
-      <View
-        style={{
-          flex: 1,
-          backgroundColor:theme.colors.surface
-        }}
-      >
+      <View>
+        <AppbarNav titulo="Mis datos" />
         {!edicion
           ? (<View style={{margin: 30, gap:30,alignItems: "center"}}>
                 <Item label='Nombre de usuario' data={datosPerfil?.nombre} />
@@ -61,14 +56,5 @@ export default function Perfil() {
           : <FormularioEditarPerfil data={datosPerfil} onSumbit={setEdicion} />
         }
       </View>
-    </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    height: 'auto',
-    alignItems: "center",
-  }
-});

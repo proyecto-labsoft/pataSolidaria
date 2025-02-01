@@ -5,6 +5,7 @@ import CardFamiliar from "../componentes/cards/cardFamiliar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AppbarNav from "../componentes/navegacion/appbarNav";
 import { useNavigation } from "../types/react-navigation";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function Extravio() {
     const theme = useTheme();
@@ -26,7 +27,7 @@ export default function Extravio() {
         <>
             <AppbarNav titulo="Seleccione un familiar" />     
             
-            <SafeAreaView style={{ alignItems: "center",flex:1,backgroundColor: theme.colors.surface}}>
+            <SafeAreaView style={{ alignItems: "center",flex:1}}>   
                 <View style={{marginHorizontal:10}}>
                     <ScrollView
                         style={ styles.scrollView }
@@ -38,6 +39,7 @@ export default function Extravio() {
                         <CardFamiliar navigateTo="ConfirmarExtravio" data={{nombre: 'Sur', especie: 'Felino'}} />
                     </ScrollView>
                 </View>
+                
             </SafeAreaView>
         </>
     )

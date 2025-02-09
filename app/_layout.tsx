@@ -17,7 +17,6 @@ import VistaFamiliar from "./pantallas/vistaFamiliar";
 // terciario: efefef
 import lightheme from '../assets/light-theme.json'
 import BotonAlerta from "./componentes/botones/botonAlerta";
-import Extravio from "./pantallas/extraviado";
 import ConfirmarExtravio from "./pantallas/confirmar-extravio";
 import Notificaciones from "./pantallas/notificaciones";
 import Perfil from "./pantallas/perfil";
@@ -25,6 +24,8 @@ import FAQ from "./pantallas/faq";
 import VistaExtravio from "./pantallas/vistaExtravio";
 import NuevoAvistamiento from "./pantallas/nuevoAvistamiento";
 import FondoGradiente from "./fondoGradiente";
+import NuevoExtraviado from "./pantallas/nuevoExtraviado";
+import NuevoEncontrado from "./pantallas/nuevoEncontrado";
 
 const theme = {
   ...DefaultTheme,
@@ -47,7 +48,8 @@ export default function Layout() {
           <Stack.Navigator initialRouteName="Home" screenOptions={{ contentStyle:{backgroundColor:'transparent'},headerShown: false}} >
             <Stack.Screen name="Home" component={Home} options={{ headerShown:false }} />
             <Stack.Screen name="Familiar" component={VistaFamiliar} options={{ headerShown:false }}/>
-            <Stack.Screen name="Extravio" component={Extravio} options={{ headerShown:false }} />
+            <Stack.Screen name="NuevoExtraviado" component={NuevoExtraviado} options={{ headerShown:false }} />
+            <Stack.Screen name="NuevoEncontrado" component={NuevoEncontrado} options={{ headerShown:false }} />
             <Stack.Screen name="Perfil" component={Perfil} options={{ headerShown:false }} />
             <Stack.Screen name="Notificaciones" component={Notificaciones} options={{ headerShown:false }} />
             <Stack.Screen name="ConfirmarExtravio" component={ConfirmarExtravio} options={{ headerShown:false }} />

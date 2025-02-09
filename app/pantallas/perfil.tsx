@@ -3,7 +3,7 @@ import { useTheme, Text as TextPaper, Divider, Button } from "react-native-paper
 import React,{ useState } from "react";
 import FormularioEditarPerfil from "../componentes/formularios/formularioEditarPerfil";
 import AppbarNav from "../componentes/navegacion/appbarNav";
-import { LinearGradient } from "expo-linear-gradient";
+import { useForm } from "react-hook-form";
 
 interface Props {
   data: string | boolean,
@@ -20,6 +20,8 @@ export default function Perfil() {
     celular: '2901-547800',
     domicilio: 'Puerto Argentino 1281'
   });
+  
+  const { control, handleSubmit, formState: {errors} } = useForm({defaultValues: datosPerfil});
 
   // <>
   //       <View style={{flexDirection: 'row', alignItems:'center',padding: "5%",backgroundColor: theme.colors.tertiary, borderRadius: 20, paddingVertical: 8}}>
@@ -38,22 +40,24 @@ export default function Perfil() {
     );
   } 
 
-  const handleChange = () => setEdicion(!edicion);
+  const onSumbit = (e: any) => {
+    setEdicion(!edicion)
+  };
 
   return (
       <View>
         <AppbarNav titulo="Mis datos" />
         {!edicion
           ? (<View style={{margin: 30, gap:30,alignItems: "center"}}>
-                <Item label='Nombre de usuario' data={datosPerfil?.nombre} />
+                {/* <Item label='Nombre de usuario' data={datosPerfil?.nombre} /> */}
                 <Item label='Nombre real' data={datosPerfil?.nombre} />
                 <Item label='Número de teléfono' data={datosPerfil?.celular} />
                 <Item label='Domicilio' data={datosPerfil?.domicilio} />
-                <Button icon="pencil" disabled={edicion} mode="contained" onPress={() => handleChange()}style={{width: '90%'}}>
+                <Button icon="pencil" buttonColor={theme.colors.primary} textColor={theme.colors.onPrimary} disabled={edicion} style={{ marginVertical: 8,borderRadius:50}} uppercase mode="contained" onPress={() => setEdicion(true)}>
                   Editar información
                 </Button>
             </View>)
-          : <FormularioEditarPerfil data={datosPerfil} onSumbit={setEdicion} />
+          : <FormularioEditarPerfil data={datosPerfil} onSumbit={handleSubmit(onSumbit)} control={control}/>
         }
       </View>
   );

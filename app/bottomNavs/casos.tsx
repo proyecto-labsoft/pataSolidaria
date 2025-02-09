@@ -1,11 +1,9 @@
 import { ScrollView, View } from "react-native";
 import CardAnimal from "../componentes/cards/cardAnimal";
 import DescripcionVista from "../componentes/descripcionVista";
-import { LinearGradient } from "expo-linear-gradient";
-import { useTheme } from "react-native-paper";
 
 export default function VistaCasos() {
-  const theme = useTheme()
+
   return ( 
     <View style={{flex:1}}>
       <DescripcionVista texto="Aquí podrás todos los casos de compañeros perdidos y avistados" />

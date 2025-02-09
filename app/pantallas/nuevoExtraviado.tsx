@@ -7,7 +7,7 @@ import AppbarNav from "../componentes/navegacion/appbarNav";
 import { useNavigation } from "../types/react-navigation";
 import { LinearGradient } from "expo-linear-gradient";
 
-export default function Extravio() {
+export default function NuevoExtraviado() {
     const theme = useTheme();
     const [datosFamiliar, setDatosFamiliar] = useState({
       nombre: 'Chili',

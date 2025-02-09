@@ -6,16 +6,14 @@ import FormularioNuevoAvistamiento from "../componentes/formularios/formularioNu
 export default function NuevoAvistamiento() {
     const {width} = Dimensions.get('screen')
     
-    const onSumbit = () => {
-        console.log("onSumbit")
-    }
     return(
         <View style={{height: '100%',width: width,alignItems:'center'}}>      
             <AppbarNav titulo="Nuevo avistamiento" tamanioTitulo="headlineMedium"/>
+            
             <ScrollView style={{marginVertical:16}} >
             
                 <DescripcionVista texto="Complete los datos del nuevo avistamiento" />
-                <FormularioNuevoAvistamiento onSumbit={onSumbit}/> 
+                <FormularioNuevoAvistamiento /> 
             
             </ScrollView> 
     

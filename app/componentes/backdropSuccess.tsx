@@ -3,8 +3,9 @@ import { Icon, Text, useTheme } from 'react-native-paper'
 
 type Props = {
     onTap: Function,
+    texto: string,
 }
-export default function BackdropSuccess({onTap}:Props){
+export default function BackdropSuccess({onTap,texto}:Props){
 
     const theme = useTheme()
     return (
@@ -17,7 +18,7 @@ export default function BackdropSuccess({onTap}:Props){
                     color={theme.colors.onSurface}
                     size={200}
                 />
-                <Text>Nuevo avistamiento confirmado</Text>
+                <Text>{texto}</Text>
             </View>
         </Pressable>
     )

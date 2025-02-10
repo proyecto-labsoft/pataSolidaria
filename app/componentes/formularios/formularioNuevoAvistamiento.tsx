@@ -28,7 +28,7 @@ export default function FormularioNuevoAvistamiento() {
     return(
         <View style={{gap:20,marginVertical: 16,paddingHorizontal: '5%',height: '100%',width:width,alignItems:'center'}}>
             <Portal>
-                {!visible && post && (<BackdropSuccess onTap={() => navigation.goBack()}/>)}
+                {!visible && post && (<BackdropSuccess texto="Nuevo avistamiento confirmado" onTap={() => navigation.goBack()}/>)}
                 <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={{...styles.containerStyle,backgroundColor:theme.colors.surface}}>
                     <Text style={{textAlign: 'center'}}>Al reportar el nuevo avistamiento compartirá sus datos de contacto con los familiares del animal.</Text>
                     <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={handleSubmit(onSumbit)}>

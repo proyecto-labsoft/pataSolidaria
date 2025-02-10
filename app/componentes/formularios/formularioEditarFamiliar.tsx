@@ -2,6 +2,7 @@ import { View } from 'react-native'
 import { SegmentedButtons,Text, TextInput, Checkbox, Button, useTheme } from 'react-native-paper'
 import CampoTexto from './campos/campoTexto'
 import CampoTextoArea from './campos/campoTextoArea'
+import CampoSelector from './campos/campoSelector'
 interface Props {
     onSumbit: Function,
     data: {
@@ -70,10 +71,16 @@ export default function FormularioEditarFamiliar({data,onSumbit} : Props) {
                 nombre="observaciones"
             />
             <Text variant="titleLarge" style={{width: '100%', textAlign:'center'}}>Sexo</Text>
-            <SegmentedButtons
+            {/* <SegmentedButtons
                 value={data?.sexo}
                 buttons={[{value:'hembra',label:'Hembra',icon:'gender-female'},{value:'macho',label:'Macho',icon:'gender-male'}]}
                 onValueChange={() => console.log('')}
+            /> */}
+            <CampoSelector
+                control={control} 
+                label="Sexo"
+                nombre="sexo"
+                opciones={['No lo sé','Macho','Hembra']}
             />
             <View style={{ justifyContent: 'flex-start' , width: '80%' }}>
                 <View style={{flexDirection:'row', marginVertical: 8, alignItems:'center'}}>

@@ -6,7 +6,7 @@ type Props = {
     label: string,
     nombre: string,
     style?: object,
-    opciones: [],
+    opciones: string[],
     control?: any,
 }
 export default function CampoSelector({opciones,label,nombre,control,style} : Props) {
@@ -39,7 +39,6 @@ export default function CampoSelector({opciones,label,nombre,control,style} : Pr
                     style={{
                     flexDirection: 'row',
                     justifyContent: 'space-around',
-                    marginVertical: 10,
                     }}>
                     <View style={{ width: '100%' }}>
                     <TextInput

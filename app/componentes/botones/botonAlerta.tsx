@@ -28,14 +28,14 @@ export default function BotonAlerta ({onPress,showButton} : Props) {
                     style: { ...styles.fabItem, backgroundColor: theme?.colors.secondaryContainer},
                     label: 'Encontré un animal perdido',
                     labelStyle: { ...styles.fabItem },
-                    onPress: () => onPress("Encontrado"),
+                    onPress: () => onPress("NuevoEncontrado"),
                 },
                 {
                     style: { ...styles.fabItem, backgroundColor: theme?.colors.secondaryContainer},
                     icon: 'alert-box',
                     label: 'Mi animal se extravió',
                     labelStyle: { ...styles.fabItem },
-                    onPress: () => onPress("Extravio"),
+                    onPress: () => onPress("NuevoExtraviado"),
                 }
                 ]}
             onStateChange={handleChange}

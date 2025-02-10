@@ -20,43 +20,54 @@ interface Props {
 }
 export default function FormularioEditarFamiliar({data,onSumbit} : Props) {
     const theme = useTheme()
+
+    const { control, handleSubmit, formState: {errors} } = useForm({defaultValues: data});
+    
     return(
         <View style={{width:'100%',gap:20,justifyContent: 'center'}}>
             <CampoTexto
+                control={control}
                 label="Nombre"
-                value={data?.nombre}
+                nombre="nombre"
             />
             <CampoTexto
+                control={control}
                 label="Especie"
-                value={data?.especie}
+                nombre="especie"
             />
             <CampoTexto
+                control={control}
                 label="Raza"
-                value={data?.raza}
+                nombre="raza"
             />
             <CampoTexto
+                control={control}
                 label="Tamaño"
-                value={data?.tamanio}
+                nombre="tamanio"
             />
             <CampoTexto
+                control={control}
                 label="Colores"
-                value={data?.colores}
+                nombre="colores"
             />
             <CampoTexto
+                control={control}
                 label="Domicilio"
-                value={data?.domicilio}
+                nombre="domicilio"
             />
             <Button icon="map-marker" buttonColor={theme.colors.primary} style={{width: '100%', marginBottom: 24,borderRadius:10}} uppercase mode="contained" onPress={() => console.log('Pressed')}>
                 Cargar otra ubicación
             </Button>
             <CampoTexto
+                control={control}
                 label="Fecha de nacimiento"
                 // autoComplete='birthdate-day'
-                value={data?.fechanac}
+                nombre="fechanac"
             />
             <CampoTextoArea
+                control={control}
                 label="Descripción adicional"
-                value={data?.observaciones}
+                nombre="observaciones"
             />
             <Text variant="titleLarge" style={{width: '100%', textAlign:'center'}}>Sexo</Text>
             <SegmentedButtons

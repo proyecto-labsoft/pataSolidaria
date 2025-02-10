@@ -37,6 +37,9 @@ export default function FormularioNuevoAvistamiento() {
                 </Modal>
             </Portal>
 
+            <View style={{borderColor:'black',justifyContent:'center',alignContent:'center',borderWidth:1,width:'80%',height:100}}>
+                <Text style={{textAlign:'center'}}>Acá va mapa</Text>
+            </View>
             <CampoTexto
                 control={control}
                 label="Ubicación del avistamiento"

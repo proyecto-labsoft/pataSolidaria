@@ -1,7 +1,7 @@
 import React, { FC, useState, useEffect, useRef } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Linking, StyleSheet, View } from 'react-native';
 import MapView, { Marker, UrlTile } from 'react-native-maps';
-import * as Location from 'expo-location';
+import { getCurrentPositionAsync, PermissionStatus, reverseGeocodeAsync, useForegroundPermissions } from 'expo-location';
 import { ActivityIndicator } from 'react-native-paper';
 
 
@@ -16,35 +16,51 @@ type MapProps = {
 export const Mapa: FC<MapProps> = ({ localizar, latitude, longitude, style, modificarDomicilio }) => {
 
   const mapRef = useRef<MapView>();
+  const [status, requestPermissionLocation] = useForegroundPermissions();
   const [loading, setLoading] = useState(true);
-  const locationUshuaia = {
-    latitude: -54.8019,
-    longitude:  -68.3029,
-  };
   const [location, setLocation] = useState({
     latitude: latitude,
     longitude: longitude,
   });
+  const INITIAL_CAMERA = {
+    center: {
+      latitude: location.latitude ?? -54.8019,
+      longitude: location.longitude ?? -68.3029
+    },
+    zoom: 14,
+    heading: 0,
+    pitch: 0
+  };
 
   useEffect(() => {
+    const obtenerUbicacion = async () => {
+      let location = await getCurrentPositionAsync();
+      const { latitude, longitude } = location.coords;
+      setLocation({ latitude, longitude });
+
+      mapRef.current?.animateCamera({ 
+        ...mapRef.current?.getCamera(),
+        center: { latitude, longitude },
+      });
+      
+      getAddress({ latitude, longitude });
+    }
+
     const fetchLocation = async () => {
       setLoading(true);
       try {
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-            console.log('Permiso de ubicación denegado');
-            return;
+        if(status?.status === PermissionStatus.GRANTED) {
+          obtenerUbicacion();
+        } else if(status?.status === PermissionStatus.UNDETERMINED || status?.canAskAgain) {
+          await requestPermissionLocation();
+          obtenerUbicacion();
+        } else {
+          await Linking.openSettings();
+          if(status?.status === PermissionStatus.GRANTED) {
+            obtenerUbicacion();
+          }
         }
   
-        let location = await Location.getCurrentPositionAsync({});
-        const { latitude, longitude } = location.coords;
-        setLocation({ latitude, longitude });
-  
-        mapRef.current?.animateCamera({
-            center: { latitude, longitude },
-        });
-        
-        getAddress({ latitude, longitude });
       } catch (error) {
         console.log('Error fetching location', error);
       } finally {
@@ -63,9 +79,9 @@ export const Mapa: FC<MapProps> = ({ localizar, latitude, longitude, style, modi
     getAddress({ latitude, longitude });
   };
 
-  const getAddress = async (ubi) => {
+  const getAddress = async (ubi: { latitude: number, longitude: number }) => {
     try {
-      let [address] = await Location.reverseGeocodeAsync(ubi);
+      let [address] = await reverseGeocodeAsync(ubi);
       if (address) {
         modificarDomicilio((address.street === null ? 'sin calle' : address.street) + ' ' + (address.streetNumber === null ? 'sin altura' : address.streetNumber));
       }
@@ -80,15 +96,8 @@ export const Mapa: FC<MapProps> = ({ localizar, latitude, longitude, style, modi
         ref={ mapRef }
         style={{ ...styles.map, ...style }}
         zoomControlEnabled
-        initialCamera={{
-          center: {
-            latitude: location.latitude ?? locationUshuaia.latitude,
-            longitude: location.longitude ?? locationUshuaia.longitude
-          },
-          zoom: 14,
-          heading: 0,
-          pitch: 0
-        }}
+        // initialRegion={INITIAL_REGION}
+        initialCamera={ INITIAL_CAMERA }
         mapType='none'
         onPress={ handleMarkerPoint }
       >

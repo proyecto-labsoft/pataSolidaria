@@ -1,7 +1,8 @@
 import React, { FC, useState, useEffect, useRef } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import MapView, { Marker, UrlTile } from 'react-native-maps';
 import * as Location from 'expo-location';
+import { ActivityIndicator } from 'react-native-paper';
 
 
 type MapProps = {
@@ -15,6 +16,7 @@ type MapProps = {
 export const Mapa: FC<MapProps> = ({ localizar, latitude, longitude, style, modificarDomicilio }) => {
 
   const mapRef = useRef<MapView>();
+  const [loading, setLoading] = useState(true);
   const locationUshuaia = {
     latitude: -54.8019,
     longitude:  -68.3029,
@@ -25,28 +27,35 @@ export const Mapa: FC<MapProps> = ({ localizar, latitude, longitude, style, modi
   });
 
   useEffect(() => {
-    const requestLocationPermission = async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-          console.log('Permiso de ubicación denegado');
-          return;
+    const fetchLocation = async () => {
+      setLoading(true);
+      try {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+            console.log('Permiso de ubicación denegado');
+            return;
+        }
+  
+        let location = await Location.getCurrentPositionAsync({});
+        const { latitude, longitude } = location.coords;
+        setLocation({ latitude, longitude });
+  
+        mapRef.current?.animateCamera({
+            center: { latitude, longitude },
+        });
+        
+        getAddress({ latitude, longitude });
+      } catch (error) {
+        console.log('Error fetching location', error);
+      } finally {
+        setLoading(false);
       }
-//TODO buscar si poder tener un loading mientras esta cargando la ubicacion
-      let location = await Location.getCurrentPositionAsync({});
-      const { latitude, longitude } = location.coords;
-      setLocation({ latitude, longitude });
-
-      mapRef.current?.animateCamera({
-          center: { latitude, longitude },
-      });
-      
-      getAddress({ latitude, longitude });
     };
 
     if(localizar){
-      requestLocationPermission();
+      fetchLocation();
     }
-  }, []);
+  }, [localizar]);
   
   const handleMarkerPoint = (e) => {
     const { latitude, longitude } = e.nativeEvent.coordinate;
@@ -66,40 +75,37 @@ export const Mapa: FC<MapProps> = ({ localizar, latitude, longitude, style, modi
   };
 
   return (
-    <MapView
-      ref={mapRef}
-      style={{...styles.map, ...style}}
-      // initialRegion={{
-      //   latitude: location.latitude,
-      //   longitude: location.longitude,
-      //   latitudeDelta: 0.0922,
-      //   longitudeDelta: 0.0421,
-      // }}
-      zoomControlEnabled
-      initialCamera={{
-        center: {
-          latitude: location.latitude ?? locationUshuaia.latitude,
-          longitude: location.longitude ?? locationUshuaia.longitude
-        },
-        zoom: 14,
-        heading: 0,
-        pitch: 0
-      }}
-      mapType='none'
-      onPress={handleMarkerPoint}
-    >
-      <UrlTile
+    <View style={{ flex: 1 }}>
+      <MapView
+        ref={ mapRef }
+        style={{ ...styles.map, ...style }}
+        zoomControlEnabled
+        initialCamera={{
+          center: {
+            latitude: location.latitude ?? locationUshuaia.latitude,
+            longitude: location.longitude ?? locationUshuaia.longitude
+          },
+          zoom: 14,
+          heading: 0,
+          pitch: 0
+        }}
+        mapType='none'
+        onPress={ handleMarkerPoint }
+      >
+        <UrlTile
           urlTemplate="https://a.tile.openstreetmap.de/{z}/{x}/{y}.png"
           maximumZ={19}
-      />
-      {location.latitude && location.longitude && (        
-        <Marker
-            coordinate={location}
-            draggable
-            onDragEnd={handleMarkerPoint}
         />
-      )}
-    </MapView>
+        {location.latitude && location.longitude && 
+          <Marker
+            coordinate={ location }
+            draggable
+            onDragEnd={ handleMarkerPoint }
+          />
+        }
+      </MapView>
+      {loading && <ActivityIndicator style={ styles.loading } size="large" color="#0000ff" />}
+    </View>
   );
 };
 
@@ -107,5 +113,12 @@ const styles = StyleSheet.create({
   map: {
     width: '100%',
     height: 200,
+  },
+  loading: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    marginTop: -25,
+    marginLeft: -25,
   },
 });

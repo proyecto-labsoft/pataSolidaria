@@ -3,12 +3,11 @@ import { StyleSheet, ScrollView, View } from "react-native";
 import { Text, useTheme } from 'react-native-paper';
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import FormularioConfirmarExtravio from "../componentes/formularios/formularioConfirmarExtravio";
+import FormularioConfirmarBuscado from "../componentes/formularios/formularioConfirmarBuscado";
 import AppbarNav from "../componentes/navegacion/appbarNav";
-import { Mapa } from "../componentes/mapa";
 
 // TODO: Request POST para la creación de un anuncio de animal extraviado
-export default function ConfirmarExtravio() {
+export default function ConfirmarBuscado() {
     const theme = useTheme();
     const [edicion, setEdicion] = useState(false);
     const [location, setLocation] = useState({
@@ -27,9 +26,9 @@ export default function ConfirmarExtravio() {
       esterilizado: true,
       identificado: false,
       domicilio: 'Puerto español 844',
-      ubicacion: location,
+    //   ubicacion: location,
     });
-    const [domi, setDomi] = useState("");
+    
     const navigation = useNavigation();
     
     return (
@@ -38,9 +37,8 @@ export default function ConfirmarExtravio() {
             <SafeAreaView style={{ alignItems: "center",flex:1}}>
             <View style={{marginHorizontal:10,width: "100%"}}>
                 <ScrollView contentContainerStyle={ {...styles.containerScroll}}>
-                    <Mapa localizar latitude={null} longitude={null} modificarDomicilio={setDomi} />
-                    <Text>{domi}</Text>
-                    <FormularioConfirmarExtravio data={datosFamiliar} onSumbit={setEdicion}  />
+                    
+                    <FormularioConfirmarBuscado data={datosFamiliar} onSumbit={setEdicion}  />
                 </ScrollView>
             </View>
             </SafeAreaView>

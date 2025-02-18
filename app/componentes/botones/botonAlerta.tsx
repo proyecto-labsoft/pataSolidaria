@@ -17,32 +17,31 @@ export default function BotonAlerta ({onPress,showButton} : Props) {
     return (
     
         <Portal>
-        <FAB.Group
-            open={open}
-            visible={showButton}
-            icon={open ? 'arrow-up-bold-outline' : 'alert'}
-            color={theme?.colors.onSecondaryContainer}
-            actions={[
-                {
-                    icon: 'eye-outline',
-                    style: { ...styles.fabItem, backgroundColor: theme?.colors.secondaryContainer},
-                    label: 'Encontré un animal perdido',
-                    labelStyle: { ...styles.fabItem },
-                    onPress: () => onPress("NuevoEncontrado"),
-                },
-                {
-                    style: { ...styles.fabItem, backgroundColor: theme?.colors.secondaryContainer},
-                    icon: 'alert-box',
-                    label: 'Mi animal se extravió',
-                    labelStyle: { ...styles.fabItem },
-                    onPress: () => onPress("NuevoExtraviado"),
-                }
-                ]}
-            onStateChange={handleChange}
-            fabStyle={{...styles.fab, backgroundColor: open ? theme?.colors.inversePrimary : theme?.colors.primaryContainer}}
-            style={{...styles.fabGroup}}
-            variant='secondary'
-        />
+            <FAB.Group
+                open={open}
+                visible={showButton}
+                icon={open ? 'arrow-up-bold-outline' : 'alert'}
+                color={theme?.colors.onSecondaryContainer}
+                actions={[
+                    {
+                        icon: 'eye-outline',
+                        style: { ...styles.fabItem, backgroundColor: theme?.colors.secondaryContainer},
+                        label: 'Encontré un animal perdido',
+                        labelStyle: { ...styles.labelFab },
+                        onPress: () => onPress("NuevoExtraviado"),
+                    },
+                    {
+                        style: { ...styles.fabItem, backgroundColor: theme?.colors.secondaryContainer},
+                        icon: 'alert-box',
+                        label: 'Mi familiar se perdió',
+                        labelStyle: { ...styles.labelFab },
+                        onPress: () => onPress("NuevoBuscado"),
+                    }
+                    ]}
+                onStateChange={handleChange}
+                fabStyle={{...styles.fab, backgroundColor: open ? theme?.colors.inversePrimary : theme?.colors.primaryContainer}}
+                style={{...styles.fabGroup}}
+            />
         </Portal>
     );
 }
@@ -50,12 +49,26 @@ export default function BotonAlerta ({onPress,showButton} : Props) {
 
 const styles = StyleSheet.create({
     fab: {
-        // sposition: 'absolute',
-        right: 0,
+        borderRadius:50,
+        justifyContent:'center',
+        width: 90,
+        height: 90,
+        alignItems:'center',
+        right: 10,
         bottom: 85,
     },
+    labelFab:{
+        bottom: 80,
+        right: 20,
+    },
     fabItem:{
-        bottom: 75,
+        justifyContent:'center',
+        alignItems:'center',
+        bottom: 80,
+        width: 60,
+        height: 60,
+        borderRadius:50,
+        right: 15,
     },
     fabGroup:{
         right: 0,

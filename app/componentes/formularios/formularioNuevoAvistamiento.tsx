@@ -7,6 +7,7 @@ import { useNavigation } from '@react-navigation/native'
 import { useState } from 'react'
 import { useForm } from "react-hook-form";
 import BackdropSuccess from '../backdropSuccess'
+import { Mapa } from '../mapa'
 
 export default function FormularioNuevoAvistamiento() {
     const theme = useTheme()
@@ -24,7 +25,7 @@ export default function FormularioNuevoAvistamiento() {
         //Cuando el post tiene exito
         setPost(true)
     }
-
+    const [ubicacion,setUbicacion] = useState("")
     return(
         <View style={{gap:20,marginVertical: 16,paddingHorizontal: '5%',height: '100%',width:width,alignItems:'center'}}>
             <Portal>
@@ -37,18 +38,16 @@ export default function FormularioNuevoAvistamiento() {
                 </Modal>
             </Portal>
 
-            <View style={{borderColor:'black',justifyContent:'center',alignContent:'center',borderWidth:1,width:'80%',height:100}}>
-                <Text style={{textAlign:'center'}}>Acá va mapa</Text>
+            <View style={{justifyContent:'center',alignContent:'center',width:'100%',height:200}}>
+                <Mapa localizar latitude={null} longitude={null} modificarDomicilio={setUbicacion} />
             </View>
             <CampoTexto
+                valor={ubicacion}
                 control={control}
                 label="Ubicación del avistamiento"
                 nombre="ubicacion"
             />
             <BannerInfo texto='Si quiere indicar otra ubicación modifique el campo ó marque otra ubicación en el mapa.' />
-            <Button buttonColor={theme.colors.primary} textColor={theme.colors.onPrimary} style={{ marginVertical: 8,borderRadius:50}} uppercase mode="contained" onPress={() => console.log("ir a mapa")}>
-                Modificar ubicación
-            </Button>
             <CampoTexto
                 control={control}
                 label="Hora"

@@ -3,6 +3,7 @@ import { SegmentedButtons,Text, TextInput, Checkbox, Button, useTheme } from 're
 import CampoTexto from './campos/campoTexto'
 import CampoTextoArea from './campos/campoTextoArea'
 import CampoSelector from './campos/campoSelector'
+import { useForm } from 'react-hook-form'
 interface Props {
     onSumbit: Function,
     data: {

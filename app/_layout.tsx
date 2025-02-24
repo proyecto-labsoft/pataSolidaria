@@ -27,7 +27,8 @@ import FondoGradiente from "./fondoGradiente";
 import NuevoExtraviado from "./pantallas/nuevoExtraviado";
 import NuevoBuscado from "./pantallas/nuevoBuscado";
 
-
+// gris azulado: rgba(250, 107, 107, 1)",
+// naranja pastel: rgba (211, 157, 135, 1)
 const theme = {
   ...DefaultTheme,
   colors: lightheme.colors,

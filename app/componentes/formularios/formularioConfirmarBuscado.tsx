@@ -1,14 +1,15 @@
-import { View, Image,StyleSheet, Text as TextNative, ScrollView } from 'react-native'
-import {useEffect, useMemo,useState} from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { SegmentedButtons,Text as TextPaper, TextInput, Checkbox, Button, useTheme, Text } from 'react-native-paper'
+import { View,StyleSheet } from 'react-native'
+import {useState} from 'react'
+import { Text as TextPaper, Checkbox, Button, useTheme, Text, Portal, Modal } from 'react-native-paper'
 import { Mapa } from '../mapa'
 import CampoTexto from './campos/campoTexto'
 import { useForm } from 'react-hook-form'
 import CampoTextoArea from './campos/campoTextoArea'
 import { useNavigation } from '@react-navigation/native'
+import CampoSelector from './campos/campoSelector'
+import DescripcionVista from '../descripcionVista'
+import BackdropSuccess from '../backdropSuccess'
 interface Props {
-    onSumbit: Function,
     data: {
         nombre: string,
         especie: string,
@@ -22,29 +23,44 @@ interface Props {
         identificado: boolean,
         domicilio: string
         ubicacion?: string
-    }
+    },
 }
-export default function FormularioConfirmarBuscado({data,onSumbit} : Props) {
+export default function FormularioConfirmarBuscado({data} : Props) {
     const theme = useTheme()
     const [ubic, setUbic] = useState("");
+    const [cambiarDomicilio, setCambiarDomicilio] = useState(false);
+    const [domic, setDomicilio] = useState("");
+    const [visible,setVisible] = useState(false)
+    const [post,setPost] = useState(false)
     const navigation = useNavigation()
-    
-    useEffect(() => {
-        if (ubic) { 
-            console.log(ubic)
-        }
-    },[ubic])
 
     const { control, handleSubmit, formState: {errors} } = useForm({defaultValues: data});
+    
     const onSubmit = (data: any) => {
         data.ubicacion = ubic
-        console.log("data: ",data)
+        if(!!domic){data.domicilio = domic}
+        console.log(data)
+        setVisible(false)
+        setPost(true)
         
     }
+
+    // TODO: Post del nuevo caso de busqueda
     return(
-        <View>
+        <View style={{gap:20}}>
+            <Portal>
+                {!visible && post && (<BackdropSuccess texto="Nueva busqueda confirmada" onTap={() => navigation.navigate('Home')}/>)}
+                <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={{...styles.containerStyle,backgroundColor:theme.colors.surface}}>
+                    <Text style={{textAlign: 'center'}}>Al reportar la nueva busqueda compartirá sus datos de contacto con los demás usuarios.</Text>
+                    <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={handleSubmit(onSubmit)}>
+                        <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Confirmar búsqueda</Text>
+                    </Button>
+                </Modal>
+            </Portal>
+            <DescripcionVista texto="¿Por dónde se extravió?" tamanioTexto="titleLarge"/>
             <Mapa localizar latitude={null} longitude={null} modificarDomicilio={setUbic} />
             <CampoTexto
+                style={ styles.input }
                 valor={ubic}
                 label='Ubicación'
                 nombre='ubicacion'
@@ -80,18 +96,26 @@ export default function FormularioConfirmarBuscado({data,onSumbit} : Props) {
                 nombre="colores"
                 control={control}
             />
+            {cambiarDomicilio && (
+                <>
+                    <Mapa localizar latitude={null} longitude={null} modificarDomicilio={setDomicilio} />
+                    <Button  buttonColor={theme.colors.secondary} style={{  marginHorizontal:'5%',marginVertical: 8 ,borderRadius:10}} uppercase mode="contained" onPress={() => {setDomicilio("");setCambiarDomicilio(false)}}>
+                        <Text variant='labelLarge' style={{color: theme.colors.onSecondary, marginLeft: "5%"}}>Cancelar</Text>
+                    </Button>
+                </>
+            )}
+            {!cambiarDomicilio && (
+                <Button icon="map-marker" buttonColor={theme.colors.primary} style={{  marginHorizontal:'5%',marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={() => setCambiarDomicilio(true)}>
+                    <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Cambiar el domicilio</Text>
+                </Button>
+            )}
             <CampoTexto
                 style={ styles.input }
+                valor={cambiarDomicilio ? domic : ''}
                 label="Domicilio"
                 nombre="domicilio"
                 control={control}
             />
-            {/* <Button icon="map-marker" buttonColor={theme.colors.tertiary} style={{width: '100%', marginBottom: 24,borderRadius:10}} uppercase mode="contained" onPress={() => console.log('Pressed')}>
-                Cargar otra ubicación
-            </Button> */}
-            <Button icon="map-marker" buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={handleSubmit(onSubmit)}>
-                    <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Cargar otra ubicación</Text>
-                </Button>
             <CampoTexto
                 style={ styles.input }
                 control={control}
@@ -104,16 +128,9 @@ export default function FormularioConfirmarBuscado({data,onSumbit} : Props) {
                 nombre="observaciones"
                 control={control}
             />
-            <TextPaper variant="titleLarge" style={{width: '100%', textAlign:'center'}}>Sexo</TextPaper>
-            <SegmentedButtons
-                style={ styles.input }
-                value={data?.sexo}
-                buttons={[{value:'hembra',label:'Hembra',icon:'gender-female'},{value:'macho',label:'Macho',icon:'gender-male'}]}
-                onValueChange={() => console.log('')}
-            />
-            <View style={{ justifyContent: 'flex-start' , width: '80%' }}>
-                <View style={{flexDirection:'row', marginVertical: 8, alignItems:'center'}}>
-                    <TextPaper variant="titleLarge">Esterilizado</TextPaper>
+            <View style={{ justifyContent: 'flex-start' , width: '100%' }}>
+                <View style={{flexDirection:'row', justifyContent:'space-between', marginVertical: 8, alignItems:'center'}}>
+                    <TextPaper variant="titleLarge">¿Está esterilizado?</TextPaper>
                     <Checkbox
                         status={data?.esterilizado ? 'checked' : 'unchecked'}
                     // onPress={() => {
@@ -121,8 +138,8 @@ export default function FormularioConfirmarBuscado({data,onSumbit} : Props) {
                     // }}
                     />
                 </View>
-                <View style={{flexDirection:'row', marginVertical: 8, alignItems:'center'}}>
-                    <TextPaper variant="titleLarge">Identificación</TextPaper>
+                <View style={{flexDirection:'row', justifyContent:'space-between',marginVertical: 8, alignItems:'center'}}>
+                    <TextPaper variant="titleLarge">¿Esta chipeado?</TextPaper>
                     <Checkbox
                         status={data?.identificado ? 'checked' : 'unchecked'}
                     // onPress={() => {
@@ -131,12 +148,17 @@ export default function FormularioConfirmarBuscado({data,onSumbit} : Props) {
                     />
                 </View>
             </View>
-                
+            <CampoSelector
+                control={control} 
+                label="Sexo"
+                nombre="sexo"
+                opciones={['No lo sé','Macho','Hembra']}
+            />
             <View style={{ flexDirection:'column', justifyContent:'space-evenly', width: '100%'}}>
-                <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={handleSubmit(onSubmit)}>
+                <Button buttonColor={theme.colors.primary} style={{  marginHorizontal:'5%',marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={() => setVisible(true)}>
                     <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Guardar</Text>
                 </Button>
-                <Button  buttonColor={theme.colors.secondary} style={{  marginVertical: 8 ,borderRadius:10}} uppercase mode="contained" onPress={() => navigation.goBack()}>
+                <Button  buttonColor={theme.colors.secondary} style={{  marginHorizontal:'5%',marginVertical: 8 ,borderRadius:10}} uppercase mode="contained" onPress={() => navigation.goBack()}>
                     <Text variant='labelLarge' style={{color: theme.colors.onSecondary, marginLeft: "5%"}}>Cancelar</Text>
                 </Button>
             </View>
@@ -148,5 +170,14 @@ export default function FormularioConfirmarBuscado({data,onSumbit} : Props) {
 const styles = StyleSheet.create({
     input:{
         marginBottom: 16,
+    },
+    containerStyle: {
+        justifyContent: "space-around",
+        alignItems: "center",
+        width: '80%',
+        height: '30%',
+        alignSelf:"center",
+        padding: 30,
+        borderRadius: 20,
     },
 });

@@ -17,9 +17,10 @@ export default function CampoTextoArea({label,nombre,control,style,cantLineas}: 
             render={({field: {onChange, value, onBlur}} ) => (
                 <TextInput
                     mode='outlined'
-                    style={{ width:'100%',backgroundColor:'transparent',...style}}
+                    style={{ marginHorizontal:'5%',backgroundColor:'transparent',...style}}
                     label={label}
                     value={value}
+                    onChangeText={value => onChange(value)}
                     multiline
                     numberOfLines={cantLineas || 5}
                 />

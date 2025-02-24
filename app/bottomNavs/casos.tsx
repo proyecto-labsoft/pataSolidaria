@@ -4,6 +4,7 @@ import DescripcionVista from "../componentes/descripcionVista";
 
 export default function VistaCasos() {
 
+  // TODO get de todos los casos, con todos sus datos.
   return ( 
     <View style={{flex:1}}>
       <DescripcionVista texto="Aquí podrás todos los casos de compañeros perdidos y avistados" />
@@ -11,7 +12,7 @@ export default function VistaCasos() {
         contentContainerStyle={{justifyContent:'center', alignItems: "flex-start"}}
       >
         <View key={1} style={{flexDirection: 'row', width: '100%'}}>
-          <CardAnimal navigateTo="VistaExtravio"  data={{nombre: 'Chili', especie: 'Canino'}} />
+          <CardAnimal navigateTo="VistaExtravio" data={{nombre: 'Chili', especie: 'Canino'}} />
           <CardAnimal navigateTo="VistaExtravio"  data={{nombre: 'Duque', especie: 'Canino'}} />
         </View>
         <View key={2} style={{flexDirection: 'row', width: '100%'}}>

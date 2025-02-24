@@ -7,8 +7,7 @@ interface Props {
         nombre: string,
         especie: string,
     },
-    navigateTo: string
-    
+    navigateTo: any
 }
 export default function CardFamiliar({data,navigateTo} : Props) {
 
@@ -18,7 +17,7 @@ export default function CardFamiliar({data,navigateTo} : Props) {
     return(
         <Card style={{width: '90%',marginHorizontal:5, backgroundColor: theme.colors.primary}} >
             <Pressable
-                onPress={() => navigation.navigate(navigateTo)}
+                onPress={() => navigation.navigate(navigateTo,data)}
                 unstable_pressDelay={200}
                 style={({pressed}) => [
                     {

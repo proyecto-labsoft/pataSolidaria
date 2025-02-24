@@ -19,7 +19,7 @@ export default function CampoTexto({label,valor,nombre,control,style}: Props) {
                 return (
                 <TextInput 
                     mode='outlined'
-                    style={{ width:'100%',backgroundColor:'transparent',...style}}
+                    style={{ marginHorizontal:'5%',backgroundColor:'transparent',...style}}
                     label={ label }
                     value={!!valor ? valor : value}
                     onBlur={onBlur}

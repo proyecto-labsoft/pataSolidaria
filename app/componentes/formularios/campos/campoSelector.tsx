@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { Controller } from 'react-hook-form';
-import { View, StatusBar, FlatList, TouchableOpacity, Text, Keyboard } from 'react-native';
+import { View, FlatList, TouchableOpacity, Text } from 'react-native';
 import { Divider, TextInput, useTheme } from 'react-native-paper';
 type Props = {
     label: string,
@@ -27,7 +27,7 @@ export default function CampoSelector({opciones,label,nombre,control,style} : Pr
         setShow(false)
         setUserinput(item)
     },
-    [show, userinput]
+    []
     );
 
     return(
@@ -38,23 +38,22 @@ export default function CampoSelector({opciones,label,nombre,control,style} : Pr
                 <View
                     style={{
                     flexDirection: 'row',
-                    justifyContent: 'space-around',
                     }}>
-                    <View style={{ width: '100%' }}>
+                    <View style={{width:'100%',alignItems:'center'}}>
                     <TextInput
                         mode='outlined'
                         label={label}
                         editable={false}
                         placeholder={show ?'' :'No hay una opción seleccionada'}
                         value={userinput}
-                        style={{ width:'100%',backgroundColor:'transparent',...style}}
-                        onChangeText={(text) => setUserinput(text)}
-
+                        style={{ width:'90%',backgroundColor:'transparent',...style}}
+                        onChangeText={(text) => onChange(text)}
+                        onChange={(text) => onChange(text)}
                         right={<TextInput.Icon onPress={openPicker} icon="chevron-down" size={20} />}
                     />
                     {show ?
                         <FlatList
-                        style={{ backgroundColor: theme.colors.surface,elevation:1, zIndex: 22, width: '100%', marginTop:56, position: 'absolute' }}
+                        style={{ backgroundColor: theme.colors.surface,elevation:1, zIndex: 22, width: '90%', marginTop:56, position: 'absolute' }}
                         data={opciones}
                         renderItem={({ item, index }) => (
                             <TouchableOpacity

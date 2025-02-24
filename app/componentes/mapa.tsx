@@ -6,14 +6,14 @@ import { ActivityIndicator } from 'react-native-paper';
 
 
 type MapProps = {
-  localizar: boolean;
+  localizar?: boolean;
   latitude: number | null;
   longitude: number | null;
   style?: object;
-  modificarDomicilio: (domicilio: string) => void;
+  modificarDomicilio?: (domicilio: string) => void;
 };
 
-export const Mapa: FC<MapProps> = ({ localizar, latitude, longitude, style, modificarDomicilio }) => {
+export const Mapa: FC<MapProps> = ({ localizar= false, latitude, longitude, style, modificarDomicilio }) => {
 
   const mapRef = useRef<MapView>();
   const [status, requestPermissionLocation] = useForegroundPermissions();

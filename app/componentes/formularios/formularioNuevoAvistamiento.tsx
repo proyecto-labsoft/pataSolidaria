@@ -1,6 +1,5 @@
-import { View, StyleSheet, Dimensions } from 'react-native'
+import { View, StyleSheet } from 'react-native'
 import { Text as TextPaper, Button, useTheme, Portal, Modal, Text } from 'react-native-paper'
-import BannerInfo from '../bannerInfo'
 import CampoTexto from './campos/campoTexto'
 import CampoTextoArea from './campos/campoTextoArea'
 import { useNavigation } from '@react-navigation/native'
@@ -11,7 +10,6 @@ import { Mapa } from '../mapa'
 
 export default function FormularioNuevoAvistamiento() {
     const theme = useTheme()
-    const {width} = Dimensions.get('screen')
     const navigation = useNavigation()
     const [visible,setVisible] = useState(false)
     const [post,setPost] = useState(false)
@@ -20,6 +18,7 @@ export default function FormularioNuevoAvistamiento() {
 
     const onSumbit = (data: any) => {
         console.log("errors: ",data)
+        data.ubicacion=ubicacion
         setVisible(false)
         
         //Cuando el post tiene exito
@@ -27,7 +26,7 @@ export default function FormularioNuevoAvistamiento() {
     }
     const [ubicacion,setUbicacion] = useState("")
     return(
-        <View style={{gap:20,marginVertical: 16,paddingHorizontal: '5%',height: '100%',width:width,alignItems:'center'}}>
+        <View style={{gap:20}}>
             <Portal>
                 {!visible && post && (<BackdropSuccess texto="Nuevo avistamiento confirmado" onTap={() => navigation.goBack()}/>)}
                 <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={{...styles.containerStyle,backgroundColor:theme.colors.surface}}>
@@ -38,16 +37,14 @@ export default function FormularioNuevoAvistamiento() {
                 </Modal>
             </Portal>
 
-            <View style={{justifyContent:'center',alignContent:'center',width:'100%',height:200}}>
-                <Mapa localizar latitude={null} longitude={null} modificarDomicilio={setUbicacion} />
-            </View>
+            
+            <Mapa localizar latitude={null} longitude={null} modificarDomicilio={setUbicacion} />
             <CampoTexto
                 valor={ubicacion}
-                control={control}
                 label="Ubicación del avistamiento"
                 nombre="ubicacion"
+                control={control}
             />
-            <BannerInfo texto='Si quiere indicar otra ubicación modifique el campo ó marque otra ubicación en el mapa.' />
             <CampoTexto
                 control={control}
                 label="Hora"
@@ -71,10 +68,10 @@ export default function FormularioNuevoAvistamiento() {
 
             
             <View style={{ flexDirection:'column', justifyContent:'space-evenly', width: '100%'}}>
-                <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={() => setVisible(true)}>
+                <Button buttonColor={theme.colors.primary} style={{  marginHorizontal:'5%',marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={() => setVisible(true)}>
                     <TextPaper variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Confirmar avistamiento</TextPaper>
                 </Button>
-                <Button  buttonColor={theme.colors.secondary} style={{  marginVertical: 8 ,borderRadius:10}} uppercase mode="contained" onPress={() => navigation.goBack()}>
+                <Button  buttonColor={theme.colors.secondary} style={{  marginHorizontal:'5%',marginVertical: 8 ,borderRadius:10}} uppercase mode="contained" onPress={() => navigation.goBack()}>
                     <TextPaper variant='labelLarge' style={{color: theme.colors.onSecondary, marginLeft: "5%"}}>Cancelar</TextPaper>
                 </Button>
             </View>

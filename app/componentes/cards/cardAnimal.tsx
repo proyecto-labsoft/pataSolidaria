@@ -7,8 +7,7 @@ interface Props {
         nombre: string,
         especie: string,
     },
-    navigateTo: string
-    
+    navigateTo: any
 }
 export default function CardAnimal({data,navigateTo} : Props) {
 

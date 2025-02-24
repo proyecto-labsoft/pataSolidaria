@@ -1,11 +1,13 @@
-import { View, ScrollView, Dimensions, useWindowDimensions } from 'react-native'
+import { View, ScrollView, Dimensions, useWindowDimensions, StyleSheet } from 'react-native'
 import React, { useState} from 'react'
-import {Button, Divider, Icon, Text, useTheme} from 'react-native-paper'
+import {Button, Divider, Icon, Modal, Portal, Text, useTheme} from 'react-native-paper'
 import ItemDato from '../componentes/itemDato';
 import { ImageSlider } from '../testData/sliderData';
 import CarruselImagenes from '../componentes/carrusel/carruselImagenes';
 import AppbarNav from '../componentes/navegacion/appbarNav';
 import { useNavigation } from "@react-navigation/native";
+import BackdropSuccess from '../componentes/backdropSuccess';
+import { Mapa } from '../componentes/mapa';
 
 // Basandose en colores de la pagina de ARAF
 // primario: 0f7599
@@ -19,14 +21,21 @@ export default function VistaExtravio({route}: any) {
     const [datosCaso] = useState(route.params?.data);
     const navigation = useNavigation()
     const {width,height} = useWindowDimensions()
-
+    const [visible,setVisible] = useState(false)
     return (
         <View style={{height: height,width:width,alignItems:'center'}}>      
 
             <AppbarNav titulo={datosCaso?.nombre} />
            
             <ScrollView contentContainerStyle={{margin:12}} > 
-                
+                <Portal>
+                    <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={{...styles.containerStyle,backgroundColor:theme.colors.surface}}>
+                        <Mapa style={{width:width,height:height}} latitude={null} longitude={null}/>
+                        <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained"  onPress={()=> setVisible(false)}>
+                            <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Volver atrás</Text>
+                        </Button>
+                    </Modal>
+                </Portal>
                 <CarruselImagenes data={imagenes} />        
                 <View style={{gap: 20,paddingVertical:40,paddingHorizontal:20,alignItems: "center"}} >
                     
@@ -43,7 +52,7 @@ export default function VistaExtravio({route}: any) {
                         <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:20}} uppercase mode="contained" onPress={() => navigation.navigate('NuevoAvistamiento')}>
                             <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Ví / Encontra este animal</Text>
                         </Button>
-                        <Button  buttonColor={theme.colors.secondary} style={{  marginVertical: 8 ,borderRadius:20}} uppercase mode="contained" >
+                        <Button  buttonColor={theme.colors.secondary} style={{  marginVertical: 8 ,borderRadius:20}} uppercase mode="contained" onPress={()=> setVisible(true)} >
                             <Text variant='labelLarge' style={{color: theme.colors.onSecondary, marginLeft: "5%"}}>Ver ubicación</Text>
                         </Button>
                     </View>
@@ -63,3 +72,11 @@ export default function VistaExtravio({route}: any) {
             </ScrollView>
         </View>
 )}
+
+const styles = StyleSheet.create({
+    containerStyle: {
+        alignItems: "center",
+        width: '100%',
+        height: '100%',
+    },
+});

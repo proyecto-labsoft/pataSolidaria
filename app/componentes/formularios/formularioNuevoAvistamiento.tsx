@@ -7,6 +7,7 @@ import { useState } from 'react'
 import { useForm } from "react-hook-form";
 import BackdropSuccess from '../backdropSuccess'
 import { Mapa } from '../mapa'
+import CampoHora from './campos/campoHora'
 
 export default function FormularioNuevoAvistamiento() {
     const theme = useTheme()
@@ -45,11 +46,16 @@ export default function FormularioNuevoAvistamiento() {
                 nombre="ubicacion"
                 control={control}
             />
-            <CampoTexto
+            <CampoHora 
+                control={control}
+                label="Hora (HH:mm)"
+                nombre="hora"
+            />
+            {/* <CampoTexto
                 control={control}
                 label="Hora"
                 nombre="hora"
-            />
+            /> */}
             <CampoTexto
                 control={control}
                 label="Celular"

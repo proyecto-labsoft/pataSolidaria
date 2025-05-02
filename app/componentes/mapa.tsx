@@ -1,7 +1,7 @@
 import React, { FC, useState, useEffect, useRef } from 'react';
 import { Linking, StyleSheet, View } from 'react-native';
 import MapView, { Marker, UrlTile } from 'react-native-maps';
-import { getCurrentPositionAsync, PermissionStatus, reverseGeocodeAsync, useForegroundPermissions } from 'expo-location';
+import { getCurrentPositionAsync, PermissionStatus, requestForegroundPermissionsAsync, reverseGeocodeAsync, useForegroundPermissions } from 'expo-location';
 import { ActivityIndicator } from 'react-native-paper';
 
 
@@ -34,33 +34,35 @@ export const Mapa: FC<MapProps> = ({ localizar= false, latitude, longitude, styl
 
   useEffect(() => {
     const obtenerUbicacion = async () => {
-      let location = await getCurrentPositionAsync();
+      const location = await getCurrentPositionAsync();
       const { latitude, longitude } = location.coords;
       setLocation({ latitude, longitude });
 
-      mapRef.current?.animateCamera({ 
-        ...mapRef.current?.getCamera(),
+      mapRef.current?.animateCamera({
         center: { latitude, longitude },
+        pitch: 0,
+        heading: 0,
+        zoom: 15,
+        altitude: 0,
       });
-      
-      getAddress({ latitude, longitude });
-    }
+
+      await getAddress({ latitude, longitude });
+    };
 
     const fetchLocation = async () => {
       setLoading(true);
       try {
-        if(status?.status === PermissionStatus.GRANTED) {
-          obtenerUbicacion();
-        } else if(status?.status === PermissionStatus.UNDETERMINED || status?.canAskAgain) {
-          await requestPermissionLocation();
-          obtenerUbicacion();
+        if (status?.status === PermissionStatus.GRANTED) {
+          await obtenerUbicacion();
         } else {
-          await Linking.openSettings();
-          if(status?.status === PermissionStatus.GRANTED) {
-            obtenerUbicacion();
+          const { status: newStatus, canAskAgain } = await requestForegroundPermissionsAsync();
+
+          if (newStatus === PermissionStatus.GRANTED) {
+            await obtenerUbicacion();
+          } else if (!canAskAgain) {
+            Linking.openSettings(); // El usuario tiene que concederlo manualmente
           }
         }
-  
       } catch (error) {
         console.log('Error fetching location', error);
       } finally {
@@ -68,7 +70,7 @@ export const Mapa: FC<MapProps> = ({ localizar= false, latitude, longitude, styl
       }
     };
 
-    if(localizar){
+    if (localizar) {
       fetchLocation();
     }
   }, [localizar]);

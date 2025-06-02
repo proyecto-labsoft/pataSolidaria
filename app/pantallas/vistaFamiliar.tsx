@@ -1,6 +1,6 @@
 import { View,StyleSheet, ScrollView, Dimensions } from 'react-native'
 import React, { useState} from 'react'
-import {useTheme} from 'react-native-paper'
+import {Divider, Text, useTheme} from 'react-native-paper'
 import FormularioEditarFamiliar from '../componentes/formularios/formularioEditarFamiliar';
 import BotonEditar from '../componentes/botones/botonEditar';
 import ItemDato from '../componentes/itemDato';
@@ -43,21 +43,37 @@ export default function VistaFamiliar() {
           
           <CarruselImagenes data={imagenes} />    
           {modoEdicion && <TakePictureBtn setImagen={setFoto} />}
-          <View style={{gap: 20,paddingVertical:40,paddingHorizontal:20,alignItems: "center"}} >
+          <View style={{gap: 20,paddingVertical:40,alignItems: "center"}} >
           {!modoEdicion ? 
           (  
             <>
-                <ItemDato label='Nombre' data={datosFamiliar?.nombre}  />
-                <ItemDato label='Especie' data={datosFamiliar?.especie}  />
-                <ItemDato label='Raza' data={datosFamiliar?.raza}  />
-                <ItemDato label='Tamaño' data={datosFamiliar?.tamanio}  />
-                <ItemDato label='Colores' data={datosFamiliar?.colores}  />
-                <ItemDato label='Fecha de nacimiento' data={datosFamiliar?.fechanac}  />
-                <ItemDato label='Genero' data={datosFamiliar?.sexo}  />
-                <ItemDato label='¿Está esterilizado?' data={datosFamiliar?.esterilizado}  />
-                <ItemDato label='¿Está chipeado?' data={datosFamiliar?.identificado} />
-                <ItemDato label='Domicilio' data={datosFamiliar?.domicilio}  />
-                <ItemDato label='Observaciones' data={datosFamiliar?.observaciones}  />
+                <View style={{width:'90%',justifyContent:'center',alignContent:'center',gap:10,marginTop: 20}}>
+                    <ItemDato label='Nombre' data={datosFamiliar?.nombre}  />
+                    <ItemDato label='Fecha de nacimiento' data={datosFamiliar?.fechanac}  />
+                    <ItemDato label='Especie' data={datosFamiliar?.especie}  />
+                    <ItemDato label='Raza' data={datosFamiliar?.raza}  />
+                    <ItemDato label='Genero' data={datosFamiliar?.sexo} />
+                </View>
+                <View style={{width:'90%',justifyContent:'center',alignContent:'center',gap:10,marginTop: 20}}>
+                  <Text style={{textAlign:'center',width:'100%'}} variant="headlineSmall">Aspecto físico</Text>
+                  <Divider style={{marginBottom: 20 , width: "90%", alignSelf: 'center'}}/>
+                  <ItemDato label='Tamaño' data={datosFamiliar?.tamanio}  />
+                  <ItemDato label='Colores' data={datosFamiliar?.colores}  />
+                  <ItemDato label='Observaciones' data={datosFamiliar?.observaciones}  />
+                </View>
+                <View style={{width:'90%',justifyContent:'center',alignContent:'center',gap:10,marginTop: 20}}>
+                  <Text style={{textAlign:'center',width:'100%'}} variant="headlineSmall">Domicilio</Text>
+                  <Divider style={{marginBottom: 20 , width: "90%", alignSelf: 'center'}}/>    
+                  <ItemDato label='Domicilio' data={datosFamiliar?.domicilio}  />
+                </View>
+                <View style={{width:'90%',justifyContent:'center',alignContent:'center',gap:10,marginTop: 20}}>
+                  <Text style={{textAlign:'center',width:'100%'}} variant="headlineSmall">Controles veterinarios</Text>
+                  <Divider style={{marginBottom: 20 , width: "90%", alignSelf: 'center'}}/>    
+                  <ItemDato label='¿Está esterilizado?' data={datosFamiliar?.esterilizado}  />
+                  <ItemDato label='¿Está chipeado?' data={datosFamiliar?.identificado} />
+                </View>
+                
+                
             </>
           ) :(
             <FormularioEditarFamiliar data={datosFamiliar} onSumbit={setModoEdicion} />

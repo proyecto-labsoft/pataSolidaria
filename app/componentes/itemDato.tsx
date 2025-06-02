@@ -14,10 +14,10 @@ export default function ItemDato({label,data,icono,style}: Props) {
     
     const theme = useTheme()
     return (
-        <View style={{alignItems: "flex-start",width: (width*80)/100, ...style }}>  
-            <TextPaper variant='titleSmall' style={{textAlign:"left",width:"100%", color: theme.colors.onSurface}}>{label}</TextPaper>
-            <Divider style={{ width: '100%', height: 1, backgroundColor: theme.colors.outlineVariant, borderRadius: 20 }} />
-            <TextPaper variant='titleMedium' style={{width:"100%",textAlign:"left",color: theme.colors.onSurface }}>{typeof data === 'boolean' ? data ? 'Si' : 'No' : data  }</TextPaper>
+        <View style={{alignItems: "flex-start",width: (width*85)/100,marginBottom: 10, ...style }}>  
+            <TextPaper variant='labelLarge' style={{textAlign:"left",width:"100%", color: theme.colors.onSurface}}>{label}</TextPaper>
+            <Divider style={{ width: '100%', height: 1, backgroundColor: theme.colors.outlineVariant, borderRadius: 20, marginBottom: 10 }} />
+            <TextPaper variant='titleLarge' style={{width:"100%",textAlign:"left",color: theme.colors.onSurface }}>{typeof data === 'boolean' ? data ? 'Si' : 'No' : data ? data : 'Sin información' }</TextPaper>
         </View>
     )
 }

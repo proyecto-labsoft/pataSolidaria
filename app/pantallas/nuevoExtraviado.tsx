@@ -9,7 +9,7 @@ export default function NuevoExtraviado() {
 
     return (
         <>
-            <AppbarNav titulo="Nuevo caso" />     
+            <AppbarNav titulo="Nuevo encontrado" tamanioTitulo="headlineSmall"/>     
             <SafeAreaView style={{flex:1}}>   
                 <ScrollView contentContainerStyle={ {...styles.containerScroll}}>
                     <FormularioNuevoExtravio />

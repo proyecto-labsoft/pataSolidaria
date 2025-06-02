@@ -14,7 +14,7 @@ export default function ConfirmarBuscado({route}: Props) {
 
     return (
         <>
-            <AppbarNav titulo="Confirmar datos" />
+            <AppbarNav titulo="Confirmar buscado" tamanioTitulo="headlineSmall" />
             <SafeAreaView style={{ alignItems: "center",flex:1}}>
             <View style={{marginHorizontal:10,width: "100%"}}>
                 <ScrollView contentContainerStyle={ {...styles.containerScroll}}>

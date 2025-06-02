@@ -26,7 +26,7 @@ export default function NuevoBuscado() {
    */
     return (
         <>
-            <AppbarNav titulo="Nueva caso" />     
+            <AppbarNav titulo="Nuevo buscado" tamanioTitulo="headlineSmall"/>     
             
             <SafeAreaView style={{ alignItems: "center",flex:1}}>   
                 <DescripcionVista texto="¿Qué familiar esta buscando?" />

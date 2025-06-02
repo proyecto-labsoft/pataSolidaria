@@ -34,8 +34,10 @@ export default function FormularioConfirmarBuscado({data} : Props) {
     const [post,setPost] = useState(false)
     const navigation = useNavigation()
 
-    const { control, handleSubmit, formState: {errors} } = useForm({defaultValues: data});
-    
+    const { control,setValue, watch, handleSubmit, formState: {errors} } = useForm();
+    const esterilizado = watch('esterilizado');
+    const tieneIdentificacion = watch('tieneIdentificacion');
+        
     const onSubmit = (data: any) => {
         data.ubicacion = ubic
         if(!!domic){data.domicilio = domic}
@@ -129,24 +131,37 @@ export default function FormularioConfirmarBuscado({data} : Props) {
                 control={control}
             />
             <View style={{ justifyContent: 'flex-start' , width: '100%' }}>
-                <View style={{flexDirection:'row', justifyContent:'space-between', marginVertical: 8, alignItems:'center'}}>
-                    <TextPaper variant="titleLarge">¿Está esterilizado?</TextPaper>
-                    <Checkbox
-                        status={data?.esterilizado ? 'checked' : 'unchecked'}
-                    // onPress={() => {
-                    //   setChecked(!checked);
-                    // }}
-                    />
-                </View>
-                <View style={{flexDirection:'row', justifyContent:'space-between',marginVertical: 8, alignItems:'center'}}>
-                    <TextPaper variant="titleLarge">¿Esta chipeado?</TextPaper>
-                    <Checkbox
-                        status={data?.identificado ? 'checked' : 'unchecked'}
-                    // onPress={() => {
-                    //   setChecked(!checked);
-                    // }}
-                    />
-                </View>
+                <Text style={{textAlign:'center'}} variant="headlineSmall">Identificadores y esterilización</Text>
+                    <View style={{ justifyContent: 'flex-start', width: '100%' }}>
+                        <View style={{flexDirection:'row', marginVertical: 8, alignItems:'center'}}>
+                            <Checkbox
+                                status={esterilizado ? 'checked' : 'unchecked'}
+                                onPress={() => {
+                                    setValue('esterilizado', !esterilizado);
+                                }}
+                            />
+                            <Text variant="titleLarge" onPress={() => {
+                                setValue('esterilizado', !esterilizado);
+                            }}>Esterilizado</Text>
+                        </View>
+                        <View style={{flexDirection:'row', marginVertical: 8, alignItems:'center'}}>
+                            <Checkbox
+                                status={tieneIdentificacion ? 'checked' : 'unchecked'}
+                                onPress={() => {
+                                    setValue('tieneIdentificacion', !tieneIdentificacion);
+                                }}
+                            />
+                            <Text variant="titleLarge" onPress={() => {
+                                setValue('tieneIdentificacion', !tieneIdentificacion);
+                            }}>¿Está chipeado/identificado?</Text>
+                        </View>
+                        <CampoTexto
+                            control={control}
+                            disabled={!tieneIdentificacion}
+                            label="Datos de la chapa, colgante, etc"
+                            nombre="identificacion"
+                        />
+                    </View>
             </View>
             <CampoSelector
                 control={control} 
@@ -154,12 +169,13 @@ export default function FormularioConfirmarBuscado({data} : Props) {
                 nombre="sexo"
                 opciones={['No lo sé','Macho','Hembra']}
             />
-            <View style={{ flexDirection:'column', justifyContent:'space-evenly', width: '100%'}}>
-                <Button buttonColor={theme.colors.primary} style={{  marginHorizontal:'5%',marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={() => setVisible(true)}>
-                    <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Guardar</Text>
-                </Button>
+            <View style={{ flexDirection:'row', justifyContent:'space-evenly', width: '100%'}}>
+                
                 <Button  buttonColor={theme.colors.secondary} style={{  marginHorizontal:'5%',marginVertical: 8 ,borderRadius:10}} uppercase mode="contained" onPress={() => navigation.goBack()}>
                     <Text variant='labelLarge' style={{color: theme.colors.onSecondary, marginLeft: "5%"}}>Cancelar</Text>
+                </Button>
+                <Button buttonColor={theme.colors.primary} style={{  marginHorizontal:'5%',marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={() => setVisible(true)}>
+                    <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Publicar buscado</Text>
                 </Button>
             </View>
             

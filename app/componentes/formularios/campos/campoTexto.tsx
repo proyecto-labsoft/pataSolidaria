@@ -2,13 +2,14 @@ import { TextInput } from "react-native-paper";
 import { Controller } from "react-hook-form";
 import { useEffect } from "react";
 type Props = {
-    label: string,
+    label?: string,
     nombre: string,
     style?: object,
     control?: any,
     valor?: any,
+    disabled?: boolean
 }
-export default function CampoTexto({label,valor,nombre,control,style}: Props) {
+export default function CampoTexto({label,valor,nombre,disabled,control,style}: Props) {
 
     useEffect(() =>{},[valor])
     return (
@@ -18,6 +19,7 @@ export default function CampoTexto({label,valor,nombre,control,style}: Props) {
             render={({field: {onChange,value, onBlur}} ) => {
                 return (
                 <TextInput 
+                    disabled={disabled}
                     mode='outlined'
                     style={{ marginHorizontal:'5%',backgroundColor:'transparent',...style}}
                     label={ label }

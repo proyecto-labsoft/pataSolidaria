@@ -21,7 +21,7 @@ export default function BotonAlerta ({onPress,showButton} : Props) {
                 open={open}
                 visible={showButton}
                 icon={open ? 'arrow-up-bold-outline' : 'alert'}
-                color={theme?.colors.onSecondaryContainer}
+                color="white"
                 actions={[
                     {
                         icon: 'eye-outline',
@@ -39,8 +39,9 @@ export default function BotonAlerta ({onPress,showButton} : Props) {
                     }
                     ]}
                 onStateChange={handleChange}
-                fabStyle={{...styles.fab, backgroundColor: open ? theme?.colors.inversePrimary : theme?.colors.primaryContainer}}
+                fabStyle={{...styles.fab, backgroundColor: open ? theme?.colors.inversePrimary : theme?.colors.primary}}
                 style={{...styles.fabGroup}}
+                label='ALERTAR UN CASO'
             />
         </Portal>
     );
@@ -49,12 +50,12 @@ export default function BotonAlerta ({onPress,showButton} : Props) {
 
 const styles = StyleSheet.create({
     fab: {
-        borderRadius:50,
+        borderRadius:20,
         justifyContent:'center',
-        width: 90,
-        height: 90,
+        width: '80%',
+        height: 50,
         alignItems:'center',
-        right: 10,
+        right: 25,
         bottom: 85,
     },
     labelFab:{
@@ -75,3 +76,4 @@ const styles = StyleSheet.create({
         bottom: 0,
     }
 })
+

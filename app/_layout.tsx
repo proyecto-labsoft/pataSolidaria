@@ -26,6 +26,7 @@ import NuevoAvistamiento from "./pantallas/nuevoAvistamiento";
 import FondoGradiente from "./fondoGradiente";
 import NuevoExtraviado from "./pantallas/nuevoExtraviado";
 import NuevoBuscado from "./pantallas/nuevoBuscado";
+import NuevoFamiliar from "./pantallas/nuevoFamiliar";
 
 // gris azulado: rgba(250, 107, 107, 1)",
 // naranja pastel: rgba (211, 157, 135, 1)
@@ -58,6 +59,7 @@ export default function Layout() {
             <Stack.Screen name="Faq" component={FAQ} options={{ headerShown:false }} />
             <Stack.Screen name="VistaExtravio" component={VistaExtravio} options={{ headerShown:false }} />
             <Stack.Screen name="NuevoAvistamiento" component={NuevoAvistamiento} options={{ headerShown:false }} />
+            <Stack.Screen name="NuevoFamiliar" component={NuevoFamiliar} options={{ headerShown:false }} />
           </Stack.Navigator>
         </NavigationContainer>
         <BotonAlerta showButton={visible} onPress={(ruta: string) => navigationRef.current && navigationRef.current.navigate(ruta)}/>

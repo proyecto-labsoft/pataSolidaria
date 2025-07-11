@@ -1,21 +1,35 @@
-import { View, Image, Dimensions } from 'react-native'
-import {ActivityIndicator} from 'react-native-paper'
+import { Image, View, Dimensions } from 'react-native';
+import React from 'react';
+
+const { width } = Dimensions.get('screen');
 
 type Props = {
-    item: string,
-    index: number,
-}
-const {width} = Dimensions.get('screen')
+  item: {
+    uri: string;
+    // otros props como key, etc.
+  };
+  index: number;
+};
 
-export default function SliderItem({item,index}: Props) {
-    
-    return(
-        <View key={index} style={{justifyContent:'center'}}>
-            <Image
-                source={item}
-                onProgress={() => (<ActivityIndicator animating/>)}
-                style={{resizeMode:'contain',width: width}}
-            />
-        </View>
-    )
+export default function SliderItem({ item }: Props) {
+  return (
+    <View
+      style={{
+        width,
+        height: 250,
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <Image
+        source={item }
+        resizeMode="contain" 
+        style={{
+          width: '90%',     
+          height: '90%',    
+          borderRadius: 12, 
+        }}
+      />
+    </View>
+  );
 }

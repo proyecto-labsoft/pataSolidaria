@@ -10,7 +10,7 @@ export default function NuevoAvistamiento() {
         <>
         <AppbarNav titulo="Nuevo avistamiento" tamanioTitulo="headlineMedium"/>
         <SafeAreaView style={{ alignItems: "center",flex:1}}>
-            <View style={{marginHorizontal:10,width: "100%"}}>
+            <View style={{marginHorizontal:10,width: "100%",flex:1}}>
                 <ScrollView contentContainerStyle={{ paddingBottom: 20}}>
                     <DescripcionVista texto="Complete los datos del nuevo avistamiento" />
                     <FormularioNuevoAvistamiento /> 

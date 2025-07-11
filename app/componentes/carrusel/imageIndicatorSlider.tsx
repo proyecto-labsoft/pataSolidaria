@@ -11,7 +11,7 @@ export default function Indicator({scrollX,data} : Props) {
     const theme = useTheme();
 
     return (
-        <View style={{position:'absolute',flexDirection: 'row',top: 200}}>
+        <View style={{position:'absolute',flexDirection: 'row',top: 240}}>
             { data.map((_: any,i: number) =>  {
                 const inputRange = [(i - 1) * width, i * width, (i + 1) * width]
                 
@@ -33,7 +33,7 @@ export default function Indicator({scrollX,data} : Props) {
                     margin: 10,
                     width: 10 ,
                     borderRadius:5,
-                    backgroundColor: theme.colors.surface
+                    backgroundColor: theme.colors.primary
                     }
                 } />
             }) }

@@ -1,13 +1,15 @@
-import { StyleSheet, Pressable, View, Text } from "react-native";
-import { Card, useTheme } from 'react-native-paper';
+import { StyleSheet, Pressable, View } from "react-native";
+import { Card, useTheme,Text } from 'react-native-paper';
 import { useNavigation } from "@react-navigation/native";
 import { ImageSlider } from '../../testData/sliderData';
-
+import { differenceInMinutes, differenceInHours, differenceInDays, isToday } from "date-fns";
 interface Props {
     data: {
         nombre: string,
         especie: string,
         tipo: 'perdido' | 'avistado' // Tipo de collar, perdido o avistado
+        ultimoAvistamiento: Date // Fecha del último avistamiento
+        estado?: string // Estado opcional, solo para avistados
     },
     navigateTo: any
 }
@@ -20,7 +22,7 @@ function Collar({ nombre,tipo}: { nombre: string, tipo: 'perdido' | 'avistado' }
         <View style={styles.collarContainer}>
             <View style={{...styles.collarBar,backgroundColor: theme.colors.primary}}>
                 <View style={{...styles.collarBuckle, backgroundColor: theme.colors.onPrimary,borderColor: theme.colors.primary}}>
-                    <Text style={styles.collarText} numberOfLines={1}>{tipo === 'perdido' ? nombre : nombre}</Text>
+                    <Text style={{...styles.collarText, color: theme.colors.primary}} variant='labelLarge' numberOfLines={1}>{tipo === 'perdido' ? "Perdido" : "Avistado"}</Text>
                 </View>
             </View>
         </View>
@@ -49,10 +51,35 @@ export default function CardAnimal({ data, navigateTo }: Props) {
                 ]}
             >
                 <Collar nombre={data.nombre} tipo={data?.tipo} />
-                {/* <Card.Title title={data.nombre} titleVariant="titleLarge" titleStyle={{ textAlign: 'center', color: theme.colors.primary }} /> */}
                 <Card.Cover style={styles.fotoAnimal} source={randomImage} />
-                {/* Collar entre la imagen y el subtítulo */}
-                <Card.Title title={data.especie} titleVariant="titleMedium" titleStyle={{ color: theme.colors.primary }} subtitleStyle={{ color: theme.colors.primary }} />
+                {(() => {
+                    const avistamientoDate = new Date(data.ultimoAvistamiento);
+                    const now = new Date();
+
+                    let info = "";
+                    if (isToday(avistamientoDate)) {
+                        const diffMins = differenceInMinutes(now, avistamientoDate);
+                        if (diffMins < 60) {
+                            info = `Hoy, hace ${diffMins} min`;
+                        } else {
+                            const diffHours = differenceInHours(now, avistamientoDate);
+                            info = `Hoy, hace ${diffHours} h`;
+                        }
+                    } else {
+                        const diffDays = differenceInDays(now, avistamientoDate);
+                        info = `Hace ${diffDays} día${diffDays !== 1 ? 's' : ''}`;
+                    }
+
+                    return (
+                        <Card.Title
+                            title={info}
+                            subtitle={data.tipo === 'perdido' ? `${data.nombre} - ${data.especie}` : `${data.estado} - ${data.especie}`}
+                            titleVariant="labelSmall"
+                            titleStyle={{ color: theme.colors.primary }}
+                            subtitleStyle={{ color: theme.colors.primary }}
+                        />
+                    );
+                })()}
             </Pressable>
         </Card>
     )
@@ -96,14 +123,9 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.2,
         shadowRadius: 2,
         paddingHorizontal: 8,
-        backgroundColor: '#FFD700',
-        borderColor: '#B8860B',
         marginTop: -5, // Simula el "top: -1theme si prefieres
     },
     collarText: {
-        color: '#333',
-        fontWeight: 'bold',
-        fontSize: 16,
         textAlign: 'center',
         minWidth: 40,
         maxWidth: 100, // Limita el ancho máximo del texto

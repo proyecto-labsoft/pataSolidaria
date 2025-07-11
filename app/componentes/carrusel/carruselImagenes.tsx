@@ -17,7 +17,7 @@ export default function CarruselImagenes({data} : Props) {
     const theme = useTheme();
 
     return(
-        <View style={{height: 250,width:width-20,alignItems:'center',overflow:'hidden',borderRadius:20,backgroundColor:'red'}}>
+        <View style={{height: 250,width:width-20,alignItems:'center',borderRadius:20}}>
             <Animated.FlatList
                 data={imagenes} 
                 keyExtractor={item => item.key}
@@ -27,7 +27,7 @@ export default function CarruselImagenes({data} : Props) {
                 [{nativeEvent: {contentOffset: {x: scrollX}}}],
                 {useNativeDriver: false}
                 )}
-                style={{width:width,backgroundColor:theme.colors.surfaceVariant}}
+                style={{width:width}}
                 pagingEnabled
                 renderItem={({item,index}) => <SliderItem item={item} index={index} />}
             />

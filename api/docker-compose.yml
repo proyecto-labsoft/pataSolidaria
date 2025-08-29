@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: postgres-mascotas
+    environment:
+      POSTGRES_DB: db_araf_v2
+      POSTGRES_USER: josegaray
+      POSTGRES_PASSWORD: 5404822
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - mascotas-network
+
+  api:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    image: esaizar88/api-mascotas:latest
+    container_name: api-mascotas
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/db_araf_v2
+      SPRING_DATASOURCE_USERNAME: josegaray
+      SPRING_DATASOURCE_PASSWORD: 5404822
+      SPRING_PROFILES_ACTIVE: local
+      SERVER_PORT: 8083
+    ports:
+      - "8083:8083"
+    networks:
+      - mascotas-network
+
+networks:
+  mascotas-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

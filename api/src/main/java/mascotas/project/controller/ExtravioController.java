@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -38,5 +39,12 @@ public class ExtravioController {
         List<ExtravioDetailDTO> extravios = extravioService.getAllExtraviosByUsuario(usuarioId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(extravios);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ExtravioDetailDTO>> getExtravios( @RequestParam(name = "resueltos", required = false) Boolean resueltos) {
+
+        List<ExtravioDetailDTO> extravios = extravioService.getAllExtravios(resueltos);
+        return ResponseEntity.status(HttpStatus.OK).body(extravios);
     }
 }

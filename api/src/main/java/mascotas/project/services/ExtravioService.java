@@ -80,4 +80,10 @@ public class ExtravioService {
                 )
                 .orElseThrow(RuntimeException::new);
     }
+
+    public List<ExtravioDetailDTO> getAllExtravios(Boolean resueltos) {
+        return Optional.ofNullable(resueltos)
+                       .map(extravioRepository::findAllByResuelto)
+                       .orElseGet(extravioRepository::findAllWithMascota);
+    }
 }

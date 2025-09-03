@@ -22,4 +22,5 @@ public class ExtravioDetailDTO {
     private LocalDateTime hora;
     private String observacion;
     private Boolean atencionMedica;
+    private Boolean resuelto;
 }

@@ -38,4 +38,5 @@ public class Extravio {
 
     private String observacion;
 
+    private Boolean resuelto;
 }

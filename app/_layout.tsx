@@ -27,6 +27,7 @@ import FondoGradiente from "./fondoGradiente";
 import NuevoExtraviado from "./pantallas/nuevoExtraviado";
 import NuevoBuscado from "./pantallas/nuevoBuscado";
 import NuevoFamiliar from "./pantallas/nuevoFamiliar";
+import QueryClientProviderBase from "./api/QueryClientProviderBase";
 
 // gris azulado: rgba(250, 107, 107, 1)",
 // naranja pastel: rgba (211, 157, 135, 1)
@@ -44,7 +45,7 @@ export default function Layout() {
 
   return (   
     <PaperProvider theme={theme} >
-      
+      <QueryClientProviderBase>
       <SafeAreaProvider>
         <FondoGradiente>
         <NavigationContainer ref={navigationRef} independent={true} onStateChange={(state) => state?.routes.length && state.routes.length > 1 ? setVisible(false) : setVisible(true)}>
@@ -65,6 +66,7 @@ export default function Layout() {
         <BotonAlerta showButton={visible} onPress={(ruta: string) => navigationRef.current && navigationRef.current.navigate(ruta)}/>
         </FondoGradiente>
       </SafeAreaProvider>
+      </QueryClientProviderBase>
     </PaperProvider>
   );
 }

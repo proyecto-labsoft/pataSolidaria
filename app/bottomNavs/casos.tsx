@@ -1,9 +1,12 @@
 import { ScrollView, View } from "react-native";
 import CardAnimal from "../componentes/cards/cardAnimal";
 import DescripcionVista from "../componentes/descripcionVista";
+import { useApiGetExtravios } from "../api/hooks";
 
 export default function VistaCasos() {
 
+  const {data } = useApiGetExtravios({enabled: true, parametros: {id: 2}})
+  
   // TODO get de todos los casos, con todos sus datos.
   const datos = [
     { nombre: 'Chili', especie: 'Canino', tipo: 'perdido', ultimoAvistamiento: new Date('2025-01-01T14:30:00') },

@@ -79,6 +79,7 @@ export const useGet = ({
   params = {},
   configuracion = {}, // opciones de useQuery (p.e. enabled, staleTime o meta)
 }) => {
+  console.log("URL en useGet", url)
   const queryKey = generarQueryKey(nombreHook, params); 
   const isEnabled = configuracion?.enabled ?? true;
   // Define para los get un meta por defecto

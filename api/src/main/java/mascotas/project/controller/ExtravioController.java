@@ -38,7 +38,7 @@ public class ExtravioController {
 
         List<ExtravioDetailDTO> extravios = extravioService.getAllExtraviosByUsuario(usuarioId);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(extravios);
+        return ResponseEntity.status(HttpStatus.OK).body(extravios);
     }
 
     @GetMapping

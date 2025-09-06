@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import mascotas.project.dto.PostulacionDTO;
 import mascotas.project.entities.Postulacion;
 import mascotas.project.services.PostulacionService;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,14 +24,14 @@ public class PostulacionController {
     private final PostulacionService postulacionService;
 
     @PostMapping()
-    public ResponseEntity<Postulacion> savePostulacion(@RequestBody PostulacionDTO postulacionRequest) throws ChangeSetPersister.NotFoundException {
+    public ResponseEntity<Postulacion> savePostulacion(@RequestBody PostulacionDTO postulacionRequest){
 
         Postulacion postulacion = postulacionService.savePostulacion(postulacionRequest);
         return  ResponseEntity.ok().body(postulacion);
     }
 
     @GetMapping(value =  "/{id}")
-    public ResponseEntity<List<PostulacionDTO>> postualcionesByUsuarioId(@PathVariable(name = "id", required = true) Long idUsuario) throws ChangeSetPersister.NotFoundException {
+    public ResponseEntity<List<PostulacionDTO>> postualcionesByUsuarioId(@PathVariable(name = "id", required = true) Long idUsuario){
 
         List<PostulacionDTO> postulaciones = postulacionService.getAllPostulacionesByUsuario(idUsuario);
 

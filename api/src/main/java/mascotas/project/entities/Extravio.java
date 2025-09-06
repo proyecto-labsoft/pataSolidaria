@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-@Table(name = "extravio")
+@Table(name = "extravio", schema = "public")
 public class Extravio {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "adopcion_id_seq")

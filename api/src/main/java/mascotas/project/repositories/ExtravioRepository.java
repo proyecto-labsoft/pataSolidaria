@@ -39,7 +39,7 @@ public interface ExtravioRepository extends JpaRepository<Extravio, Long> {
     )
     FROM Extravio e
     JOIN Mascota m ON e.mascota = m.id
-    WHERE e.resuelto = :resuelto
+    WHERE e.resuelto = :resueltos
     """)
     List<ExtravioDetailDTO> findAllByResuelto(@Param("resueltos") Boolean resueltos);
 

@@ -3,9 +3,11 @@ package mascotas.project.services;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mascotas.project.Enums.ErrorsEnums;
 import mascotas.project.dto.ExtravioDetailDTO;
 import mascotas.project.dto.ExtravioRequestDTO;
 import mascotas.project.entities.Extravio;
+import mascotas.project.exceptions.NotFoundException;
 import mascotas.project.mapper.ExtravioMapper;
 import mascotas.project.repositories.ExtravioRepository;
 import mascotas.project.repositories.MascotaRepository;
@@ -37,18 +39,16 @@ public class ExtravioService {
                                                         mascota -> {
                                                             log.info("SAVE_EXTRAVIO :Mascota id {}, nombre {}", mascota.getId(), mascota.getNombre());
                                                             return mascota;
-                                                        }
-                                                )
-                                             .orElseThrow( () -> new IllegalArgumentException("No se encontró la mascota con ID: " + extravioDto.getMascotaId()) );
+                                                })
+                                             .orElseThrow( () -> new NotFoundException(ErrorsEnums.MASCOTA_NOT_FOUND.getDescription() + extravioDTO.getMascotaId() ));
 
                             //busco el usuario
                             usuarioRepository.findById(extravioDto.getCreador())
                                                 .map(usuario -> {
                                                             log.info("SAVE_EXTRAVIO :Usuario id {}, nombre {}", usuario.getId(), usuario.getNombre());
                                                             return usuario;
-                                                        }
-                                                )
-                                             .orElseThrow( () -> new IllegalArgumentException("No se encontró al usuario con ID: " + extravioDto.getCreador()) );
+                                                })
+                                             .orElseThrow( () -> new NotFoundException(ErrorsEnums.USUARIO_NOT_FOUND.getDescription() + extravioDto.getCreador()));
 
                            return extravioMapper.toEntity(extravioDto); //mapeo el dto
                     }
@@ -71,9 +71,7 @@ public class ExtravioService {
                         usuario ->{
 
                             usuarioRepository.findById(usuario)
-                                                .orElseThrow(
-                                                        () -> new IllegalArgumentException("No se encontró al usuario con ID: " + usuarioId)
-                                                );
+                                    .orElseThrow( () -> new NotFoundException(ErrorsEnums.USUARIO_NOT_FOUND.getDescription() + usuarioId));
 
                             return extravioRepository.findAllByCreador(usuarioId);
                         }

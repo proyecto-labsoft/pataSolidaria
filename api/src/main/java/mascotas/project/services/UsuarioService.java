@@ -4,8 +4,10 @@ package mascotas.project.services;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mascotas.project.Enums.ErrorsEnums;
 import mascotas.project.dto.UsuarioDTO;
 import mascotas.project.entities.Usuario;
+import mascotas.project.exceptions.NotFoundException;
 import mascotas.project.mapper.UsuarioMapper;
 import mascotas.project.repositories.UsuarioRepository;
 import org.springframework.data.crossstore.ChangeSetPersister;
@@ -20,10 +22,10 @@ public class UsuarioService {
     UsuarioMapper usuarioMapper;
 
     @Transactional
-    public UsuarioDTO getUsuarioById(Long idUsuario) throws ChangeSetPersister.NotFoundException {
+    public UsuarioDTO getUsuarioById(Long idUsuario){
 
         Usuario usuario = usuarioRepository.findById(idUsuario)
-                                            .orElseThrow(ChangeSetPersister.NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(ErrorsEnums.USUARIO_NOT_FOUND.getDescription() + idUsuario ));
 
         return  usuarioMapper.toUsuarioDto(usuario);
     }

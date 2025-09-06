@@ -4,10 +4,12 @@ package mascotas.project.services;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mascotas.project.Enums.ErrorsEnums;
 import mascotas.project.dto.MascotaDTODetalle;
 import mascotas.project.dto.MascotaDTORequest;
 import mascotas.project.dto.MascotaDTOSaveSucces;
 import mascotas.project.entities.Mascota;
+import mascotas.project.exceptions.NotFoundException;
 import mascotas.project.mapper.MascotaMapper;
 import mascotas.project.repositories.MascotaRepository;
 import mascotas.project.repositories.UsuarioRepository;
@@ -26,10 +28,10 @@ public class MascotaService {
 
 
     @Transactional
-    public MascotaDTOSaveSucces saveMascota(MascotaDTORequest mascotaDTORequest) throws ChangeSetPersister.NotFoundException {
+    public MascotaDTOSaveSucces saveMascota(MascotaDTORequest mascotaDTORequest){
 
         usuarioRepository.findById(mascotaDTORequest.getFamiliarId())
-                         .orElseThrow(ChangeSetPersister.NotFoundException::new); //TODO: implementar las excepciones
+                         .orElseThrow( () -> new NotFoundException(ErrorsEnums.USUARIO_NOT_FOUND.getDescription() + mascotaDTORequest.getFamiliarId() ) );
 
         Mascota mascota = mascotaMapper.toEntity(mascotaDTORequest);
         mascota = mascotaRepository.save(mascota);
@@ -41,20 +43,19 @@ public class MascotaService {
                                    .build();
     }
 
-    @Transactional
-    public MascotaDTODetalle getMascotaById(Long id) throws ChangeSetPersister.NotFoundException {
+    public MascotaDTODetalle getMascotaById(Long id){
 
         Mascota mascota = mascotaRepository.findById(id)
-                                           .orElseThrow(() -> new ChangeSetPersister.NotFoundException());
+                                           .orElseThrow(() -> new NotFoundException(ErrorsEnums.MASCOTA_NOT_FOUND.getDescription() + id));
 
         return mascotaMapper.toDTO(mascota);
     }
 
 
-    public List<MascotaDTODetalle> getMascotasByFamiliarId(Long usuarioId) throws ChangeSetPersister.NotFoundException {
+    public List<MascotaDTODetalle> getMascotasByFamiliarId(Long usuarioId){
 
        usuarioRepository.findById(usuarioId)
-                        .orElseThrow(() -> new ChangeSetPersister.NotFoundException());
+                        .orElseThrow(() -> new NotFoundException(ErrorsEnums.USUARIO_NOT_FOUND.getDescription() + usuarioId ) );
 
         return mascotaRepository.findByFamiliarId(usuarioId)
                                 .stream()

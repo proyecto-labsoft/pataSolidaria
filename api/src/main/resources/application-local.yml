@@ -4,13 +4,13 @@ spring:
       on-profile: local
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://postgres:5432/db_araf_v2
+    url: jdbc:postgresql://localhost:5432/db_araf_V2
     username: josegaray
     password: 5404822
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect

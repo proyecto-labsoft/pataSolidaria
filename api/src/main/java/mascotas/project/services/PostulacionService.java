@@ -2,8 +2,11 @@ package mascotas.project.services;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mascotas.project.Enums.ErrorsEnums;
 import mascotas.project.dto.PostulacionDTO;
 import mascotas.project.entities.Postulacion;
+import mascotas.project.exceptions.NoContentException;
+import mascotas.project.exceptions.NotFoundException;
 import mascotas.project.mapper.PostulacionMapper;
 import mascotas.project.repositories.AdopocionRepository;
 import mascotas.project.repositories.PostulacionRepository;
@@ -30,18 +33,13 @@ public class PostulacionService {
                      .map(
                             p -> {
                                 usuarioRepository.findById(p.getUsuario())
-                                                 .orElseThrow(
-                                                         () -> new IllegalArgumentException("No se encontró al usuario con ID: " + postulacion.getUsuario())
-                                                 );
+                                                 .orElseThrow(() -> new NotFoundException(ErrorsEnums.USUARIO_NOT_FOUND.getDescription() + postulacion.getUsuario() ));
 
                                 adopcionRepository.findById(p.getAdopcion())
-                                                    .orElseThrow(
-                                                            () -> new IllegalArgumentException("No se encontró la adopcion con ID: " + postulacion.getAdopcion())
-                                                    );
+                                                    .orElseThrow( () -> new NotFoundException(ErrorsEnums.ADOPCION_NOT_FOUND_ERROR.getDescription() + postulacion.getAdopcion()));
 
                                 return postulacionMapper.toPostulacionEntity(postulacion);
-                            }
-                     )
+                     })
                      .map(
                             postulacionEntity -> {
                                 Postulacion postulacionPersistida =  postulacionRepository.save(postulacionEntity);
@@ -56,18 +54,14 @@ public class PostulacionService {
     public List<PostulacionDTO> getAllPostulacionesByUsuario(Long  usuarioId){
 
        return Optional.of(usuarioId)
-                .map(
-                        usuario ->{
-
-                                usuarioRepository.findById(usuario)
-                                                 .orElseThrow(
-                                                           () -> new IllegalArgumentException("No se encontró al usuario con ID: " + usuarioId)
-                                                 );
+                .map(usuario ->{
+                            usuarioRepository.findById(usuario)
+                                             .orElseThrow(
+                                                       () -> new NotFoundException(ErrorsEnums.USUARIO_NOT_FOUND.getDescription() + usuario )
+                                             );
 
                            return postulacionRepository.findPostulacionesByUsuarioId(usuarioId)
-                                    .orElseThrow(
-                                            () -> new IllegalArgumentException("No se encontraron posutlaciones para el usuario con ID: " + usuarioId)
-                                    );
+                                    .orElseThrow( () -> new NoContentException(ErrorsEnums.NO_CONTENT_ERROR.getDescription()) );
                         }
                 )
                 .map(

@@ -1,5 +1,5 @@
 import { View,StyleSheet, ScrollView, Dimensions } from 'react-native'
-import React, { useState} from 'react'
+import React, { useMemo, useState} from 'react'
 import {Divider, Text, useTheme} from 'react-native-paper'
 import FormularioEditarFamiliar from '../componentes/formularios/formularioEditarFamiliar';
 import BotonEditar from '../componentes/botones/botonEditar';
@@ -8,6 +8,7 @@ import { ImageSlider } from '../testData/sliderData';
 import CarruselImagenes from '../componentes/carrusel/carruselImagenes';
 import AppbarNav from '../componentes/navegacion/appbarNav';
 import { TakePictureBtn } from '../componentes/TakePictureBtn';
+import { useRoute } from '@react-navigation/native';
 
 // Basandose en colores de la pagina de ARAF
 // primario: 0f7599
@@ -16,21 +17,38 @@ import { TakePictureBtn } from '../componentes/TakePictureBtn';
 const imagenes = ImageSlider[0].imagenes
 
 export default function VistaFamiliar() {
-  
+   const route = useRoute();
+
+  const datosFamiliar = useMemo(() => route.params, [route.params]);
+  console.log("VistaFamiliar",datosFamiliar)
+   // {
+    //     "chipeado": true, 
+    //     "color": "Blanco y Negro", 
+    //     "descripcion": "Gata tranquila y cariñosa", 
+    //     "especie": "Gato", 
+    //     "esterilizado": true, 
+    //     "fnacimiento": null, 
+    //     "id": 2, 
+    //     "nombre": "Luna", 
+    //     "raza": "Siames", 
+    //     "sexo": "H"
+    // }
   const [modoEdicion, setModoEdicion] = useState(false);
-  const [datosFamiliar, setDatosFamiliar] = useState({
-    nombre: 'Chili',
-    especie: 'Perro',
-    raza: 'callejero',
-    tamanio: 'grande',
-    colores: 'tricolor',
-    fechanac: '14/04/2021',
-    observaciones: 'compañero y sociable',
-    sexo: 'macho',
-    esterilizado: true,
-    identificado: false,
-    domicilio: 'Puerto español 844'
-  });
+  // const [datosFamiliar, setDatosFamiliar] = useState({
+  //   nombre: 'Chili',
+  //   especie: 'Perro',
+  //   raza: 'callejero',
+  //   tamanio: 'grande',
+  //   colores: 'tricolor',
+  // identificado: false,
+  //   domicilio: 'Puerto español 844'
+  //   fechanac: '14/04/2021',
+  //   observaciones: 'compañero y sociable',
+  //   sexo: 'macho',
+  //   esterilizado: true,
+  //   identificado: false,
+  //   domicilio: 'Puerto español 844'
+  // });
   
   const {width} = Dimensions.get('screen')
   const [foto, setFoto] = useState<string | null>('https://static.fundacion-affinity.org/cdn/farfuture/PVbbIC-0M9y4fPbbCsdvAD8bcjjtbFc0NSP3lRwlWcE/mtime:1643275542/sites/default/files/los-10-sonidos-principales-del-perro.jpg');

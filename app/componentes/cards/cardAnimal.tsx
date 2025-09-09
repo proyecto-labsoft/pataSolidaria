@@ -5,7 +5,7 @@ import { ImageSlider } from '../../testData/sliderData';
 import { differenceInMinutes, differenceInHours, differenceInDays, isToday } from "date-fns";
 interface Props {
     data: {
-        nombre: string,
+        nombreMascota: string,
         especie: string,
         tipo: 'perdido' | 'avistado' // Tipo de collar, perdido o avistado
         ultimoAvistamiento: Date // Fecha del último avistamiento
@@ -22,15 +22,29 @@ function Collar({ nombre,tipo}: { nombre: string, tipo: 'perdido' | 'avistado' }
         <View style={styles.collarContainer}>
             <View style={{...styles.collarBar,backgroundColor: theme.colors.primary}}>
                 <View style={{...styles.collarBuckle, backgroundColor: theme.colors.onPrimary,borderColor: theme.colors.primary}}>
-                    <Text style={{...styles.collarText, color: theme.colors.primary}} variant='labelLarge' numberOfLines={1}>{tipo === 'perdido' ? "Perdido" : "Avistado"}</Text>
+                    <Text style={{...styles.collarText, color: theme.colors.primary}} variant='labelLarge' numberOfLines={1}>
+                        {tipo === 'perdido' ? "Perdido" : "Avistado"}
+                    </Text>
                 </View>
             </View>
         </View>
     );
 }
 
+// TODO:
+// (1*) Tener todo los avistamientos de este animal y mostrar el más reciente
 export default function CardAnimal({ data, navigateTo }: Props) {
 
+    console.log("CardAnimal",data)
+    // {
+    //     "atencionMedica": true, 
+    //     "hora": "2025-08-26T18:45:00", 
+    //     "mascotaId": 1, 
+    //     "nombreMascota": "Max", 
+    //     "observacion": "Lleva collar rojo con placa de identificación", 
+    //     "resuelto": null, 
+    //     "zona": "Plaza Mayor"
+    // }
     const theme = useTheme();
     const navigation = useNavigation();
     const randomImage = ImageSlider[0].imagenes[Math.floor(Math.random() * ImageSlider[0].imagenes.length)];
@@ -50,10 +64,10 @@ export default function CardAnimal({ data, navigateTo }: Props) {
                     },
                 ]}
             >
-                <Collar nombre={data.nombre} tipo={data?.tipo} />
+                <Collar nombre={data.nombreMascota} tipo={data?.tipo} />
                 <Card.Cover style={styles.fotoAnimal} source={randomImage} />
                 {(() => {
-                    const avistamientoDate = new Date(data.ultimoAvistamiento);
+                    const avistamientoDate = new Date(data.ultimoAvistamiento);// (1*)
                     const now = new Date();
 
                     let info = "";
@@ -73,7 +87,7 @@ export default function CardAnimal({ data, navigateTo }: Props) {
                     return (
                         <Card.Title
                             title={info}
-                            subtitle={data.tipo === 'perdido' ? `${data.nombre} - ${data.especie}` : `${data.estado} - ${data.especie}`}
+                            subtitle={data.tipo === 'perdido' ? `${data.nombreMascota} - ${data.especie}` : `${data.estado} - ${data.especie}`}
                             titleVariant="labelSmall"
                             titleStyle={{ color: theme.colors.primary }}
                             subtitleStyle={{ color: theme.colors.primary }}

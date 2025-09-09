@@ -1,22 +1,123 @@
 import { rutas } from "./api.rutas";
 import { useDelete, useGet, usePost, usePut } from "./reactQueryHooks";
 
-export function useApiGetExtravios({parametros, ...opciones }) {
-    return (useGet(
-        {
-        nombreHook: "useApiGetExtravios",      
-        url: rutas.mascotaPorId,
-        params: parametros,
-        configuracion: {
-            meta: {
-            habilitarExito: false,
-            habilitarError: false,
-            habilitarAdvertencia: false,
-            },
-            ...opciones
-        },  
-    }))
+// Usuarios
+export function useApiGetUsuarioPorId({ id, ...opciones }) {
+    return useGet({
+        nombreHook: "useApiGetUsuarioPorId",
+        url: rutas.usuarioPorId,
+        configuracion: { ...opciones }
+    });
 }
+
+export function useApiPostCrearUsuario({ body, ...opciones }) {
+    return usePost({
+        nombreHook: "useApiPostCrearUsuario",
+        url: rutas.crearUsuario,
+        body,
+        configuracion: { ...opciones }
+    });
+}
+
+
+// Mascotas
+export function useApiGetMascotaPorId({ id, ...opciones }) {
+    return useGet({
+        nombreHook: "useApiGetMascotaPorId",
+        url: rutas.mascotaPorId.replace("{id}", id),
+        configuracion: { ...opciones }
+    });
+}
+
+export function useApiGetMascotasPorUsuario({ parametros, ...opciones }) {
+    return useGet({
+        nombreHook: "useApiGetMascotasPorUsuario",
+        url: rutas.mascotasPorUsuario,
+        params: parametros,
+        configuracion: { ...opciones }
+    });
+}
+
+export function useApiPostRegistrarMascota({ body, ...opciones }) {
+    return usePost({
+        nombreHook: "useApiPostRegistrarMascota",
+        url: rutas.registrarMascota,
+        body,
+        configuracion: { ...opciones }
+    });
+}
+
+export function useApiPutActualizarMascota({ id, body, ...opciones }) {
+    return usePut({
+        nombreHook: "useApiPutActualizarMascota",
+        url: rutas.mascotaPorId,
+        body,
+        configuracion: { ...opciones }
+    });
+}
+
+// Adopciones
+export function useApiGetAdopciones({ ...opciones }) {
+    return useGet({
+        nombreHook: "useApiGetAdopciones",
+        url: rutas.listarAdopciones,
+        configuracion: { ...opciones }
+    });
+}
+
+export function useApiPostCrearAdopcion({ body, ...opciones }) {
+    return usePost({
+        nombreHook: "useApiPostCrearAdopcion",
+        url: rutas.crearAdopcion,
+        body,
+        configuracion: { ...opciones }
+    });
+}
+
+// Extravíos
+export function useApiGetExtravios({ ...opciones }) {
+    return useGet({
+        nombreHook: "useApiGetExtravios",
+        url: rutas.extravios,
+        configuracion: { ...opciones }
+    });
+}
+
+export function useApiGetExtraviosPorUsuario({ ...opciones }) {
+    return useGet({
+        nombreHook: "useApiGetExtraviosPorUsuario",
+        url: rutas.extraviosPorUsuario,
+        configuracion: { ...opciones }
+    });
+}
+
+export function useApiPostRegistrarExtravio({ body, ...opciones }) {
+    return usePost({
+        nombreHook: "useApiPostRegistrarExtravio",
+        url: rutas.registrarExtravio,
+        body,
+        configuracion: { ...opciones }
+    });
+}
+
+// Postulaciones
+export function useApiGetPostulacionPorId({ id, ...opciones }) {
+    return useGet({
+        nombreHook: "useApiGetPostulacionPorId",
+        url: rutas.listarPostulaciones,
+        configuracion: { ...opciones }
+    });
+}
+
+export function useApiPostCrearPostulacion({ body, ...opciones }) {
+    return usePost({
+        nombreHook: "useApiPostCrearPostulacion",
+        url: rutas.crearPostulacion,
+        body,
+        configuracion: { ...opciones }
+    });
+}
+
 
 // export function useApiGetTransporteLicenciaPorDominio({ parametros, ...opciones }) {
 //   return (useGet(

@@ -1,37 +1,42 @@
-import { ScrollView, View } from "react-native";
+import { FlatList, ScrollView, View } from "react-native";
 import CardAnimal from "../componentes/cards/cardAnimal";
 import DescripcionVista from "../componentes/descripcionVista";
+import { useApiGetAdopciones } from "../api/hooks";
 
 export default function VistaAdopciones() {
   
+  const {data: adopciones, isFetching } = useApiGetAdopciones({enabled: true }) 
+
+  // Agrupa los datos de a dos por fila
+  const adopcionesPorFila = Array.isArray(adopciones)
+    ? Array.from({ length: Math.ceil(adopciones.length / 2) }, (_, idx) =>
+        adopciones.slice(idx * 2, idx * 2 + 2)
+      )
+    : [];
+
   return (
     <View  style={{height: '100%'}}>
         <DescripcionVista texto="Compañeros en adopción bajo el cuidado de la asociación" />
-        <ScrollView
-          contentContainerStyle={{justifyContent:'center', alignItems: "flex-start"}}
-        >
-          <View style={{flexDirection: 'row', width: '100%'}}>
-            <CardAnimal navigateTo="Familiar" data={{nombre: 'Chili', especie: 'Canino'}} />
-            <CardAnimal navigateTo="Familiar" data={{nombre: 'Duque', especie: 'Canino'}} />
-            
-          </View>
-          <View style={{flexDirection: 'row', width: '100%'}}>
-            <CardAnimal navigateTo="Familiar" data={{nombre: 'Draco', especie: 'Canino'}} />
-            <CardAnimal navigateTo="Familiar" data={{nombre: 'Sur', especie: 'Felino'}} />
-          </View>
-          <View style={{flexDirection: 'row', width: '100%'}}>
-            <CardAnimal navigateTo="Familiar" data={{nombre: 'Draco', especie: 'Canino'}} />
-            <CardAnimal navigateTo="Familiar" data={{nombre: 'Sur', especie: 'Felino'}} />
-          </View>
-          <View style={{flexDirection: 'row', width: '100%'}}>
-            <CardAnimal navigateTo="Familiar" data={{nombre: 'Draco', especie: 'Canino'}} />
-            <CardAnimal navigateTo="Familiar" data={{nombre: 'Sur', especie: 'Felino'}} />
-          </View>
-          <View style={{flexDirection: 'row', width: '100%'}}>
-            <CardAnimal navigateTo="Familiar" data={{nombre: 'Draco', especie: 'Canino'}} />
-            <CardAnimal navigateTo="Familiar" data={{nombre: 'Sur', especie: 'Felino'}} />
-          </View>
-        </ScrollView>
+        <FlatList
+          data={adopcionesPorFila}
+          keyExtractor={(_, idx) => idx.toString()}
+          contentContainerStyle={{ justifyContent: 'center', alignItems: "flex-start", paddingBottom: 80 }}
+          renderItem={({ item }) => (
+            <View style={{ flexDirection: 'row', width: '100%' }}>
+              <CardAnimal navigateTo="Familiar" data={item[0]} />
+              {item[1] ? (
+                <CardAnimal navigateTo="Familiar" data={item[1]} />
+              ) : (
+                <View style={{ flex: 1 }} />
+              )}
+            </View>
+          )}
+          ListEmptyComponent={
+            isFetching
+              ? <View style={{ alignSelf: 'center', marginTop: 20 }}><CardAnimal navigateTo="Familiar" data={{ nombreMascota: 'Cargando...', especie: '' }} /></View>
+              : <View style={{ alignSelf: 'center', marginTop: 20 }}><CardAnimal navigateTo="Familiar" data={{ nombreMascota: 'Sin datos', especie: '' }} /></View>
+          }
+        />
     </View>
   );
 }

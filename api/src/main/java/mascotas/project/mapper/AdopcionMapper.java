@@ -8,12 +8,15 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface AdopcionMapper {
 
-    @Mapping(target="mascota.id", source="adopcionDTO.mascotaId")
-    @Mapping(target="administrador.id", source="adopcionDTO.publicador")
+    @Mapping(target="mascota.id", source="adopcionDTO.mascotaID")
+    @Mapping(target="administrador.id", source="adopcionDTO.publicadorID")
     Adopcion toEntity (AdopcionDTO adopcionDTO);
 
-
-    /*@Mapping(target="mascotaId", source="mascota.id")
-    @Mapping(target="publicador", source="administrador.id")
-    AdopcionDTO toDto (Adopcion adopcionEntity);*/
+    @Mapping(target="publicadorID", source="administrador.id")
+    @Mapping(target="publicadorContacto", source="administrador.celular")
+    @Mapping(target="publicadorNombre", source="administrador.nombre")
+    @Mapping(target="mascotaID", source="mascota.id")
+    @Mapping(target="nombreCompaniero", source="mascota.nombre")
+    @Mapping(target="esterilizado", source="mascota.esterilizado")
+    AdopcionDTO toDto (Adopcion adopcionEntity);
 }

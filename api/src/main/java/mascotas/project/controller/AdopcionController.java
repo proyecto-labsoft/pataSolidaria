@@ -26,8 +26,10 @@ public class AdopcionController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Adopcion>> getAllAdopciones(){
-        List<Adopcion> adopciones = adopcionService.findAll();
+    public ResponseEntity<Object> getAllAdopciones(){
+
+        List<AdopcionDTO> adopciones = adopcionService.getAdopciones();
+
         return  ResponseEntity.ok().body(adopciones);
     }
 }

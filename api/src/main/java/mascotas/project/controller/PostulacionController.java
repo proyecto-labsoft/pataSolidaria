@@ -30,8 +30,8 @@ public class PostulacionController {
         return  ResponseEntity.ok().body(postulacion);
     }
 
-    @GetMapping(value =  "/{id}")
-    public ResponseEntity<List<PostulacionDTO>> postualcionesByUsuarioId(@PathVariable(name = "id", required = true) Long idUsuario){
+    @GetMapping(value =  "/user/{id}")
+    public ResponseEntity<Object> postualcionesByUsuarioId(@PathVariable(name = "id", required = true) Long idUsuario){
 
         List<PostulacionDTO> postulaciones = postulacionService.getAllPostulacionesByUsuario(idUsuario);
 

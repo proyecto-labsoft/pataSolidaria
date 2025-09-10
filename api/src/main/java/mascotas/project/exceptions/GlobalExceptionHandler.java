@@ -75,7 +75,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({NoContentException.class})
-    public ResponseEntity<ErrorResponse> handleBadNoContentException(NoContentException ex, HttpServletRequest request) {
+    public ResponseEntity<ErrorResponse> handleNoContentException(NoContentException ex, HttpServletRequest request) {
 
         log.info("Global_Exception_Handler: Handling NoContentException");
 
@@ -87,7 +87,7 @@ public class GlobalExceptionHandler {
                 .path(this.buildPathWithQueryParams(request))
                 .build();
 
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(errorBody);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorBody);
     }
 
     private String buildPathWithQueryParams(HttpServletRequest request) {

@@ -1,4 +1,9 @@
 spring:
+  springdoc:
+    api-docs:
+      enabled = true
+    swagger-ui:
+      enabled = true
   config:
     activate:
       on-profile: local

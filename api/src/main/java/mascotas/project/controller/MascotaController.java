@@ -1,6 +1,9 @@
 package mascotas.project.controller;
 
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mascotas.project.dto.MascotaDTODetalle;
@@ -16,31 +19,54 @@ import java.util.List;
 @RequestMapping("/mascotas")
 @Slf4j
 @AllArgsConstructor
+@Tag(name= "Mascotas", description = "Servicios relacionados a compañeros")
 public class MascotaController {
 
     private MascotaService mascotaService;
 
     @PostMapping
+    @Operation(
+            operationId = "saveMascota",
+            summary = "Persiste una nueva mascota",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Datos para la nueva mascota")
+    )
     public ResponseEntity<MascotaDTOSaveSucces> saveMascota(@RequestBody MascotaDTORequest mascotaDTORequest){
         MascotaDTOSaveSucces mascota = mascotaService.saveMascota(mascotaDTORequest);
         return  ResponseEntity.ok().body(mascota);
     }
 
-    @PutMapping(value = "/{id}")
-    public ResponseEntity<MascotaDTOSaveSucces> editMascota(@RequestBody MascotaDTORequest mascotaDTORequest){
+    /*@PutMapping(value = "/{id}")
+    @Operation(
+            operationId = "putMascota",
+            summary = "Modifica una mascota existente",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Datos de la mascota"),
+            parameters = {@Parameter(name="id", description = "Id de la mascota", example = "1", required = true)}
+    )
+    public ResponseEntity<MascotaDTOSaveSucces> editMascota(@PathVariable(name="id", required = true) Long,
+                                                            @RequestBody MascotaDTORequest mascotaDTORequest){
         MascotaDTOSaveSucces mascota = mascotaService.saveMascota(mascotaDTORequest);
         return  ResponseEntity.ok().body(mascota);
-    }
+    }*/
 
 
     @GetMapping(value = "/{id}")
+    @Operation(
+            operationId = "getMascota",
+            summary = "Obtiene mascota existente",
+            parameters = {@Parameter(name="id", description = "Id de la mascota", example = "1", required = true)}
+    )
     public ResponseEntity<MascotaDTODetalle> getMascotabyID(@PathVariable(name="id", required = true) Long idMascota){
         MascotaDTODetalle mascota = mascotaService.getMascotaById(idMascota);
         return ResponseEntity.ok().body(mascota);
     }
 
-    @GetMapping(value = "/user/{userId}")
-    public ResponseEntity<List<MascotaDTODetalle>> getMascotasByFamiliarId(@PathVariable(name="userId", required = true) Long idUser){
+    @GetMapping(value = "/user/{id}")
+    @Operation(
+            operationId = "getMascotasByFamiliarId",
+            summary = "Obtiene listado de mascotas por usuario ID",
+            parameters = {@Parameter(name="id", description = "Id del familiar", example = "1", required = true)}
+    )
+    public ResponseEntity<List<MascotaDTODetalle>> getMascotasByFamiliarId(@PathVariable(name="id", required = true) Long idUser){
         List<MascotaDTODetalle> mascota = mascotaService.getMascotasByFamiliarId(idUser);
         return ResponseEntity.ok().body(mascota);
     }

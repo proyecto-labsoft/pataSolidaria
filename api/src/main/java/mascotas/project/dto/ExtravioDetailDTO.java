@@ -23,4 +23,5 @@ public class ExtravioDetailDTO {
     private String observacion;
     private Boolean atencionMedica;
     private Boolean resuelto;
+    //private MascotaDTODetalle mascotaDetalle;
 }

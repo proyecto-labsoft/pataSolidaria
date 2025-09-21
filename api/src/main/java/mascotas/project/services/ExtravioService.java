@@ -22,8 +22,8 @@ import java.util.Optional;
 @AllArgsConstructor
 public class ExtravioService {
 
-    private UsuarioRepository usuarioRepository;
-    private MascotaRepository mascotaRepository;
+    private UsuarioService usuarioService;
+    private MascotaService mascotaService;
     private ExtravioMapper extravioMapper;
     private ExtravioRepository extravioRepository;
 
@@ -34,21 +34,9 @@ public class ExtravioService {
                 .map(
                     extravioDTO -> {
                             //busco la mascota
-                            mascotaRepository.findById(extravioDTO.getMascotaId())
-                                                .map(
-                                                        mascota -> {
-                                                            log.info("SAVE_EXTRAVIO :Mascota id {}, nombre {}", mascota.getId(), mascota.getNombre());
-                                                            return mascota;
-                                                })
-                                             .orElseThrow( () -> new NotFoundException(ErrorsEnums.MASCOTA_NOT_FOUND.getDescription() + extravioDTO.getMascotaId() ));
-
+                            mascotaService.getMascotaEntityById(extravioDTO.getMascotaId());
                             //busco el usuario
-                            usuarioRepository.findById(extravioDto.getCreador())
-                                                .map(usuario -> {
-                                                            log.info("SAVE_EXTRAVIO :Usuario id {}, nombre {}", usuario.getId(), usuario.getNombre());
-                                                            return usuario;
-                                                })
-                                             .orElseThrow( () -> new NotFoundException(ErrorsEnums.USUARIO_NOT_FOUND.getDescription() + extravioDto.getCreador()));
+                            usuarioService.getUsuarioById(extravioDTO.getCreador());
 
                            return extravioMapper.toEntity(extravioDto); //mapeo el dto
                     }
@@ -70,8 +58,7 @@ public class ExtravioService {
                 .map(
                         usuario ->{
 
-                            usuarioRepository.findById(usuario)
-                                    .orElseThrow( () -> new NotFoundException(ErrorsEnums.USUARIO_NOT_FOUND.getDescription() + usuarioId));
+                            usuarioService.getUsuarioById(usuarioId);
 
                             return extravioRepository.findAllByCreador(usuarioId);
                         }

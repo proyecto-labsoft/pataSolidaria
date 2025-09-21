@@ -62,18 +62,18 @@
 			<version>${org.mapstruct.version}</version>
 		</dependency>
 
-		<!--<dependency>
-			<groupId>org.mapstruct</groupId>
-			<artifactId>mapstruct-processor</artifactId>
-			<version>${org.mapstruct.version}</version>
-			<scope>provided</scope>
-		</dependency>-->
-
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>42.6.0</version> <!-- Verifica la última versión en Maven Central -->
 		</dependency>
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.5.0</version> <!-- Use the latest stable version -->
+        </dependency>
+
 	</dependencies>
 
 	<build>

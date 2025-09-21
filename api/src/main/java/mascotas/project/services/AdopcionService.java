@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mascotas.project.Enums.ErrorsEnums;
 import mascotas.project.dto.AdopcionDTO;
+import mascotas.project.dto.AdopcionDetailDTO;
 import mascotas.project.entities.Adopcion;
 import mascotas.project.entities.Mascota;
 import mascotas.project.exceptions.BadRequestException;
@@ -26,6 +27,7 @@ public class AdopcionService {
     private AdopocionRepository adopcionRepository;
     private AdopcionMapper adopcionMapper;
     private MascotaRepository mascotaRepository;
+    private MascotaService mascotaService;
 
     @Transactional
     public Adopcion saveAdopcion(AdopcionDTO adopcionDtoRequest) {
@@ -33,10 +35,7 @@ public class AdopcionService {
                     .map(
                         dto -> {
                             //verifico que el animal exista
-                           Mascota mascota = mascotaRepository.findById(dto.getMascotaID())
-                                                              .orElseThrow(
-                                                                    () -> new NotFoundException(ErrorsEnums.MASCOTA_NOT_FOUND.getDescription() + dto.getMascotaID())
-                                                              );
+                           Mascota mascota = mascotaService.getMascotaEntityById(dto.getMascotaID());
 
                             //verifico que el publicador sea familiar del animal
                             return Optional.of(mascota)
@@ -53,13 +52,13 @@ public class AdopcionService {
     }
 
 
-    public List<AdopcionDTO> getAdopciones() {
+    public List<AdopcionDetailDTO> getAdopciones() {
 
         List<Adopcion> adopcionesEntity = adopcionRepository.findAll();
 
         return Optional.of(adopcionesEntity)
                         .filter(adopciones -> !adopcionesEntity.isEmpty())
-                       .map(  adopciones -> adopciones.stream().map(adopcionMapper::toDto).toList())
+                       .map(  adopciones -> adopciones.stream().map(adopcionMapper::toDetailDto).toList())
                        .orElseThrow( () -> new NoContentException(ErrorsEnums.NO_CONTENT_ERROR.getDescription()) );
     }
 

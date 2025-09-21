@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mascotas.project.dto.AdopcionDTO;
+import mascotas.project.dto.AdopcionDetailDTO;
 import mascotas.project.entities.Adopcion;
 import mascotas.project.services.AdopcionService;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +40,7 @@ public class AdopcionController {
     )
     public ResponseEntity<Object> getAllAdopciones(){
 
-        List<AdopcionDTO> adopciones = adopcionService.getAdopciones();
+        List<AdopcionDetailDTO> adopciones = adopcionService.getAdopciones();
 
         return  ResponseEntity.ok().body(adopciones);
     }

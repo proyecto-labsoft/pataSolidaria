@@ -52,6 +52,13 @@ public class MascotaService {
     }
 
 
+    public Mascota getMascotaEntityById(Long id){
+
+        return mascotaRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(ErrorsEnums.MASCOTA_NOT_FOUND.getDescription() + id));
+    }
+
+
     public List<MascotaDTODetalle> getMascotasByFamiliarId(Long usuarioId){
 
        usuarioRepository.findById(usuarioId)

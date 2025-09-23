@@ -1,7 +1,10 @@
 package mascotas.project.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
+import mascotas.project.Enums.SexoEnum;
+
 import java.time.LocalDate;
 
 @AllArgsConstructor
@@ -28,8 +31,9 @@ public class Mascota {
     @Column(nullable = false)
     private String raza;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 1)
-    private String sexo;
+    private SexoEnum sexo;
 
     @Column(nullable = true)
     private String color;
@@ -38,7 +42,8 @@ public class Mascota {
     private String descripcion;
 
     @Column(name = "f_naciemiento", nullable = true)
-    private LocalDate fNacimiento;
+    @JsonFormat(pattern="dd-MM-yyyy")
+    private LocalDate fechaNacimiento;
 
     @Column(nullable = true)
     private Boolean esterilizado;

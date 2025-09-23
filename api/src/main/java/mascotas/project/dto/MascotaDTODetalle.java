@@ -2,7 +2,9 @@ package mascotas.project.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
+import mascotas.project.Enums.SexoEnum;
 
 import java.time.LocalDate;
 
@@ -16,11 +18,15 @@ public class MascotaDTODetalle {
     private String nombre;
     private String especie;
     private String raza;
-    private Character sexo;
     private String color;
     private String descripcion;
-    @JsonFormat(pattern="dd-MM-yyyy")
-    private LocalDate fechaNacimiento;
     private Boolean esterilizado;
     private Boolean chipeado;
+
+    @Schema(description = "Sexo de la mascota", example = "M", allowableValues = {"M", "H"})
+    private SexoEnum sexo;
+
+    @Schema(type = "string", example = "23-09-2025")
+    @JsonFormat(pattern="dd-MM-yyyy")
+    private LocalDate fechaNacimiento;
 }

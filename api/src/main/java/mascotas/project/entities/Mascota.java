@@ -3,6 +3,8 @@ package mascotas.project.entities;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
+import mascotas.project.Enums.SexoEnum;
+
 import java.time.LocalDate;
 
 @AllArgsConstructor
@@ -29,8 +31,9 @@ public class Mascota {
     @Column(nullable = false)
     private String raza;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 1)
-    private Character sexo;
+    private SexoEnum sexo;
 
     @Column(nullable = true)
     private String color;

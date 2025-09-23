@@ -1,5 +1,6 @@
 package mascotas.project.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,5 +32,6 @@ public class Postulacion {
     private Adopcion adopcion;
 
     @Column(nullable = false)
+    @JsonFormat(pattern="dd-MM-yyyy")
     private LocalDate fecha;
 }

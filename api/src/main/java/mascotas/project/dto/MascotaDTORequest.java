@@ -1,6 +1,7 @@
 package mascotas.project.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -8,18 +9,18 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Getter
-@Setter
+@Data
 public class MascotaDTORequest {
 
     private Long familiarId;
     private String nombre;
     private String especie;
     private String raza;
-    private String sexo;
+    private Character sexo;
     private String color;
     private String descripcion;
-    private LocalDate fNacimiento;
+    @JsonFormat(pattern="dd-MM-yyyy")
+    private LocalDate fechaNacimiento;
     private Boolean esterilizado;
     private Boolean chipeado;
 

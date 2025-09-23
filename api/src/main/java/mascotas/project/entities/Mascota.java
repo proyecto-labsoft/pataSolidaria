@@ -1,5 +1,6 @@
 package mascotas.project.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
@@ -29,7 +30,7 @@ public class Mascota {
     private String raza;
 
     @Column(nullable = false, length = 1)
-    private String sexo;
+    private Character sexo;
 
     @Column(nullable = true)
     private String color;
@@ -38,7 +39,8 @@ public class Mascota {
     private String descripcion;
 
     @Column(name = "f_naciemiento", nullable = true)
-    private LocalDate fNacimiento;
+    @JsonFormat(pattern="dd-MM-yyyy")
+    private LocalDate fechaNacimiento;
 
     @Column(nullable = true)
     private Boolean esterilizado;

@@ -13,7 +13,6 @@ import mascotas.project.exceptions.NotFoundException;
 import mascotas.project.mapper.MascotaMapper;
 import mascotas.project.repositories.MascotaRepository;
 import mascotas.project.repositories.UsuarioRepository;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 import java.util.List;
 

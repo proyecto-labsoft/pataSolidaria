@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 import mascotas.project.Enums.SexoEnum;
+import mascotas.project.Enums.TamanioEnum;
 
 import java.time.LocalDate;
 
@@ -34,6 +35,10 @@ public class Mascota {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 1)
     private SexoEnum sexo;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 255)
+    private TamanioEnum tamanio;
 
     @Column(nullable = true)
     private String color;

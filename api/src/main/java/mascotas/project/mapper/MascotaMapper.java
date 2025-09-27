@@ -9,8 +9,12 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface MascotaMapper {
 
-    @Mapping(source = "familiarId", target = "familiar.id")
+    @Mapping(target = "familiar.id", source = "familiarId")
     Mascota toEntity(MascotaDTORequest dtoRequest);
+
+    @Mapping(target = "familiar.id", source = "dtoRequest.familiarId")
+    @Mapping(target = "id", source = "idMascota")
+    Mascota toEntity(MascotaDTORequest dtoRequest, Long idMascota);
 
     MascotaDTODetalle toDTO(Mascota mascota);
 }

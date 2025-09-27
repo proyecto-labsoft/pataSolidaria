@@ -12,7 +12,6 @@ import mascotas.project.entities.Mascota;
 import mascotas.project.exceptions.NotFoundException;
 import mascotas.project.mapper.MascotaMapper;
 import mascotas.project.repositories.MascotaRepository;
-import mascotas.project.repositories.UsuarioRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -22,15 +21,14 @@ import java.util.List;
 public class MascotaService {
 
     private MascotaRepository mascotaRepository;
-    private UsuarioRepository usuarioRepository;
+    private UsuarioService usuarioService;
     private MascotaMapper mascotaMapper;
 
 
     @Transactional
     public MascotaDTOSaveSucces saveMascota(MascotaDTORequest mascotaDTORequest){
 
-        usuarioRepository.findById(mascotaDTORequest.getFamiliarId())
-                         .orElseThrow( () -> new NotFoundException(ErrorsEnums.USUARIO_NOT_FOUND.getDescription() + mascotaDTORequest.getFamiliarId() ) );
+        usuarioService.getUsuarioById(mascotaDTORequest.getFamiliarId());
 
         Mascota mascota = mascotaMapper.toEntity(mascotaDTORequest);
         mascota = mascotaRepository.save(mascota);
@@ -42,10 +40,27 @@ public class MascotaService {
                                    .build();
     }
 
+    @Transactional
+    public MascotaDTOSaveSucces putMascota(Long idMascota, MascotaDTORequest mascotaDTORequest){
+
+        this.getMascotaEntityById(idMascota);
+        usuarioService.getUsuarioById(mascotaDTORequest.getFamiliarId());
+
+        Mascota mascota = mascotaMapper.toEntity(mascotaDTORequest, idMascota);
+
+        mascotaRepository.save(mascota);
+
+        return MascotaDTOSaveSucces.builder()
+                .id(mascota.getId())
+                .nombre(mascota.getNombre())
+                .familiarId(mascota.getFamiliar().getId())
+                .build();
+
+    }
+
     public MascotaDTODetalle getMascotaById(Long id){
 
-        Mascota mascota = mascotaRepository.findById(id)
-                                           .orElseThrow(() -> new NotFoundException(ErrorsEnums.MASCOTA_NOT_FOUND.getDescription() + id));
+        Mascota mascota = this.getMascotaEntityById(id);
 
         return mascotaMapper.toDTO(mascota);
     }
@@ -60,14 +75,20 @@ public class MascotaService {
 
     public List<MascotaDTODetalle> getMascotasByFamiliarId(Long usuarioId){
 
-       usuarioRepository.findById(usuarioId)
-                        .orElseThrow(() -> new NotFoundException(ErrorsEnums.USUARIO_NOT_FOUND.getDescription() + usuarioId ) );
+        usuarioService.getUsuarioById(usuarioId);
 
         return mascotaRepository.findByFamiliarId(usuarioId)
                                 .stream()
                                 .map(mascotaMapper::toDTO)
                                 .toList();
     }
+
+    @Transactional
+    public void deleteCompaniero(Long id) {
+        this.getMascotaEntityById(id);
+        mascotaRepository.deleteById(id);
+    }
+
 
     //implementar servicio para declarar a la mascota perdida
 

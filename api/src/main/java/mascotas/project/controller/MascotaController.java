@@ -35,19 +35,19 @@ public class MascotaController {
         return  ResponseEntity.ok().body(mascota);
     }
 
-    /*@PutMapping(value = "/{id}")
+    @PutMapping(value = "/{id}")
     @Operation(
             operationId = "putMascota",
             summary = "Modifica una mascota existente",
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Datos de la mascota"),
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Datos de la mascota a modificar"),
             parameters = {@Parameter(name="id", description = "Id de la mascota", example = "1", required = true)}
     )
-    public ResponseEntity<MascotaDTOSaveSucces> editMascota(@PathVariable(name="id", required = true) Long,
-                                                            @RequestBody MascotaDTORequest mascotaDTORequest){
-        MascotaDTOSaveSucces mascota = mascotaService.saveMascota(mascotaDTORequest);
-        return  ResponseEntity.ok().body(mascota);
-    }*/
+    public ResponseEntity<MascotaDTOSaveSucces> editMascota( @PathVariable(name="id", required = true) Long id ,
+                                                             @RequestBody MascotaDTORequest mascotaDTORequest){
 
+        MascotaDTOSaveSucces mascota = mascotaService.putMascota(id, mascotaDTORequest);
+        return  ResponseEntity.ok().body(mascota);
+    }
 
     @GetMapping(value = "/{id}")
     @Operation(
@@ -71,4 +71,14 @@ public class MascotaController {
         return ResponseEntity.ok().body(mascota);
     }
 
+    @DeleteMapping(value = "/{id}")
+    @Operation(
+            operationId = "deleteMascota",
+            summary = "Elimina una mascota existente",
+            parameters = {@Parameter(name="id", description = "Id de la mascota a eliminar", example = "1", required = true)}
+    )
+    public ResponseEntity<Void> deleteMascota (@PathVariable(name="id", required = true) Long id ){
+        mascotaService.deleteCompaniero(id);
+        return  ResponseEntity.noContent().build();
+    }
 }

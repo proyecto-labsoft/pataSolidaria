@@ -9,7 +9,7 @@ import lombok.*;
 @Setter
 public class UsuarioDTO {
 
-    private Integer id;
+    private Long id;
     private String nombre;
     private Integer celular;
     private String email;

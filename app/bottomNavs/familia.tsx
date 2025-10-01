@@ -1,17 +1,25 @@
+import React from "react";
 import { FlatList, ScrollView, View } from "react-native";
 import { Divider,useTheme, Button, Text } from 'react-native-paper'
 import CardFamiliar from "../componentes/cards/cardFamiliar";
 import CardUsuario from "../componentes/cards/cardUsuarios";
 import DescripcionVista from "../componentes/descripcionVista";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useApiGetMascotasPorUsuario } from "../api/hooks";
 
 export default function VistaFamilia() {
   const theme = useTheme(); 
   const navigation = useNavigation();
 
-  const {data:familiares, isFetching } = useApiGetMascotasPorUsuario({enabled: true, parametros: {idUsuario: 2}}) 
+  const {data:familiares, isFetching, refetch } = useApiGetMascotasPorUsuario({ parametros: {idUsuario: 2}}) 
 
+  
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     refetch();
+  //   }, [])
+  // );
+  // console.log("#### VistaFamilia #### familiares:",familiares)
   return (
       
         <View style={{ flex: 1, marginTop: 20 }}>

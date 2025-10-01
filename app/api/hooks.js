@@ -21,10 +21,11 @@ export function useApiPostCrearUsuario({ body, ...opciones }) {
 
 
 // Mascotas
-export function useApiGetMascotaPorId({ id, ...opciones }) {
+export function useApiGetMascotaPorId({ params, ...opciones }) {
     return useGet({
         nombreHook: "useApiGetMascotaPorId",
-        url: rutas.mascotaPorId.replace("{id}", id),
+        url: rutas.mascotaPorId,
+        params,
         configuracion: { ...opciones }
     });
 }
@@ -42,16 +43,15 @@ export function useApiPostRegistrarMascota({ ...opciones }) {
     return usePost({
         nombreHook: "useApiPostRegistrarMascota",
         url: rutas.registrarMascota,
-        configuracion: { ...opciones }
+        configuracion: { ...opciones, queriesToInvalidate: ['useApiGetMascotasPorUsuario', { idUsuario: 2 }] }
     });
 }
 
-export function useApiPutActualizarMascota({ id, body, ...opciones }) {
+export function useApiPutActualizarMascota({ ...opciones }) { 
     return usePut({
         nombreHook: "useApiPutActualizarMascota",
-        url: rutas.mascotaPorId,
-        body,
-        configuracion: { ...opciones }
+        url: rutas.mascotaPorId, 
+        configuracion: { ...opciones, queriesToInvalidate:['useApiGetMascotasPorUsuario', { idUsuario: 2 }] }
     });
 }
 

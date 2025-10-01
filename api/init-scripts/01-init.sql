@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS companiero (
     f_naciemiento DATE,
     esterilizado BOOLEAN,
     chipeado BOOLEAN,
+    tamanio VARCHAR(255) NOT NULL,
     familiar BIGINT NOT NULL REFERENCES usuario(id)
 );
 

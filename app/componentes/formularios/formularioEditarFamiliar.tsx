@@ -18,8 +18,8 @@ interface Props {
         observaciones?: string,
         sexo?: string,
         esterilizado?: boolean,
-        identificado?: boolean,
-        domicilio?: string
+        chipeado?: boolean,
+        // domicilio?: string
     }
 }
 export default function FormularioEditarFamiliar({data, onCancel, onSubmit} : Props) {
@@ -29,14 +29,14 @@ export default function FormularioEditarFamiliar({data, onCancel, onSubmit} : Pr
         defaultValues: data || {}
     });
     const esterilizado = watch('esterilizado');
-    const identificado = watch('identificado');
+    const chipeado = watch('chipeado');
     
     return(
-        <View style={{width:'100%',gap:20,justifyContent: 'center'}}>
+        <View style={{width:'100%',gap:20,justifyContent: 'center'}}> 
             <CampoTexto
                 control={control}
                 label="Nombre"
-                nombre="nombreCompaniero"
+                nombre="nombre"
             />
             <CampoFecha
                 label="Fecha de nacimiento"
@@ -67,24 +67,24 @@ export default function FormularioEditarFamiliar({data, onCancel, onSubmit} : Pr
                 <CampoTexto
                     control={control}
                     label="Colores"
-                    nombre="colores"
+                    nombre="color"
                 />
                 
                 <CampoSelectorModal
                     control={control}
                     label="Tamaño"
                     nombre="tamanio"
-                    opciones={['Gigante','Grande','Mediano','Pequeño']}
+                    opciones={['Muy grande','Grande','Mediano','Pequeño']}
                 />
                 
                 <CampoTextoArea
                     control={control}
                     label="Descripción adicional"
-                    nombre="observaciones"
+                    nombre="descripcion"
                 />
             </View>
 
-            <View style={{justifyContent:'center',alignContent:'center',gap:10,marginTop: 20}}>
+            {/* <View style={{justifyContent:'center',alignContent:'center',gap:10,marginTop: 20}}>
                 <Text style={{textAlign:'center',width:'100%'}} variant="headlineSmall">Domicilio</Text>
                 <Divider style={{marginBottom: 20 , width: "90%", alignSelf: 'center'}}/>    
 
@@ -96,9 +96,9 @@ export default function FormularioEditarFamiliar({data, onCancel, onSubmit} : Pr
                 <Button icon="map-marker" buttonColor={theme.colors.primary} style={{width: '90%',alignSelf:'center',borderRadius:10}} uppercase mode="contained" onPress={() => console.log('Pressed')}>
                     Cambiar domicilio
                 </Button> 
-            </View>
+            </View> */}
             <View style={{justifyContent:'center',alignContent:'center',gap:10,marginTop: 20}}>
-                <Text style={{textAlign:'center',width:'100%'}} variant="headlineSmall">Identificadores y esterilización</Text>
+                <Text style={{textAlign:'center',width:'100%'}} variant="headlineSmall">Identificación y esterilización</Text>
                 <Divider style={{marginBottom: 20 , width: "90%", alignSelf: 'center'}}/>    
                 
                     <View style={{flexDirection:'row', marginHorizontal: 30,marginVertical: 8, alignItems:'center', justifyContent: 'space-between'}}>
@@ -116,13 +116,13 @@ export default function FormularioEditarFamiliar({data, onCancel, onSubmit} : Pr
                     </View>
                     <View style={{flexDirection:'row', marginHorizontal: 30, marginVertical: 8, alignItems:'center', justifyContent: 'space-between'}}>
                         <Text variant="titleLarge" onPress={() => {
-                            setValue('identificado', !identificado);
+                            setValue('chipeado', !chipeado);
                         }}>Chipeado</Text>
                         <Switch
-                            value={identificado}
+                            value={chipeado}
                             style={{ transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }] }}
                             onValueChange={() => {
-                                setValue('identificado', !identificado);
+                                setValue('chipeado', !chipeado);
                             }}
                         />
                     </View>

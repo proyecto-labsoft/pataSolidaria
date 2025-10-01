@@ -69,21 +69,13 @@ export default function QueryClientProviderBase({ children }) {
   //   [agregarMensaje, configMensajesDefault]
   // );
 
-  const queryClient = new QueryClient({
-    queryCache: new QueryCache({
-      // onError: (err, query) => error(err, query?.meta ?? {}),
-      // onSuccess: (data, query) => exito(data, query?.meta ?? {}),
-    }),
-    mutationCache: new MutationCache({
-      // onError: (err, _vars, _ctx, mutation) =>{console.log(err,_vars,_ctx, mutation); error(err, mutation?.meta ?? {})},
-      // onSuccess: (data, _vars, _ctx, mutation) => exito(data, mutation?.meta ?? {}),
-    }),
+  const queryClient = React.useMemo(() => new QueryClient({
+    queryCache: new QueryCache({}),
+    mutationCache: new MutationCache({}),
     defaultOptions: {
-      queries: {
-        refetchOnWindowFocus: false,
-      }, 
+      queries: { refetchOnWindowFocus: false },
     },
-  });
+  }), []);
   return (
     <QueryClientProvider client={queryClient}>
       {children}

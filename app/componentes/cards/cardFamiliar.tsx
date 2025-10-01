@@ -9,21 +9,8 @@ interface Props {
     },
     navigateTo: any
 }
-export default function CardFamiliar({data,navigateTo} : Props) {
-
-    // console.log("CardFamiliar",data)
-    // {
-    //     "chipeado": true, 
-    //     "color": "Blanco y Negro", 
-    //     "descripcion": "Gata tranquila y cariñosa", 
-    //     "especie": "Gato", 
-    //     "esterilizado": true, 
-    //     "fnacimiento": null, 
-    //     "id": 2, 
-    //     "nombre": "Luna", 
-    //     "raza": "Siames", 
-    //     "sexo": "H"
-    // }
+export default function CardFamiliar({data,navigateTo} : Props) { 
+    
     const theme = useTheme();  
     const navigation = useNavigation();
     

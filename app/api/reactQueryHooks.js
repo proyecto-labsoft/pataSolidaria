@@ -79,7 +79,7 @@ export const useGet = ({
   params = {},
   configuracion = {}, // opciones de useQuery (p.e. enabled, staleTime o meta)
 }) => {
-  console.log("URL en useGet", url)
+
   const queryKey = generarQueryKey(nombreHook, params); 
   const isEnabled = configuracion?.enabled ?? true;
   // Define para los get un meta por defecto
@@ -92,7 +92,7 @@ export const useGet = ({
     mensajeError: { tipo: 'flotante', severity: 'error', titulo: "Error al obtener los datos", tiempo: false },
   }
 
-  const { meta ,conAuth = true, configAxios = {}, ...otrasConfiguraciones} = configuracion
+  const { meta , configAxios = {}, ...otrasConfiguraciones} = configuracion
 
   // Merge con defaultMeta y configuracion.meta para permitir personalización
   const mergedMeta = {
@@ -288,10 +288,8 @@ export const useGenericMutation = ({
       };
       const finalData = variables.data ?? data;
 
-     // console.log("Final Data", finalData,"variables" ,variables,"data", data);
-      const resolvedUrl = urlConParametros(url, finalParams);
-       
-     
+      const resolvedUrl = urlConParametros(url, finalParams);      
+      
        // Extraemos configuraciones adicionales
       const {
         headers: customHeaders = {'Content-Type': contentType},
@@ -334,7 +332,6 @@ export const useGenericMutation = ({
 
     onSuccess: async (datos, variables, context) => {
 
-     // console.log("QUERIES TO INVALIDATE EN MUTACION", queriesToInvalidate);
       // llama a invalidateAndRefetch si el arreglo tiene algún elemento
       if (Array.isArray(queriesToInvalidate) && queriesToInvalidate.length > 0) {
         try {
@@ -441,8 +438,7 @@ export const usePut = (props) => {
   
   } = props; 
 
-  const {  updater = null,
-            conAuth = true,
+  const {  updater = null, 
             queriesToInvalidate = [],
             data,
             onSuccess,
@@ -450,6 +446,7 @@ export const usePut = (props) => {
             refetch = false,
             meta = {}, //customMeta
             ...rest} = configuracion;
+
 
   return useGenericMutation({
     method: 'PUT',

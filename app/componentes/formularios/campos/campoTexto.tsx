@@ -7,13 +7,15 @@ type Props = {
     style?: object,
     control?: any,
     valor?: any,
-    disabled?: boolean
+    disabled?: boolean,
+    defaultValue?: any,
 }
-export default function CampoTexto({label,valor,nombre,disabled,control,style}: Props) {
+export default function CampoTexto({label,valor,nombre,defaultValue,disabled,control,style}: Props) {
 
     useEffect(() =>{},[valor])
     return (
         <Controller 
+            defaultValue={defaultValue}
             name={nombre}
             control={control}
             render={({field: {onChange,value, onBlur}} ) => {

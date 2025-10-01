@@ -38,11 +38,10 @@ export function useApiGetMascotasPorUsuario({ parametros, ...opciones }) {
     });
 }
 
-export function useApiPostRegistrarMascota({ body, ...opciones }) {
+export function useApiPostRegistrarMascota({ ...opciones }) {
     return usePost({
         nombreHook: "useApiPostRegistrarMascota",
         url: rutas.registrarMascota,
-        body,
         configuracion: { ...opciones }
     });
 }
@@ -70,6 +69,16 @@ export function useApiPostCrearAdopcion({ body, ...opciones }) {
         nombreHook: "useApiPostCrearAdopcion",
         url: rutas.crearAdopcion,
         body,
+        configuracion: { ...opciones }
+    });
+}
+
+// Esto lo modifica solo la asociacion TODO
+export function useApiPutActualizarAdopcion({ parametros, ...opciones }) {
+    return usePut({
+        nombreHook: "useApiPutActualizarAdopcion",
+        url: rutas.adopcionPorId,
+        params: parametros,
         configuracion: { ...opciones }
     });
 }

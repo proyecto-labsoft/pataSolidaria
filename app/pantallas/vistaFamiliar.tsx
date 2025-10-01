@@ -9,6 +9,7 @@ import CarruselImagenes from '../componentes/carrusel/carruselImagenes';
 import AppbarNav from '../componentes/navegacion/appbarNav';
 import { TakePictureBtn } from '../componentes/TakePictureBtn';
 import { useRoute } from '@react-navigation/native';
+import { useApiPutActualizarMascota } from '../api/hooks';
 
 // Basandose en colores de la pagina de ARAF
 // primario: 0f7599
@@ -17,10 +18,12 @@ import { useRoute } from '@react-navigation/native';
 const imagenes = ImageSlider[0].imagenes
 
 export default function VistaFamiliar() {
-   const route = useRoute();
+  const route = useRoute();
 
   const datosFamiliar = useMemo(() => route.params, [route.params]);
-  console.log("VistaFamiliar",datosFamiliar)
+  // console.log("VistaFamiliar",datosFamiliar)
+
+  const { mutateAsync: actualizarFamiliar } = useApiPutActualizarMascota({ params: {id: datosFamiliar?.id }}); // Descomentar cuando la API esté lista
    // {
     //     "chipeado": true, 
     //     "color": "Blanco y Negro", 
@@ -34,28 +37,18 @@ export default function VistaFamiliar() {
     //     "sexo": "H"
     // }
   const [modoEdicion, setModoEdicion] = useState(false);
-  // const [datosFamiliar, setDatosFamiliar] = useState({
-  //   nombre: 'Chili',
-  //   especie: 'Perro',
-  //   raza: 'callejero',
-  //   tamanio: 'grande',
-  //   colores: 'tricolor',
-  // identificado: false,
-  //   domicilio: 'Puerto español 844'
-  //   fechanac: '14/04/2021',
-  //   observaciones: 'compañero y sociable',
-  //   sexo: 'macho',
-  //   esterilizado: true,
-  //   identificado: false,
-  //   domicilio: 'Puerto español 844'
-  // });
+
+  const onSubmit = (data: any) => {
+    console.log("Formulario enviado:", data);
+    actualizarFamiliar({ form: data }) // Descomentar cuando la API esté lista
+  }
   
   const {width} = Dimensions.get('screen')
   const [foto, setFoto] = useState<string | null>('https://static.fundacion-affinity.org/cdn/farfuture/PVbbIC-0M9y4fPbbCsdvAD8bcjjtbFc0NSP3lRwlWcE/mtime:1643275542/sites/default/files/los-10-sonidos-principales-del-perro.jpg');
   
   return (
       <View style={{height: '100%',width:width,alignItems:'center'}}>      
-        <AppbarNav titulo={datosFamiliar?.nombre} />
+        <AppbarNav titulo={datosFamiliar?.nombreCompaniero} />
 
         <ScrollView contentContainerStyle={{margin:12}} > 
           
@@ -66,8 +59,8 @@ export default function VistaFamiliar() {
           (  
             <>
                 <View style={{width:'90%',justifyContent:'center',alignContent:'center',gap:10,marginTop: 20}}>
-                    <ItemDato label='Nombre' data={datosFamiliar?.nombre}  />
-                    <ItemDato label='Fecha de nacimiento' data={datosFamiliar?.fechanac}  />
+                    {/* <ItemDato label='Nombre' data={datosFamiliar?.nombreCompaniero}  /> */}
+                    <ItemDato label='Fecha de nacimiento' data={datosFamiliar?.fechaNacimiento}  />
                     <ItemDato label='Especie' data={datosFamiliar?.especie}  />
                     <ItemDato label='Raza' data={datosFamiliar?.raza}  />
                     <ItemDato label='Genero' data={datosFamiliar?.sexo} />
@@ -94,7 +87,7 @@ export default function VistaFamiliar() {
                 
             </>
           ) :(
-            <FormularioEditarFamiliar data={datosFamiliar} onSumbit={setModoEdicion} />
+            <FormularioEditarFamiliar data={datosFamiliar} onCancel={() => setModoEdicion(false)} onSubmit={onSubmit} />
           )}     
           </View>
         

@@ -14,8 +14,8 @@ export default function VistaFamilia() {
 
   return (
       
-        <View style={{ flex: 1 }}>
-          <DescripcionVista texto="Aquí podrás ver la información de tus familiares" />
+        <View style={{ flex: 1, marginTop: 20 }}>
+          {/* <DescripcionVista texto="Aquí podrás ver la información de tus familiares" /> */}
           <View style={{width: '100%', alignItems: 'center', gap: 10, paddingVertical: 10}}>
             <CardUsuario />
             <Divider style={{ width: '70%', height: 2, backgroundColor: theme.colors.outlineVariant, borderRadius: 20, alignSelf: 'center', marginVertical: 10 }} />

@@ -1,31 +1,71 @@
-import { View,StyleSheet } from 'react-native'
+import { View } from 'react-native'
 import {useState} from 'react'
-import { Button, useTheme, Text, Portal, Modal, Checkbox, Divider } from 'react-native-paper'
-import { Mapa } from '../mapa'
+import { Button, useTheme, Text, Portal, Divider } from 'react-native-paper'
 import CampoTexto from './campos/campoTexto'
 import { useForm } from 'react-hook-form'
 import CampoTextoArea from './campos/campoTextoArea'
 import { useNavigation } from '@react-navigation/native'
-import CampoSelector from './campos/campoSelector'
 import DescripcionVista from '../descripcionVista'
 import BackdropSuccess from '../backdropSuccess'
+import CampoSelectorModal from './campos/campoSelectorModal'
+import CampoCheckbox from './campos/campoCheckbox'
+import CampoFecha from './campos/campoFecha'
+import { useApiPostRegistrarMascota } from '@/app/api/hooks'
+
 export default function FormularioNuevoFamiliar() {
+    
     const theme = useTheme()
     const [ubic, setUbic] = useState("");
     const [visible,setVisible] = useState(false)
     const [post,setPost] = useState(false)
     const navigation = useNavigation()
 
-    const { control,setValue, watch, handleSubmit, formState: {errors} } = useForm();
-    const esterilizado = watch('esterilizado');
+    const { control, watch, handleSubmit } = useForm();
     const tieneIdentificacion = watch('tieneIdentificacion');
+
+    const {mutateAsync: crearFamiliar } = useApiPostRegistrarMascota({params: {id: 2}})
     
     const onSubmit = (data: any) => {
         console.log("onSubmit: ",data)
-        data.ubicacion = ubic
-        setVisible(true)
-        setPost(true)
-        
+
+        if (data?.sexo === 'Macho') {
+            data.sexo = 'M';
+        } else if (data?.sexo === 'Hembra') {
+            data.sexo = 'H';
+        } else if (data?.sexo === 'No lo sé') {
+            data.sexo = null;
+        }
+        if (data?.tamanio === 'Pequeño') {
+            data.tamanio = 'PEQUENIO';
+        } else if (data?.tamanio === 'Mediano') {
+            data.tamanio = 'MEDIANO';
+        } else if (data?.tamanio === 'Grande') {
+            data.tamanio = 'GRANDE';
+        } else if (data?.tamanio === 'Muy grande') {
+            data.tamanio = 'GIGANTE';
+        }
+        // data.ubicacion = ubic
+        // setVisible(true)
+        // setPost(true)
+
+        crearFamiliar({ 
+            data: {
+                ...{ 
+                    familiarId: 2,
+                    nombre: null,
+                    especie: null,
+                    raza: null,
+                    color: null,
+                    descripcion: null,
+                    esterilizado: null,
+                    chipeado: null,
+                    sexo: null,
+                    tamanio: null,
+                    fechaNacimiento: null
+                }, 
+                ...data
+            }
+        })
     }
 
     return(
@@ -40,13 +80,12 @@ export default function FormularioNuevoFamiliar() {
                 label="Nombre"
                 nombre="nombre"
             />
-            <CampoTexto
-                control={control}
+            <CampoFecha 
                 label="Fecha de nacimiento"
-                // autoComplete='birthdate-day'
-                nombre="fechanac"
+                nombre="fechaNacimiento"
+                control={control}
             />
-            <CampoSelector
+            <CampoSelectorModal
                 control={control}
                 label="Especie de animal"
                 nombre="especie"
@@ -57,7 +96,7 @@ export default function FormularioNuevoFamiliar() {
                 label="Raza"
                 nombre="raza"
             />
-            <CampoSelector
+            <CampoSelectorModal
                 control={control} 
                 label="Sexo"
                 nombre="sexo"
@@ -68,34 +107,26 @@ export default function FormularioNuevoFamiliar() {
                 <Text style={{textAlign:'center'}} variant="headlineSmall">Identificadores y esterilización</Text>
                 
                 <View style={{ justifyContent: 'flex-start', width: '100%' }}>
-                    <View style={{flexDirection:'row', marginVertical: 8, alignItems:'center'}}>
-                        <Checkbox
-                            status={esterilizado ? 'checked' : 'unchecked'}
-                            onPress={() => {
-                                setValue('esterilizado', !esterilizado);
-                            }}
-                        />
-                        <Text variant="titleLarge" onPress={() => {
-                            setValue('esterilizado', !esterilizado);
-                        }}>Esterilizado</Text>
-                    </View>
-                    <View style={{flexDirection:'row', marginVertical: 8, alignItems:'center'}}>
-                        <Checkbox
-                            status={tieneIdentificacion ? 'checked' : 'unchecked'}
-                            onPress={() => {
-                                setValue('tieneIdentificacion', !tieneIdentificacion);
-                            }}
-                        />
-                        <Text variant="titleLarge" onPress={() => {
-                            setValue('tieneIdentificacion', !tieneIdentificacion);
-                        }}>¿Está chipeado/identificado?</Text>
-                    </View>
-                    <CampoTexto
+                    <CampoCheckbox
+                        control={control}
+                        label="¿Está esterilizado?"
+                        nombre="esterilizado"
+                        description="Marque si el animal ha sido esterilizado"
+                    /> 
+                    <CampoCheckbox
+                        control={control}
+                        label="¿Está chipeado/identificado?"
+                        nombre="chipeado"
+                        disabled={false}
+                        description="Indique si tiene chip, collar o identificación"
+                    />
+                    {/* <CampoTexto
+                        defaultValue={null}
                         control={control}
                         disabled={!tieneIdentificacion}
                         label="Datos de la chapa, colgante, etc"
                         nombre="identificacion"
-                    />
+                    /> */}
                 </View>
             </View>
             <Divider style={{marginVertical: 20}}/>
@@ -104,20 +135,20 @@ export default function FormularioNuevoFamiliar() {
                 <CampoTexto
                     control={control}
                     label="Colores"
-                    nombre="colores"
+                    nombre="color"
                 />
             </View>
-            <CampoSelector
+            <CampoSelectorModal
                 control={control}
                 label="Tamaño"
                 nombre="tamanio"
-                opciones={['Muy pequeño','Pequeño','Mediano','Grande','Muy grande']}
+                opciones={['Pequeño','Mediano','Grande','Muy grande']}
             />
         
             <CampoTextoArea
                 control={control}
                 label="ObservacionesAdicionales"
-                nombre="observaciones"
+                nombre="descripcion"
             />
             <View style={{ flexDirection:'row', justifyContent:'space-evenly', width: '100%'}}>
                 <Button  buttonColor={theme.colors.secondary} style={{  marginHorizontal:'5%',marginVertical: 8 ,borderRadius:10}} uppercase mode="contained" onPress={() => navigation.goBack()}>
@@ -131,15 +162,3 @@ export default function FormularioNuevoFamiliar() {
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    containerStyle: {
-        justifyContent: "space-around",
-        alignItems: "center",
-        width: '80%',
-        height: '30%',
-        alignSelf:"center",
-        padding: 30,
-        borderRadius: 20,
-    },
-});

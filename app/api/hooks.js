@@ -55,6 +55,13 @@ export function useApiPutActualizarMascota({ ...opciones }) {
     });
 }
 
+export function useApiDeleteMascota({ ...opciones }) { 
+    return useDelete({
+        nombreHook: "useApiDeleteMascota",
+        url: rutas.mascotaPorId, 
+        configuracion: { ...opciones, queriesToInvalidate:['useApiGetMascotasPorUsuario', { idUsuario: 2 }] }
+    });
+}
 // Adopciones
 export function useApiGetAdopciones({ ...opciones }) {
     return useGet({
@@ -100,12 +107,11 @@ export function useApiGetExtraviosPorUsuario({ ...opciones }) {
     });
 }
 
-export function useApiPostRegistrarExtravio({ body, ...opciones }) {
+export function useApiPostRegistrarExtravio({ ...opciones }) {
     return usePost({
         nombreHook: "useApiPostRegistrarExtravio",
         url: rutas.registrarExtravio,
-        body,
-        configuracion: { ...opciones }
+        configuracion: { ...opciones, queriesToInvalidate:['useApiGetExtravios'] }
     });
 }
 

@@ -16,17 +16,17 @@ export default function FormularioNuevoFamiliar() {
     
     const theme = useTheme()
     const [ubic, setUbic] = useState("");
-    const [visible,setVisible] = useState(false)
-    const [post,setPost] = useState(false)
+    const [successMensaje, setSuccessMensaje] = useState(false);
     const navigation = useNavigation()
 
-    const { control, watch, handleSubmit } = useForm();
-    const tieneIdentificacion = watch('tieneIdentificacion');
+    const { control, handleSubmit } = useForm(); 
 
-    const {mutateAsync: crearFamiliar } = useApiPostRegistrarMascota({params: {id: 2}})
+    const {mutateAsync: crearFamiliar } = useApiPostRegistrarMascota({
+        params: {id: 2},
+        onSuccess: () => {setSuccessMensaje(true)}
+    })
     
-    const onSubmit = (data: any) => {
-        console.log("onSubmit: ",data)
+    const onSubmit = (data: any) => { 
 
         if (data?.sexo === 'Macho') {
             data.sexo = 'M';
@@ -45,8 +45,6 @@ export default function FormularioNuevoFamiliar() {
             data.tamanio = 'GIGANTE';
         }
         // data.ubicacion = ubic
-        // setVisible(true)
-        // setPost(true)
 
         crearFamiliar({ 
             data: {
@@ -71,7 +69,14 @@ export default function FormularioNuevoFamiliar() {
     return(
         <View style={{gap:20}}>
             <Portal>
-                {visible && post && (<BackdropSuccess texto="Nuevo integrante agregado a la familia" onTap={() => navigation.goBack()}/>)}
+                {successMensaje && (
+                <BackdropSuccess
+                    texto="Nuevo integrante agregado a la familia"
+                    onTap={() => {
+                        navigation.goBack()
+                    }}
+                />
+                )}
             </Portal>
             <DescripcionVista texto="Información del nuevo integrante" tamanioTexto="titleLarge"/>
         
@@ -119,14 +124,7 @@ export default function FormularioNuevoFamiliar() {
                         nombre="chipeado"
                         disabled={false}
                         description="Indique si tiene chip, collar o identificación"
-                    />
-                    {/* <CampoTexto
-                        defaultValue={null}
-                        control={control}
-                        disabled={!tieneIdentificacion}
-                        label="Datos de la chapa, colgante, etc"
-                        nombre="identificacion"
-                    /> */}
+                    /> 
                 </View>
             </View>
             <Divider style={{marginVertical: 20}}/>

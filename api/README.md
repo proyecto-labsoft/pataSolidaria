@@ -13,8 +13,8 @@ API REST para el sistema de gestión de mascotas, adopciones y extravíos.
 
 1. Clonar el repositorio:
 ```bash
-git clone https://github.com/JomaGaray/api-mascotas.git
-cd api-mascotas
+git clone https://github.com/proyecto-labsoft/pataSolidaria.git
+cd pataSolidaria/api
 ```
 
 2. Compilar el proyecto y generar el JAR:
@@ -51,12 +51,16 @@ docker-compose up
 - `init-scripts/`: Scripts SQL para inicialización de la base de datos
   - `01-init.sql`: Estructura de la base de datos
   - `02-data.sql`: Datos de ejemplo
+  - `03-add-geolocation.sql`: Agrego a la estructura de la BD los datos para geolocalización
+- `GEOLOCATION_GUIDE.md`: Guía completa de implementación de geolocalización
 
 ## Base de Datos
 
 La base de datos PostgreSQL se inicializa automáticamente con:
 - Tablas: usuarios, mascotas (companieros), adopciones, extravíos y postulaciones
-- Datos de ejemplo para pruebas
+- **Geolocalización**: Los extravíos incluyen campos de latitud, longitud y dirección
+- Datos de ejemplo para pruebas (con coordenadas de Ushuaia)
+- Índices optimizados para búsquedas geográficas
 
 ## Endpoints Disponibles
 
@@ -76,11 +80,56 @@ La base de datos PostgreSQL se inicializa automáticamente con:
 
 - Extravíos: `/extravios`
   - GET `/user/{id}`: Obtener extravíos por usuario
-  - POST `/`: Registrar nuevo extravío
+  - GET `/`: Listar extravíos (filtrable por resueltos)
+  - POST `/`: Registrar nuevo extravío con geolocalización
 
 - Postulaciones: `/postulaciones`
   - GET `/{id}`: Obtener postulación por ID
   - POST `/`: Crear nueva postulación
+
+## 📍 Funcionalidad de Geolocalización
+
+Los extravíos ahora incluyen datos de ubicación:
+
+### Campos de Geolocalización
+- **`latitud`** (obligatorio): Coordenada Y del lugar del extravío
+- **`longitud`** (obligatorio): Coordenada X del lugar del extravío  
+- **`direccion`** (opcional): Dirección textual para geocodificación
+- **`zona`** (existente): Descripción textual de la zona
+
+### Ejemplo de Request
+```json
+POST /extravios
+{
+    "creador": 1,
+    "mascotaId": 123,
+    "zona": "Zona Norte",
+    "hora": "2025-10-04T14:30:00",
+    "observacion": "Se perdió cerca del parque",
+    "atencionMedica": false,
+    "latitud": -54.8019,
+    "longitud": -68.3030,
+    "direccion": "Parque Central, Ushuaia"
+}
+```
+
+### Ejemplo de Response
+```json
+{
+    "mascotaId": 123,
+    "nombreMascota": "Max",
+    "zona": "Zona Norte",
+    "hora": "2025-10-04T14:30:00",
+    "observacion": "Se perdió cerca del parque",
+    "atencionMedica": false,
+    "resuelto": false,
+    "latitud": -54.8019,
+    "longitud": -68.3030,
+    "direccion": "Parque Central, Ushuaia"
+}
+```
+
+Ver `GEOLOCATION_GUIDE.md` para más detalles sobre implementación y funcionalidades avanzadas.
 
 ## Actualizaciones
 

@@ -23,5 +23,8 @@ public class ExtravioDetailDTO {
     private String observacion;
     private Boolean atencionMedica;
     private Boolean resuelto;
+    private Double latitud;
+    private Double longitud;
+    private String direccion;
     //private MascotaDTODetalle mascotaDetalle;
 }

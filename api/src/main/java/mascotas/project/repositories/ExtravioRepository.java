@@ -19,7 +19,10 @@ public interface ExtravioRepository extends JpaRepository<Extravio, Long> {
         e.hora,
         e.observacion,
         e.atencion_medica,
-        e.resuelto
+        e.resuelto,
+        e.latitud,
+        e.longitud,
+        e.direccion
     )
     FROM Extravio e
     JOIN Mascota m ON e.mascota = m.id
@@ -35,7 +38,10 @@ public interface ExtravioRepository extends JpaRepository<Extravio, Long> {
         e.hora,
         e.observacion,
         e.atencion_medica,
-        e.resuelto
+        e.resuelto,
+        e.latitud,
+        e.longitud,
+        e.direccion
     )
     FROM Extravio e
     JOIN Mascota m ON e.mascota = m.id
@@ -52,7 +58,10 @@ public interface ExtravioRepository extends JpaRepository<Extravio, Long> {
         e.hora,
         e.observacion,
         e.atencion_medica,
-        e.resuelto
+        e.resuelto,
+        e.latitud,
+        e.longitud,
+        e.direccion
     )
     FROM Extravio e
     JOIN Mascota m ON e.mascota = m.id

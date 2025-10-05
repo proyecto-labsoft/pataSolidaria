@@ -6,6 +6,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,4 +41,15 @@ public class Extravio {
     private String observacion;
 
     private Boolean resuelto;
+
+    @NotNull
+    @Column(name = "latitud")
+    private Double latitud;
+
+    @NotNull
+    @Column(name = "longitud")
+    private Double longitud;
+
+    @Column(name = "direccion")
+    private String direccion;
 }

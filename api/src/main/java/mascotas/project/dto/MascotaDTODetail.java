@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 @Data
-public class MascotaDTODetalle {
+public class MascotaDTODetail {
 
     private Long id;
     private String nombre;

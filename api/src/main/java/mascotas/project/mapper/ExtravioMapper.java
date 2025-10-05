@@ -10,8 +10,10 @@ import org.mapstruct.Mapping;
 public interface ExtravioMapper {
 
     @Mapping(target = "mascota", source = "mascotaId")
-    @Mapping(target = "atencion_medica", source ="atencionMedica")
-    @Mapping(target = "tiempo_gracia", ignore = true)
     Extravio toEntity(ExtravioRequestDTO dto);
+
+    @Mapping(target = "id", source = "extravioId")
+    @Mapping(target = "mascota", source = "dto.mascotaId")
+    Extravio putToEntity(ExtravioRequestDTO dto, Long  extravioId);
 
 }

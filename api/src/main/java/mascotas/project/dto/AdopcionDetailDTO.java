@@ -16,5 +16,5 @@ public class AdopcionDetailDTO {
     private Integer publicadorContacto;
     private String requisitos;
     private Boolean transito;
-    private MascotaDTODetalle mascotaDetalle;
+    private MascotaDTODetail mascotaDetalle;
 }

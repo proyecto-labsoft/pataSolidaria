@@ -16,11 +16,11 @@ public interface ExtravioRepository extends JpaRepository<Extravio, Long> {
     SELECT new mascotas.project.dto.ExtravioDetailDTO(
         e.creador,
         e.mascota,
-        m.nombre,
         e.zona,
         e.hora,
         e.observacion,
-        e.resuelto
+        e.resuelto,
+        null
     )
     FROM Extravio e
     JOIN Mascota m ON e.mascota = m.id
@@ -33,11 +33,11 @@ public interface ExtravioRepository extends JpaRepository<Extravio, Long> {
     SELECT new mascotas.project.dto.ExtravioDetailDTO(
         e.creador,
         e.mascota,
-        m.nombre,
         e.zona,
         e.hora,
         e.observacion,
-        e.resuelto
+        e.resuelto,
+        null
     )
     FROM Extravio e
     JOIN Mascota m ON e.mascota = m.id
@@ -50,11 +50,11 @@ public interface ExtravioRepository extends JpaRepository<Extravio, Long> {
     SELECT new mascotas.project.dto.ExtravioDetailDTO(
         e.creador,
         e.mascota,
-        m.nombre,
         e.zona,
         e.hora,
         e.observacion,
-        e.resuelto
+        e.resuelto,
+        null
     )
     FROM Extravio e
     JOIN Mascota m ON e.mascota = m.id

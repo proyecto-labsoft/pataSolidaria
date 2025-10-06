@@ -6,9 +6,10 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mascotas.project.dto.MascotaDTODetalle;
+import mascotas.project.dto.MascotaDTODetail;
 import mascotas.project.dto.MascotaDTORequest;
 import mascotas.project.dto.MascotaDTOSaveSucces;
+import mascotas.project.dto.PerdidoDTO;
 import mascotas.project.services.MascotaService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -55,8 +56,8 @@ public class MascotaController {
             summary = "Obtiene mascota existente",
             parameters = {@Parameter(name="id", description = "Id de la mascota", example = "1", required = true)}
     )
-    public ResponseEntity<MascotaDTODetalle> getMascotabyID(@PathVariable(name="id", required = true) Long idMascota){
-        MascotaDTODetalle mascota = mascotaService.getMascotaById(idMascota);
+    public ResponseEntity<MascotaDTODetail> getMascotabyID(@PathVariable(name="id", required = true) Long idMascota){
+        MascotaDTODetail mascota = mascotaService.getMascotaById(idMascota);
         return ResponseEntity.ok().body(mascota);
     }
 
@@ -66,8 +67,8 @@ public class MascotaController {
             summary = "Obtiene listado de mascotas por usuario ID",
             parameters = {@Parameter(name="id", description = "Id del familiar", example = "1", required = true)}
     )
-    public ResponseEntity<List<MascotaDTODetalle>> getMascotasByFamiliarId(@PathVariable(name="id", required = true) Long idUser){
-        List<MascotaDTODetalle> mascota = mascotaService.getMascotasByFamiliarId(idUser);
+    public ResponseEntity<List<MascotaDTODetail>> getMascotasByFamiliarId(@PathVariable(name="id", required = true) Long idUser){
+        List<MascotaDTODetail> mascota = mascotaService.getMascotasByFamiliarId(idUser);
         return ResponseEntity.ok().body(mascota);
     }
 

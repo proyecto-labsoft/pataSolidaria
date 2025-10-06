@@ -33,7 +33,7 @@ public class PostulacionService {
                      .map(
                             p -> {
                                 usuarioRepository.findById(p.getUsuario())
-                                                 .orElseThrow(() -> new NotFoundException(ErrorsEnums.USUARIO_NOT_FOUND.getDescription() + postulacion.getUsuario() ));
+                                                 .orElseThrow(() -> new NotFoundException(ErrorsEnums.USUARIO_NOT_FOUND_ERROR.getDescription() + postulacion.getUsuario() ));
 
                                 adopcionRepository.findById(p.getAdopcion())
                                                     .orElseThrow( () -> new NotFoundException(ErrorsEnums.ADOPCION_NOT_FOUND_ERROR.getDescription() + postulacion.getAdopcion()));
@@ -57,7 +57,7 @@ public class PostulacionService {
                 .map(usuario ->{
                             usuarioRepository.findById(usuario)
                                              .orElseThrow(
-                                                       () -> new NotFoundException(ErrorsEnums.USUARIO_NOT_FOUND.getDescription() + usuario )
+                                                       () -> new NotFoundException(ErrorsEnums.USUARIO_NOT_FOUND_ERROR.getDescription() + usuario )
                                              );
 
                            return postulacionRepository.findPostulacionesByUsuarioId(usuarioId)

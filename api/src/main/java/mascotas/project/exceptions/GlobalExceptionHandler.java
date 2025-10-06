@@ -93,6 +93,22 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorBody);
     }
 
+    @ExceptionHandler({ForbiddenException.class})
+    public ResponseEntity<ErrorResponse> handleForbiddenException(ForbiddenException ex, HttpServletRequest request) {
+
+        log.info("Global_Exception_Handler: Handling ForbiddenException");
+
+        ErrorResponse errorBody = ErrorResponse.builder()
+                .error(HttpStatus.FORBIDDEN.name())
+                .message(ex.getMessage())
+                .status(HttpStatus.FORBIDDEN.value())
+                .requestTime(Instant.now())
+                .path(this.buildPathWithQueryParams(request))
+                .build();
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorBody);
+    }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleInvalidFormat(HttpMessageNotReadableException ex,  HttpServletRequest request) {
 

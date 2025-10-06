@@ -10,18 +10,15 @@ import mascotas.project.dto.PerdidoDTO;
 import mascotas.project.dto.UsuarioDTO;
 import mascotas.project.entities.Extravio;
 import mascotas.project.entities.Mascota;
-import mascotas.project.entities.Usuario;
-import mascotas.project.exceptions.BadRequestException;
 import mascotas.project.exceptions.ForbiddenException;
 import mascotas.project.exceptions.NotFoundException;
 import mascotas.project.mapper.ExtravioMapper;
 import mascotas.project.repositories.ExtravioRepository;
-import mascotas.project.repositories.MascotaRepository;
-import mascotas.project.repositories.UsuarioRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -58,18 +55,20 @@ public class ExtravioService {
 
     public List<ExtravioDetailDTO> getAllExtraviosByUsuario(Long  usuarioId, Boolean resueltos){
 
-        return Optional.of(usuarioId)
-                .map(usuario ->{
-                            usuarioService.getUsuarioById(usuarioId);
-                            return extravioRepository.findAllByCreador(usuarioId, resueltos);
-                })
-                .orElseThrow(RuntimeException::new);
+        usuarioService.getUsuarioById(usuarioId);
+
+        List<ExtravioDetailDTO> extraviosDtos = extravioRepository.findAllByCreador(usuarioId, resueltos);
+
+        return setMascotaDetailToExtravioDtoList(extraviosDtos);
     }
 
     public List<ExtravioDetailDTO> getAllExtravios(Boolean resueltos) {
-        return Optional.ofNullable(resueltos)
-                       .map(extravioRepository::findAllByResuelto)
-                       .orElseGet(extravioRepository::findAllWithMascota);
+
+        List<ExtravioDetailDTO> extraviosDtos = Optional.ofNullable(resueltos)
+                                               .map(extravioRepository::findAllByResuelto)
+                                               .orElseGet(extravioRepository::findAllWithMascota);
+
+        return setMascotaDetailToExtravioDtoList(extraviosDtos);
     }
 
     @Transactional
@@ -125,6 +124,18 @@ public class ExtravioService {
         return  PerdidoDTO.builder()
                 .extravioId(null)
                 .estaExtraviado(Boolean.FALSE).build();
+    }
+
+
+    private List<ExtravioDetailDTO> setMascotaDetailToExtravioDtoList(List<ExtravioDetailDTO> extravioDtos){
+
+        return extravioDtos.stream()
+                            .map(extravioDTO -> {
+                                Mascota mascotaEntity = mascotaService.getMascotaEntityById(extravioDTO.getMascotaId());
+                                return extravioMapper.toDtoDetail(extravioDTO, mascotaEntity);
+                            })
+                            .collect(Collectors.toList());
+
     }
 
 }

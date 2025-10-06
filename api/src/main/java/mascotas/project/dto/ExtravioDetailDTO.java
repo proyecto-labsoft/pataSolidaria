@@ -16,12 +16,11 @@ public class ExtravioDetailDTO {
 
     private Long creadorId;
     private Long mascotaId;
-    private String nombreMascota;
     private String zona;
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime hora;
     private String observacion;
     private Boolean resuelto;
 
-    //private MascotaDTODetail mascotaDetalle;
+    private MascotaDTODetail mascotaDetalle;
 }

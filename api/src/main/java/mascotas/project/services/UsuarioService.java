@@ -25,7 +25,7 @@ public class UsuarioService {
     public UsuarioDTO getUsuarioById(Long idUsuario){
 
         Usuario usuario = usuarioRepository.findById(idUsuario)
-                .orElseThrow(() -> new NotFoundException(ErrorsEnums.USUARIO_NOT_FOUND.getDescription() + idUsuario ));
+                .orElseThrow(() -> new NotFoundException(ErrorsEnums.USUARIO_NOT_FOUND_ERROR.getDescription() + idUsuario ));
 
         return  usuarioMapper.toUsuarioDto(usuario);
     }

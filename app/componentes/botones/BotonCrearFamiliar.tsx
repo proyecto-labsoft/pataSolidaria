@@ -5,8 +5,7 @@ interface Props {
     onPress: any
     showButton: boolean
 }
-export default function BotonAlerta ({onPress,showButton} : Props) {
-    
+export default function BotonCrearFamiliar({onPress,showButton} : Props) {
     const [state, setState] = useState({ open: false });
     
     const theme = useTheme()
@@ -21,7 +20,7 @@ export default function BotonAlerta ({onPress,showButton} : Props) {
             <FAB.Group
                 open={open}
                 visible={showButton}
-                icon={open ? 'arrow-up-bold-outline' : 'alert'}
+                icon={open ? 'arrow-up-bold-outline' : 'plus'}
                 color="white"
                 actions={[
                     {

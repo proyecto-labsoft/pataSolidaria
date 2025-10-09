@@ -27,7 +27,23 @@ public interface ExtravioRepository extends JpaRepository<Extravio, Long> {
     WHERE e.creador = :usuario
     AND e.resuelto = :resueltos
 """)
-    List<ExtravioDetailDTO> findAllByCreador(@Param("usuario") Long usuario, @Param("resueltos") Boolean resueltos);
+    List<ExtravioDetailDTO> findAllByCreadorAndResuelto(@Param("usuario") Long usuario, @Param("resueltos") Boolean resueltos);
+
+
+    @Query("""
+    SELECT new mascotas.project.dto.ExtravioDetailDTO(
+        e.creador,
+        e.mascota,
+        e.zona,
+        e.hora,
+        e.observacion,
+        e.resuelto,
+        null
+    )
+    FROM Extravio e
+    WHERE e.creador = :usuario
+""")
+    List<ExtravioDetailDTO> findAllByCreador(@Param("usuario") Long usuario);
 
     @Query("""
     SELECT new mascotas.project.dto.ExtravioDetailDTO(

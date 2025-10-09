@@ -107,6 +107,14 @@ export function useApiGetExtraviosPorUsuario({ ...opciones }) {
     });
 }
 
+export function useApiGetExtravioPorMascota({ params, ...opciones }) {
+    return useGet({
+        nombreHook: "useApiGetExtravioPorMascota",
+        url: rutas.extraviosPorMascota,
+        params,
+        configuracion: { ...opciones }
+    });
+}
 export function useApiPostRegistrarExtravio({ ...opciones }) {
     return usePost({
         nombreHook: "useApiPostRegistrarExtravio",

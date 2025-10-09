@@ -16,6 +16,7 @@ import mascotas.project.mapper.ExtravioMapper;
 import mascotas.project.repositories.ExtravioRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -57,7 +58,9 @@ public class ExtravioService {
 
         usuarioService.getUsuarioById(usuarioId);
 
-        List<ExtravioDetailDTO> extraviosDtos = extravioRepository.findAllByCreador(usuarioId, resueltos);
+        List<ExtravioDetailDTO> extraviosDtos = Optional.ofNullable(resueltos)
+                                                                .map(r -> extravioRepository.findAllByCreadorAndResuelto(usuarioId, r) )
+                                                                .orElseGet(() -> extravioRepository.findAllByCreador(usuarioId));
 
         return setMascotaDetailToExtravioDtoList(extraviosDtos);
     }

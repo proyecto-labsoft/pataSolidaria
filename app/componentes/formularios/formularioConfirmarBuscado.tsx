@@ -1,6 +1,6 @@
 import { View,StyleSheet } from 'react-native'
 import {useState} from 'react'
-import { Text as TextPaper, Checkbox, Button, useTheme, Text, Portal, Modal } from 'react-native-paper'
+import { Text as TextPaper, Checkbox, Button, useTheme, Text, Portal, Modal, Divider, Switch } from 'react-native-paper'
 import { Mapa } from '../mapa'
 import CampoTexto from './campos/campoTexto'
 import { useForm } from 'react-hook-form'
@@ -9,49 +9,94 @@ import { useNavigation } from '@react-navigation/native'
 import CampoSelector from './campos/campoSelector'
 import DescripcionVista from '../descripcionVista'
 import BackdropSuccess from '../backdropSuccess'
+import CampoSelectorModal from './campos/campoSelectorModal'
+import CampoFecha from './campos/campoFecha'
+import { useApiPostRegistrarExtravio } from '@/app/api/hooks'
+import { format } from 'date-fns'
 interface Props {
     data: {
         nombre: string,
         especie: string,
         raza: string,
         tamanio: string,
-        colores: string,
-        fechanac: string,
-        observaciones: string,
+        color: string,
+        fechaNacimiento: string,
+        descripcion: string,
         sexo: string,
         esterilizado: boolean,
-        identificado: boolean,
+        chipeado: boolean,
         domicilio: string
         ubicacion?: string
     },
 }
-export default function FormularioConfirmarBuscado({data} : Props) {
+export default function FormularioConfirmarBuscado({ data } : Props) {
     const theme = useTheme()
     const [ubic, setUbic] = useState("");
     const [cambiarDomicilio, setCambiarDomicilio] = useState(false);
     const [domic, setDomicilio] = useState("");
-    const [visible,setVisible] = useState(false)
-    const [post,setPost] = useState(false)
+    const [visible,setVisible] = useState(false) 
     const navigation = useNavigation()
 
-    const { control,setValue, watch, handleSubmit, formState: {errors} } = useForm();
+    const { control,setValue, watch, handleSubmit, formState: {errors} } = useForm({
+        defaultValues: data || {}
+    });
+    
     const esterilizado = watch('esterilizado');
-    const tieneIdentificacion = watch('tieneIdentificacion');
-        
-    const onSubmit = (data: any) => {
-        data.ubicacion = ubic
-        if(!!domic){data.domicilio = domic}
-        console.log(data)
-        setVisible(false)
-        setPost(true)
-        
+    
+    const chipeado = watch('chipeado');
+
+    const [successMensaje, setSuccessMensaje] = useState(false);
+     
+    const { mutateAsync: declararExtraviado } = useApiPostRegistrarExtravio({
+        params: {id: data?.id},
+        onSuccess: () => {setSuccessMensaje(true);setVisible(false)},
+    });
+
+    const onSubmit = (formData: any) => {
+        if (formData?.sexo === 'Macho') {
+            formData.sexo = 'M';
+        } else if (formData?.sexo === 'Hembra') {
+            formData.sexo = 'H';
+        } else if (formData?.sexo === 'No lo sé') {
+            formData.sexo = null;
+        }
+        if (formData?.tamanio === 'Pequeño') {
+            formData.tamanio = 'PEQUENIO';
+        } else if (formData?.tamanio === 'Mediano') {
+            formData.tamanio = 'MEDIANO';
+        } else if (formData?.tamanio === 'Grande') {
+            formData.tamanio = 'GRANDE';
+        } else if (formData?.tamanio === 'Muy grande') {
+            formData.tamanio = 'GIGANTE';
+        }
+
+        declararExtraviado({
+            data: {
+            creador: 2, // TODO - ID del usuario, reemplazar con el ID real del usuario autenticado
+            mascotaId: data?.id,
+            zona: "", // TODO - zona, reemplazar con la zona real, datos de geoloocalizacion
+            hora: format(new Date(), 'dd-MM-yyyy HH:mm:ss'),
+            observacion: formData?.observacionExtravio || null,
+            }
+        })
+        // declararExtraviado({})
     }
 
-    // TODO: Post del nuevo caso de busqueda
+
+
     return(
         <View style={{gap:20}}>
             <Portal>
-                {!visible && post && (<BackdropSuccess texto="Nueva busqueda confirmada" onTap={() => navigation.navigate('Home')}/>)}
+                {successMensaje && (
+                <BackdropSuccess
+                    texto="Nuevo extravío reportado con éxito"
+                    onTap={() => {
+                        navigation.goBack()
+                    }}
+                />
+                )}
+            </Portal>
+            <Portal>
                 <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={{...styles.containerStyle,backgroundColor:theme.colors.surface}}>
                     <Text style={{textAlign: 'center'}}>Al reportar la nueva busqueda compartirá sus datos de contacto con los demás usuarios.</Text>
                     <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={handleSubmit(onSubmit)}>
@@ -61,6 +106,12 @@ export default function FormularioConfirmarBuscado({data} : Props) {
             </Portal>
             <DescripcionVista texto="¿Por dónde se extravió?" tamanioTexto="titleLarge"/>
             <Mapa localizar latitude={null} longitude={null} modificarDomicilio={setUbic} />
+            <CampoTexto
+                style={ styles.input } 
+                label='Observaciones'
+                nombre='observacionExtravio'
+                control={control}
+            />
             <CampoTexto
                 style={ styles.input }
                 valor={ubic}
@@ -73,6 +124,12 @@ export default function FormularioConfirmarBuscado({data} : Props) {
                 label="Nombre"
                 nombre="nombre"
                 control={control}
+            /> 
+            <CampoSelectorModal
+                control={control} 
+                label="Sexo"
+                nombre="sexo"
+                opciones={['No lo sé','Macho','Hembra']}
             />
             <CampoTexto
                 style={ styles.input }
@@ -95,7 +152,7 @@ export default function FormularioConfirmarBuscado({data} : Props) {
             <CampoTexto
                 style={ styles.input }
                 label="Colores"
-                nombre="colores"
+                nombre="color"
                 control={control}
             />
             {cambiarDomicilio && (
@@ -110,65 +167,50 @@ export default function FormularioConfirmarBuscado({data} : Props) {
                 <Button icon="map-marker" buttonColor={theme.colors.primary} style={{  marginHorizontal:'5%',marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={() => setCambiarDomicilio(true)}>
                     <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Cambiar el domicilio</Text>
                 </Button>
-            )}
-            <CampoTexto
-                style={ styles.input }
-                valor={cambiarDomicilio ? domic : ''}
-                label="Domicilio"
-                nombre="domicilio"
-                control={control}
-            />
-            <CampoTexto
-                style={ styles.input }
-                control={control}
-                nombre="fechanac"
+            )} 
+            <CampoFecha
                 label="Fecha de nacimiento"
+                nombre="fechaNacimiento"
+                control={control}
             />
             <CampoTextoArea
                 style={ styles.input }
                 label="Descripción adicional"
-                nombre="observaciones"
+                nombre="descripcion"
                 control={control}
             />
-            <View style={{ justifyContent: 'flex-start' , width: '100%' }}>
-                <Text style={{textAlign:'center'}} variant="headlineSmall">Identificadores y esterilización</Text>
-                    <View style={{ justifyContent: 'flex-start', width: '100%' }}>
-                        <View style={{flexDirection:'row', marginVertical: 8, alignItems:'center'}}>
-                            <Checkbox
-                                status={esterilizado ? 'checked' : 'unchecked'}
-                                onPress={() => {
-                                    setValue('esterilizado', !esterilizado);
-                                }}
-                            />
-                            <Text variant="titleLarge" onPress={() => {
+            <View style={{justifyContent:'center',alignContent:'center',gap:10,marginTop: 20}}>
+                <Text style={{textAlign:'center',width:'100%'}} variant="headlineSmall">Identificación y esterilización</Text>
+                <Divider style={{marginBottom: 20 , width: "90%", alignSelf: 'center'}}/>    
+                
+                    <View style={{flexDirection:'row', marginHorizontal: 30,marginVertical: 8, alignItems:'center', justifyContent: 'space-between'}}>
+                        <Text variant="titleLarge" onPress={() => {
+                            setValue('esterilizado', !esterilizado);
+                        }}>Esterilizado</Text>
+                        <Switch
+                            value={esterilizado}
+                            style={{ transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }] }}
+                            onValueChange={() => {
                                 setValue('esterilizado', !esterilizado);
-                            }}>Esterilizado</Text>
-                        </View>
-                        <View style={{flexDirection:'row', marginVertical: 8, alignItems:'center'}}>
-                            <Checkbox
-                                status={tieneIdentificacion ? 'checked' : 'unchecked'}
-                                onPress={() => {
-                                    setValue('tieneIdentificacion', !tieneIdentificacion);
-                                }}
-                            />
-                            <Text variant="titleLarge" onPress={() => {
-                                setValue('tieneIdentificacion', !tieneIdentificacion);
-                            }}>¿Está chipeado/identificado?</Text>
-                        </View>
-                        <CampoTexto
-                            control={control}
-                            disabled={!tieneIdentificacion}
-                            label="Datos de la chapa, colgante, etc"
-                            nombre="identificacion"
+                            }}
+                        />
+                        
+                    </View>
+                    <View style={{flexDirection:'row', marginHorizontal: 30, marginVertical: 8, alignItems:'center', justifyContent: 'space-between'}}>
+                        <Text variant="titleLarge" onPress={() => {
+                            setValue('chipeado', !chipeado);
+                        }}>Chipeado</Text>
+                        <Switch
+                            value={chipeado}
+                            style={{ transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }] }}
+                            onValueChange={() => {
+                                setValue('chipeado', !chipeado);
+                            }}
                         />
                     </View>
+                
             </View>
-            <CampoSelector
-                control={control} 
-                label="Sexo"
-                nombre="sexo"
-                opciones={['No lo sé','Macho','Hembra']}
-            />
+            
             <View style={{ flexDirection:'row', justifyContent:'space-evenly', width: '100%'}}>
                 
                 <Button  buttonColor={theme.colors.secondary} style={{  marginHorizontal:'5%',marginVertical: 8 ,borderRadius:10}} uppercase mode="contained" onPress={() => navigation.goBack()}>

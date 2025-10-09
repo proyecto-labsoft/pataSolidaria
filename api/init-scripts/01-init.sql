@@ -47,8 +47,7 @@ CREATE TABLE IF NOT EXISTS extravio (
     mascota BIGINT,
     zona VARCHAR(255),
     hora TIMESTAMP,
-    tiempo_gracia TIMESTAMP,
-    atencion_medica BOOLEAN,
+    tiempo_gracia TIMESTAMP, 
     observacion VARCHAR(255)
 );
 

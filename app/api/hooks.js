@@ -99,10 +99,11 @@ export function useApiGetExtravios({ ...opciones }) {
     });
 }
 
-export function useApiGetExtraviosPorUsuario({ ...opciones }) {
+export function useApiGetExtraviosPorUsuario({ params, ...opciones }) {
     return useGet({
         nombreHook: "useApiGetExtraviosPorUsuario",
         url: rutas.extraviosPorUsuario,
+        params,
         configuracion: { ...opciones }
     });
 }

@@ -1,6 +1,6 @@
 package mascotas.project.mapper;
 
-import mascotas.project.dto.MascotaDTODetalle;
+import mascotas.project.dto.MascotaDTODetail;
 import mascotas.project.dto.MascotaDTORequest;
 import mascotas.project.entities.Mascota;
 import org.mapstruct.Mapper;
@@ -16,5 +16,5 @@ public interface MascotaMapper {
     @Mapping(target = "id", source = "idMascota")
     Mascota toEntity(MascotaDTORequest dtoRequest, Long idMascota);
 
-    MascotaDTODetalle toDTO(Mascota mascota);
+    MascotaDTODetail toDTO(Mascota mascota);
 }

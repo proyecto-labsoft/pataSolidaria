@@ -5,7 +5,7 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mascotas.project.Enums.ErrorsEnums;
-import mascotas.project.dto.MascotaDTODetalle;
+import mascotas.project.dto.MascotaDTODetail;
 import mascotas.project.dto.MascotaDTORequest;
 import mascotas.project.dto.MascotaDTOSaveSucces;
 import mascotas.project.entities.Mascota;
@@ -58,7 +58,7 @@ public class MascotaService {
 
     }
 
-    public MascotaDTODetalle getMascotaById(Long id){
+    public MascotaDTODetail getMascotaById(Long id){
 
         Mascota mascota = this.getMascotaEntityById(id);
 
@@ -73,7 +73,7 @@ public class MascotaService {
     }
 
 
-    public List<MascotaDTODetalle> getMascotasByFamiliarId(Long usuarioId){
+    public List<MascotaDTODetail> getMascotasByFamiliarId(Long usuarioId){
 
         usuarioService.getUsuarioById(usuarioId);
 

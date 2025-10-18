@@ -9,6 +9,7 @@ import BackdropSuccess from '../backdropSuccess'
 import { Mapa } from '../mapa'
 import CampoHora from './campos/campoHora'
 
+// TODO: Falta parte del back
 export default function FormularioNuevoAvistamiento() {
     const theme = useTheme()
     const navigation = useNavigation()
@@ -18,7 +19,6 @@ export default function FormularioNuevoAvistamiento() {
     const { control, handleSubmit, formState: {errors} } = useForm();
 
     const onSumbit = (data: any) => {
-        console.log("errors: ",data)
         data.ubicacion=ubicacion
         setVisible(false)
         

@@ -1,5 +1,7 @@
 package mascotas.project.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,12 +18,19 @@ import java.time.LocalDateTime;
 @Setter
 public class ExtravioRequestDTO {
 
-    private Long creador;
+    @Schema(type = "long", example = "10")
     private Long mascotaId;
+    @Schema(type = "long", example = "2")
+    private Long creador;
+    @Schema(type = "string", example = "zona del parque")
     private String zona;
-    private LocalDateTime hora;
+    @Schema(type = "string", example = "tenia un collar rojo")
     private String observacion;
-    private Boolean atencionMedica;
+    @Schema(type = "string", example = "23-01-2025 20:15:10")
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
+    private LocalDateTime hora;
+    @Schema(type = "boolean", example = "false")
+    private Boolean resuelto;
     
     @NotNull
     private Double latitud;
@@ -31,6 +40,4 @@ public class ExtravioRequestDTO {
     
     private String direccion;
 
-    /*private LocalDate tiempoGracia;
-    private Boolean atencionMedica;*/
 }

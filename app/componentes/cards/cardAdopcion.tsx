@@ -5,7 +5,7 @@ import { ImageSlider } from '../../testData/sliderData';
 import { differenceInMinutes, differenceInHours, differenceInDays, isToday } from "date-fns";
 interface Props {
     data: {
-        nombreMascota: string,
+        nombreCompaniero: string,
         especie: string,
         tipo: 'perdido' | 'avistado' // Tipo de collar, perdido o avistado
         ultimoAvistamiento: Date // Fecha del último avistamiento
@@ -33,8 +33,18 @@ function Collar({ nombre,tipo}: { nombre: string, tipo: 'perdido' | 'avistado' }
 
 // TODO:
 // (1*) Tener todo los avistamientos de este animal y mostrar el más reciente
-export default function CardAnimal({ data, navigateTo }: Props) {
-    
+export default function CardAdopcion({ data, navigateTo }: Props) {
+
+    // {
+    //   "esterilizado": true, 
+    //   "mascotaID": 1, 
+    //   "nombreCompaniero": "Max", 
+    //   "publicadorContacto": 987654321, 
+    //   "publicadorID": 2, 
+    //   "publicadorNombre": "María García", 
+    //   "requisitos": "Patio grande, experiencia con perros", 
+    //   "transito": true
+    // }
     const theme = useTheme();
     const navigation = useNavigation();
     const randomImage = ImageSlider[0].imagenes[Math.floor(Math.random() * ImageSlider[0].imagenes.length)];
@@ -54,7 +64,7 @@ export default function CardAnimal({ data, navigateTo }: Props) {
                     },
                 ]}
             >
-                <Collar nombre={data.nombreMascota} tipo={data?.tipo} />
+                {/* <Collar nombre={data.nombreCompaniero} tipo={data?.tipo} /> */}
                 <Card.Cover style={styles.fotoAnimal} source={randomImage} />
                 {(() => {
                     const avistamientoDate = new Date(data.ultimoAvistamiento);// (1*)
@@ -77,7 +87,7 @@ export default function CardAnimal({ data, navigateTo }: Props) {
                     return (
                         <Card.Title
                             title={info}
-                            subtitle={data.tipo === 'perdido' ? `${data.nombreMascota} - ${data.especie}` : `${data.estado} - ${data.especie}`}
+                            subtitle={`${data?.nombreCompaniero} - ${data.especie}`}
                             titleVariant="labelSmall"
                             titleStyle={{ color: theme.colors.primary }}
                             subtitleStyle={{ color: theme.colors.primary }}

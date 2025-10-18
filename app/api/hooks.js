@@ -99,14 +99,23 @@ export function useApiGetExtravios({ ...opciones }) {
     });
 }
 
-export function useApiGetExtraviosPorUsuario({ ...opciones }) {
+export function useApiGetExtraviosPorUsuario({ params, ...opciones }) {
     return useGet({
         nombreHook: "useApiGetExtraviosPorUsuario",
         url: rutas.extraviosPorUsuario,
+        params,
         configuracion: { ...opciones }
     });
 }
 
+export function useApiGetExtravioPorMascota({ params, ...opciones }) {
+    return useGet({
+        nombreHook: "useApiGetExtravioPorMascota",
+        url: rutas.extraviosPorMascota,
+        params,
+        configuracion: { ...opciones }
+    });
+}
 export function useApiPostRegistrarExtravio({ ...opciones }) {
     return usePost({
         nombreHook: "useApiPostRegistrarExtravio",

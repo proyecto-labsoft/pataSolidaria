@@ -21,7 +21,6 @@ export default function FormularioNuevoExtravio() {
     
     const onSubmit = (data: any) => {
         data.ubicacion = ubic
-        console.log(data)
         setVisible(false)
         setPost(true)
         

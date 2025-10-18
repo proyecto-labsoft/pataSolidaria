@@ -1,5 +1,5 @@
 import { View, ScrollView, Dimensions } from 'react-native'
-import React, { useMemo, useState} from 'react'
+import React, { useMemo, useEffect, useState} from 'react'
 import {Divider, Portal, Text, Chip, Modal, Button, TextInput, useTheme } from 'react-native-paper'
 import FormularioEditarFamiliar from '../componentes/formularios/formularioEditarFamiliar';
 import BotonAccionesFamiliarFAB from '../componentes/botones/botonAccionesFamiliarFAB';
@@ -9,9 +9,10 @@ import CarruselImagenes from '../componentes/carrusel/carruselImagenes';
 import AppbarNav from '../componentes/navegacion/appbarNav';
 import { TakePictureBtn } from '../componentes/TakePictureBtn';
 import { useRoute } from '@react-navigation/native';
-import { useApiDeleteMascota, useApiGetMascotaPorId, useApiPostRegistrarExtravio, useApiPutActualizarMascota } from '../api/hooks';
+import { useApiDeleteMascota, useApiGetExtravioPorMascota, useApiGetMascotaPorId, useApiPostRegistrarExtravio, useApiPutActualizarMascota } from '../api/hooks';
 import BackdropSuccess from '../componentes/backdropSuccess'; 
 import { useNavigation } from '@react-navigation/native'
+import { format } from 'date-fns';
 
 // Basandose en colores de la pagina de ARAF
 // primario: 0f7599
@@ -34,7 +35,9 @@ export default function VistaFamiliar() {
   // Hook para obtener datos actualizados
   const { data, refetch } = useApiGetMascotaPorId({params: { id: familiarId } });
 
+  console.log("familiarId",familiarId)
   const datosFamiliar = useMemo(() => {
+    console.log("datosFamiliar",data)
     if (!data) return null;
     return data
   }, [data]);
@@ -43,20 +46,31 @@ export default function VistaFamiliar() {
     onSuccess: () => {setSuccessMensaje(true) ; refetch()}
   }); 
 
+  const { data: isExtraviado } = useApiGetExtravioPorMascota({ params: {id: familiarId}})
+
+  useEffect(() => {
+    console.log("isExtraviado:", isExtraviado);
+    if (isExtraviado?.estaExtraviado) {
+      setPerdido(true);
+    } else {
+      setPerdido(false);
+    }
+  }, [isExtraviado]);
   const { mutateAsync: declararExtraviado } = useApiPostRegistrarExtravio({
     params: {id: familiarId},
     onSuccess: () => {setPerdido(true)}
   });
 
   const handleDeclararExtravio = () => {
-    declararExtraviado({data: {
-        creador: 2, // TODO - ID del usuario, reemplazar con el ID real del usuario autenticado
-        mascotaId: familiarId,
-        zona: "", // TODO - zona, reemplazar con la zona real, datos de geoloocalizacion
-        hora: new Date().toISOString(),
-        observacion: observacionesExtravio || null, 
-        atencionMedica: false // TODO - esto va a volar
-      }})
+    declararExtraviado({
+      data: {
+      creador: 2, // TODO - ID del usuario, reemplazar con el ID real del usuario autenticado
+      mascotaId: familiarId,
+      zona: "", // TODO - zona, reemplazar con la zona real, datos de geoloocalizacion
+      hora: format(new Date(), 'dd-MM-yyyy HH:mm:ss'),
+      observacion: observacionesExtravio || null,
+      }
+    })
     setCargarExtravio(false);
     setObservacionesExtravio('');
   }
@@ -123,7 +137,7 @@ export default function VistaFamiliar() {
               }}
           >
               <Text variant="titleLarge" style={{ marginBottom: 16 }}>
-                  ¿Declarar extravío de {datosFamiliar?.nombre}?
+                  {`¿Declarar extravío de ${datosFamiliar?.nombre}?`}
               </Text>
 
               <TextInput

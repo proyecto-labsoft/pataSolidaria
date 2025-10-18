@@ -1,5 +1,5 @@
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import React,{ useState } from "react";  
+import React from "react";  
 // Usar tema Material https://callstack.github.io/react-native-paper/docs/guides/theming#using-schemes
 import {
   MD3LightTheme as DefaultTheme,
@@ -16,7 +16,6 @@ import VistaFamiliar from "./pantallas/vistaFamiliar";
 // secundario: e28325
 // terciario: efefef
 import lightheme from '../assets/light-theme.json'
-import BotonAlerta from "./componentes/botones/botonAlerta";
 import ConfirmarBuscado from "./pantallas/confirmar-buscado";
 import Notificaciones from "./pantallas/notificaciones";
 import Perfil from "./pantallas/perfil";
@@ -39,8 +38,6 @@ const theme = {
 export default function Layout() {
   const Stack = createNativeStackNavigator();
   
-  const [visible, setVisible] = useState(true);
-  
   const navigationRef = useNavigationContainerRef();
 
   return (   
@@ -48,7 +45,7 @@ export default function Layout() {
       <QueryClientProviderBase>
       <SafeAreaProvider>
         <FondoGradiente>
-        <NavigationContainer ref={navigationRef} independent={true} onStateChange={(state) => state?.routes.length && state.routes.length > 1 ? setVisible(false) : setVisible(true)}>
+        <NavigationContainer ref={navigationRef} independent={true}>
           <Stack.Navigator initialRouteName="Home" screenOptions={{ contentStyle:{backgroundColor:'transparent'},headerShown: false}} >
             <Stack.Screen name="Home" component={Home} options={{ headerShown:false }} />
             <Stack.Screen name="Familiar" component={VistaFamiliar} options={{ headerShown:false }}/>
@@ -63,7 +60,6 @@ export default function Layout() {
             <Stack.Screen name="NuevoFamiliar" component={NuevoFamiliar} options={{ headerShown:false }} />
           </Stack.Navigator>
         </NavigationContainer>
-        <BotonAlerta showButton={visible} onPress={(ruta: string) => navigationRef.current && navigationRef.current.navigate(ruta)}/>
         </FondoGradiente>
       </SafeAreaProvider>
       </QueryClientProviderBase>

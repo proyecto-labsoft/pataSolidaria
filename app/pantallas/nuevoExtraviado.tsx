@@ -1,5 +1,4 @@
-import React from "react"
-import { StyleSheet} from "react-native";
+import React from "react" 
 import { SafeAreaView } from "react-native-safe-area-context";
 import AppbarNav from "../componentes/navegacion/appbarNav";
 import FormularioNuevoExtravio from "../componentes/formularios/nuevoExtravio/formularioNuevoExtravio";
@@ -15,8 +14,4 @@ export default function NuevoExtraviado() {
             </SafeAreaView>
         </>
     )
-}
-const styles = StyleSheet.create({
-    containerScroll: { 
-    },
-});
+} 

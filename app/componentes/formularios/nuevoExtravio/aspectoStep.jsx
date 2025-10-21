@@ -28,30 +28,32 @@ export default function AspectoStep({control}) {
                     nombre="tamanio"
                     opciones={['Muy grande','Grande','Mediano','Pequeño']}
                 />
-                
+
+                <CampoSelectorModal
+                    control={control}
+                    label="Especie de animal"
+                    nombre="especie"
+                    opciones={['Perro','Gato','Caballo','Otros']}
+                />
+                <CampoTexto
+                    control={control}
+                    label="Raza"
+                    nombre="raza"
+                />
+                <CampoSelectorModal
+                    control={control} 
+                    label="Sexo"
+                    nombre="sexo"
+                    opciones={['No lo sé','Macho','Hembra']}
+                />
                 <CampoTextoArea
                     control={control}
                     label="Descripción adicional"
                     nombre="descripcion"
                 />
+
             </View>
-            <CampoSelectorModal
-                control={control}
-                label="Especie de animal"
-                nombre="especie"
-                opciones={['Perro','Gato','Caballo','Otros']}
-            />
-            <CampoTexto
-                control={control}
-                label="Raza"
-                nombre="raza"
-            />
-            <CampoSelectorModal
-                control={control} 
-                label="Sexo"
-                nombre="sexo"
-                opciones={['No lo sé','Macho','Hembra']}
-            />
+            
         </View>
     )
 }

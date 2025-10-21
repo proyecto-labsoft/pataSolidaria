@@ -1,7 +1,6 @@
 
 import { View } from 'react-native' 
-import { useTheme, Text } from 'react-native-paper' 
-import CampoTexto from '../campos/campoTexto'  
+import { useTheme, Text } from 'react-native-paper'  
 import CampoFechaHora from '../campos/campoFechaHora'
 import TimeNoteIcon from '../../iconos/TimeNoteIcon'
 import PropTypes from 'prop-types'

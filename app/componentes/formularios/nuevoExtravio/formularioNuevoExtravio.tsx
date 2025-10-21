@@ -254,7 +254,7 @@ export default function FormularioNuevoExtravio() {
             >
                 <View style={{flex: 1, gap:20}}>
                     <Portal>
-                        {!visible && post && (<BackdropSuccess texto="Nueva busqueda confirmada" onTap={() => navigation.navigate('Home')}/>)}
+                        {!visible && post && (<BackdropSuccess texto="Nueva extravío confirmado" onTap={() => navigation.navigate('Home')}/>)}
                         <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={{...styles.containerStyle,backgroundColor:theme.colors.surface}}>
                             <Text style={{textAlign: 'center'}}>Al reportar el extravío compartirá sus datos de contacto con los demás usuarios para que se comuniquen con usted.</Text>
                             <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={handleSubmit(onSubmit)}>

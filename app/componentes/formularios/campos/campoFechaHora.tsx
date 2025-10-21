@@ -34,13 +34,18 @@ export default function CampoFechaHora({
     const [visible, setVisible] = useState(false);
     const [mode, setMode] = useState<'date' | 'time'>('date');
     const [tempDate, setTempDate] = useState<Date>(new Date());
+    const [cancelled, setCancelled] = useState(false);
 
     const showPicker = () => {
         setMode('date');
         setVisible(true);
+        setCancelled(false);
     };
 
-    const hideModal = () => setVisible(false);
+    const hideModal = () => {
+        setCancelled(true);
+        setVisible(false);
+    };
 
     // Función para formatear fecha y hora a dd-MM-yyyy hh:mm
     const formatDateTime = (date: Date): string => {
@@ -76,8 +81,16 @@ export default function CampoFechaHora({
     };
 
     const onDateTimeChange = (event: any, selectedDate?: Date, onChange?: (value: string) => void) => {
+        const eventType = event?.type;
+        
         if (Platform.OS === 'android') {
             setVisible(false);
+            
+            // Si el usuario canceló (dismissed o set sin fecha), no hacer nada
+            if (eventType === 'dismissed' || !selectedDate) {
+                setCancelled(true);
+                return;
+            }
         }
         
         if (selectedDate) {
@@ -85,22 +98,27 @@ export default function CampoFechaHora({
             
             if (Platform.OS === 'android') {
                 // En Android, después de seleccionar fecha, mostrar selector de hora
-                if (mode === 'date') {
+                if (mode === 'date' && eventType === 'set') {
                     setTimeout(() => {
                         setMode('time');
                         setVisible(true);
+                        setCancelled(false);
                     }, 100);
-                } else if (mode === 'time' && onChange) {
+                } else if (mode === 'time' && eventType === 'set' && onChange) {
                     // Después de seleccionar hora, confirmar
                     onChange(formatDateTime(selectedDate));
+                    setCancelled(false);
                 }
             }
         }
     };
 
     const confirmDateTime = (onChange: (value: string) => void) => {
-        onChange(formatDateTime(tempDate));
-        hideModal();
+        if (!cancelled) {
+            onChange(formatDateTime(tempDate));
+        }
+        setVisible(false);
+        setCancelled(false);
     };
 
     return (
@@ -198,7 +216,10 @@ export default function CampoFechaHora({
                                         {mode === 'date' ? (
                                             <Button 
                                                 mode="contained" 
-                                                onPress={() => setMode('time')}
+                                                onPress={() => {
+                                                    setCancelled(false);
+                                                    setMode('time');
+                                                }}
                                                 style={{ flex: 1, marginLeft: 8 }}
                                             >
                                                 Siguiente

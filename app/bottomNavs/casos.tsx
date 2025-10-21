@@ -1,45 +1,48 @@
-import { ScrollView, View } from "react-native";
+import { FlatList, View } from "react-native";
 import CardAnimal from "../componentes/cards/cardAnimal"; 
 import { useApiGetExtravios } from "../api/hooks";
-import { Text } from "react-native-paper";
+import { Text, useTheme } from "react-native-paper";
+import VisitVetIcon from "../componentes/iconos/VisitVetIcon"; 
 
 export default function VistaCasos() {
-  const {data, isFetching } = useApiGetExtravios({enabled: true }) 
+  const {data: extravios, isFetching } = useApiGetExtravios({enabled: true }) 
+
+  const theme = useTheme();
+
+  // Agrupa los datos de a dos por fila
+  const extraviosPorFila = Array.isArray(extravios)
+    ? Array.from({ length: Math.ceil(extravios.length / 2) }, (_, idx) =>
+        extravios.slice(idx * 2, idx * 2 + 2)
+      )
+    : [];
 
   return ( 
-    <View style={{flex:1, marginTop: 20 }}> 
-      <ScrollView
-        contentContainerStyle={{justifyContent:'center', alignItems: "flex-start",paddingVertical: 10,paddingBottom:80}}
-      >
-        {isFetching ? (
-          <Text>Cargando...</Text>
-        ) : (
-          (Array.isArray(data) && data?.length > 0 ? (
-            Array.from({ length: Math.ceil((Array.isArray(data) ? data.length : 0) / 2) }).map((_, rowIdx) => {
-              const safeData = Array.isArray(data) ? data : [];
-              const rowItems = safeData.slice(rowIdx * 2, rowIdx * 2 + 2);
-              return (
-                <View key={rowIdx} style={{ flexDirection: 'row', width: '100%' }}>
-                  <CardAnimal
-                    key={rowItems[0]?.id || `${rowIdx}-0`}
-                    navigateTo="VistaExtravio"
-                    data={rowItems[0]}
-                  />
-                  {rowItems[1] ? (
-                    <CardAnimal
-                      key={rowItems[1]?.id || `${rowIdx}-1`}
-                      navigateTo="VistaExtravio"
-                      data={rowItems[1]}
-                    />
-                  ) : (
-                    <View key={`${rowIdx}-empty`} style={{ flex: 1 }} />
-                  )}
-                </View>
-              );
-            })) : <Text>No hay datos disponibles</Text>
-        ))}
-      </ScrollView>
+    <View style={{height: '100%', marginVertical: 10}}> 
+      <FlatList
+        data={extraviosPorFila}
+        keyExtractor={(_, idx) => idx.toString()}
+        contentContainerStyle={{ justifyContent: 'center', alignItems: "center", paddingBottom: 80 }}
+        renderItem={({ item }) => (
+          <View style={{ flexDirection: 'row', width: '100%' }}>
+            <CardAnimal navigateTo="VistaExtravio" data={item[0]} />
+            {item[1] ? (
+              <CardAnimal navigateTo="VistaExtravio" data={item[1]} />
+            ) : (
+              <View style={{ flex: 1 }} />
+            )}
+          </View>
+        )}
+        ListEmptyComponent={
+          isFetching
+            ? (<View style={{alignItems: 'center', marginVertical: 50}}> 
+                  <Text variant="headlineMedium" style={{textAlign: 'center', color: theme.colors.secondary}}>Buscando casos...</Text>
+              </View>)
+            : (<View style={{alignItems: 'center', marginVertical: 50}}>
+                  <VisitVetIcon width={250} height={250} color={theme.colors.primary} />
+                  <Text variant="headlineMedium" style={{textAlign: 'center', color: theme.colors.secondary}}>No hay casos de extravío</Text>
+              </View>)
+        }
+      />
     </View> 
-    
   );
 }

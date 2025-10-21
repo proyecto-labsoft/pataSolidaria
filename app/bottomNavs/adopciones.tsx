@@ -1,10 +1,12 @@
-import { FlatList, ScrollView, View } from "react-native";
-import DescripcionVista from "../componentes/descripcionVista";
+import { FlatList, View } from "react-native"; 
 import { useApiGetAdopciones } from "../api/hooks";
 import CardAdopcion from "../componentes/cards/cardAdopcion";
+import DogHouseIcon from "../componentes/iconos/DogHouseIcon"; 
+import { Text, useTheme } from "react-native-paper";
 
 export default function VistaAdopciones() {
-  
+
+  const theme = useTheme();
   const {data: adopciones, isFetching } = useApiGetAdopciones({enabled: true }) 
 
   // Agrupa los datos de a dos por fila
@@ -20,7 +22,7 @@ export default function VistaAdopciones() {
         <FlatList
           data={adopcionesPorFila}
           keyExtractor={(_, idx) => idx.toString()}
-          contentContainerStyle={{ justifyContent: 'center', alignItems: "flex-start", paddingBottom: 80 }}
+          contentContainerStyle={{ justifyContent: 'center', alignItems: "center", paddingBottom: 80 }}
           renderItem={({ item }) => (
             <View style={{ flexDirection: 'row', width: '100%' }}>
               <CardAdopcion navigateTo="Familiar" data={item[0]} />
@@ -33,8 +35,13 @@ export default function VistaAdopciones() {
           )}
           ListEmptyComponent={
             isFetching
-              ? <View style={{ alignSelf: 'center', marginTop: 20 }}><CardAdopcion navigateTo="Familiar" data={{ nombreMascota: 'Cargando...', especie: '' }} /></View>
-              : <View style={{ alignSelf: 'center', marginTop: 20 }}><CardAdopcion navigateTo="Familiar" data={{ nombreMascota: 'Sin datos', especie: '' }} /></View>
+              ? (<View style={{alignItems: 'center',marginVertical: 50}}> 
+                    <Text variant="headlineMedium" style={{textAlign: 'center',color: theme.colors.secondary }}>Cargando adopciones...</Text>
+                </View>)
+              : (<View style={{alignItems: 'center',marginVertical: 50}}>
+                    <DogHouseIcon width={250} height={250} color={theme.colors.primary} />
+                    <Text variant="headlineMedium" style={{textAlign: 'center',color: theme.colors.secondary }}>No tenemos compas en adopción</Text>
+                </View>)
           }
         />
     </View>

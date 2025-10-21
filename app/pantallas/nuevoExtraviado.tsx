@@ -1,25 +1,22 @@
 import React from "react"
-import { ScrollView, StyleSheet} from "react-native";
+import { StyleSheet} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AppbarNav from "../componentes/navegacion/appbarNav";
-import FormularioNuevoExtravio from "../componentes/formularios/formularioNuevoExtravio";
+import FormularioNuevoExtravio from "../componentes/formularios/nuevoExtravio/formularioNuevoExtravio";
 
 //TODO: Cambiar el estadod e post por el retorno de la request Post cuando se cree el caso
 export default function NuevoExtraviado() {
 
     return (
         <>
-            <AppbarNav titulo="Nuevo encontrado" tamanioTitulo="headlineSmall"/>     
-            <SafeAreaView style={{flex:1}}>   
-                <ScrollView contentContainerStyle={ {...styles.containerScroll}}>
-                    <FormularioNuevoExtravio />
-                </ScrollView>
+            <AppbarNav titulo="Nuevo extravío" tamanioTitulo="headlineSmall"/>     
+            <SafeAreaView style={{flex:1}}>    
+                <FormularioNuevoExtravio /> 
             </SafeAreaView>
         </>
     )
 }
 const styles = StyleSheet.create({
-    containerScroll: {
-        paddingBottom: 20
+    containerScroll: { 
     },
 });

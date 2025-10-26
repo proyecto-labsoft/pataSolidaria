@@ -12,6 +12,9 @@ public interface MascotaMapper {
     @Mapping(target = "familiar.id", source = "familiarId")
     Mascota toEntity(MascotaDTORequest dtoRequest);
 
+    @Mapping(target = "familiar", ignore = true)
+    Mascota toAnonimousEntity(MascotaDTORequest dtoRequest);
+
     @Mapping(target = "familiar.id", source = "dtoRequest.familiarId")
     @Mapping(target = "id", source = "idMascota")
     Mascota toEntity(MascotaDTORequest dtoRequest, Long idMascota);

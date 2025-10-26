@@ -16,12 +16,19 @@ import java.time.LocalDate;
 public class MascotaDTORequest {
 
     private Long familiarId;
+    @Schema(description = "nombre de la mascota", example = "Rocky")
     private String nombre;
+    @Schema(description = "especie de la mascota", example = "Perro")
     private String especie;
+    @Schema(description = "raza de la mascota", example = "Labrador")
     private String raza;
+    @Schema(description = "color de la mascota", example = "Marron")
     private String color;
+    @Schema(description = "descripcion de la mascota", example = "Perro amigable")
     private String descripcion;
+    @Schema(description = "esterilizado", example = "True", allowableValues = {"True", "False"})
     private Boolean esterilizado;
+    @Schema(description = "chipeado", example = "True", allowableValues = {"True", "False"})
     private Boolean chipeado;
 
     @Schema(description = "Sexo de la mascota", example = "M", allowableValues = {"M", "H"})

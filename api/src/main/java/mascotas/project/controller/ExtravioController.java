@@ -8,8 +8,10 @@ import lombok.extern.slf4j.Slf4j;
 import mascotas.project.dto.ExtravioDetailDTO;
 import mascotas.project.dto.ExtravioRequestDTO;
 import mascotas.project.dto.PerdidoDTO;
+import mascotas.project.dto.PerdidoSinFamiliarDTO;
 import mascotas.project.entities.Extravio;
 import mascotas.project.services.ExtravioService;
+import mascotas.project.services.PerdidosAnonimosService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,10 +30,11 @@ import java.util.List;
 @RequestMapping("/extravios")
 @AllArgsConstructor
 @Slf4j
-@Tag(name= "Extravios", description = "Servicios relacionados a Extravios")
+@Tag(name= "Extravios", description = "Servicios relacionados a Extravios para animales con Familiares")
 public class ExtravioController {
 
     private ExtravioService extravioService;
+    private PerdidosAnonimosService perdidosAnonimosService;
 
     @PostMapping(value = "")
     @Operation(
@@ -42,6 +45,20 @@ public class ExtravioController {
     public ResponseEntity<Object> publicarExtravio (@RequestBody ExtravioRequestDTO extravioDTO){
 
         extravioService.saveExtravio(extravioDTO);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(null);
+    }
+
+
+    @PostMapping(value = "sin-familiar")
+    @Operation(
+            operationId = "postExtravioSinFamiliar",
+            summary = "Persiste un nuevo extravio",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Datos para el nuevo extravio sin familiar")
+    )
+    public ResponseEntity<Object> publicarExtravio(@RequestBody PerdidoSinFamiliarDTO perdidoAnonimoDto) {
+
+        perdidosAnonimosService.savePerdidosAnonimos(perdidoAnonimoDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(null);
     }

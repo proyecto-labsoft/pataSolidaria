@@ -85,7 +85,7 @@ export const Mapa: FC<MapProps> = ({ localizar= false, latitude, longitude, styl
     try {
       let [address] = await reverseGeocodeAsync(ubi);
       if (address) {
-        modificarDomicilio((address.street === null ? 'sin calle' : address.street) + ' ' + (address.streetNumber === null ? 'sin altura' : address.streetNumber));
+        modificarDomicilio?.((address.street === null ? 'sin calle' : address.street) + ' ' + (address.streetNumber === null ? 'sin altura' : address.streetNumber));
       }
     } catch (error) {
       console.error('Error al obtener la dirección:', error);
@@ -100,16 +100,20 @@ export const Mapa: FC<MapProps> = ({ localizar= false, latitude, longitude, styl
         zoomControlEnabled
         // initialRegion={INITIAL_REGION}
         initialCamera={ INITIAL_CAMERA }
-        mapType='none'
+        //mapType='none'
         onPress={ handleMarkerPoint }
       >
         <UrlTile
-          urlTemplate="https://a.tile.openstreetmap.de/{z}/{x}/{y}.png"
+          urlTemplate="https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png"
           maximumZ={19}
+          flipY={false}
         />
         {location.latitude && location.longitude && 
           <Marker
-            coordinate={ location }
+            coordinate={{ 
+              latitude: location.latitude, 
+              longitude: location.longitude 
+            }}
             draggable
             onDragEnd={ handleMarkerPoint }
           />

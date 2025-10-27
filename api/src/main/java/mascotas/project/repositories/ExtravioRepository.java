@@ -41,7 +41,10 @@ public interface ExtravioRepository extends JpaRepository<Extravio, Long> {
         e.hora,
         e.observacion,
         e.resuelto,
-        null
+        null,
+        e.latitud,
+        e.longitud,
+        e.direccion
     )
     FROM Extravio e
     WHERE e.creador = :usuario

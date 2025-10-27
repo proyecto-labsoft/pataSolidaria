@@ -19,7 +19,7 @@ services:
     build: 
       context: .
       dockerfile: Dockerfile
-    image: esaizar88/api-mascotas:latest
+    image: esaizar88/api-mascotas:geo
     container_name: api-mascotas
     depends_on:
       - postgres

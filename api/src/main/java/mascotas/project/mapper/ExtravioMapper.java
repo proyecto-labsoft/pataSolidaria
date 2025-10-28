@@ -10,8 +10,9 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring", uses = {MascotaMapper.class}, imports = Mascota.class)
 public interface ExtravioMapper {
 
-    @Mapping(target = "mascota", source = "mascotaId")
-    Extravio toEntity(ExtravioRequestDTO dto);
+    @Mapping(target = "creadoByFamiliar", expression = "java(!animalAnonimo)")
+    @Mapping(target = "mascota", source = "dto.mascotaId")
+    Extravio toEntity(ExtravioRequestDTO dto, Boolean animalAnonimo);
 
     @Mapping(target = "id", source = "extravioId")
     @Mapping(target = "mascota", source = "dto.mascotaId")

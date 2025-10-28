@@ -57,7 +57,7 @@ public class Mascota {
     private Boolean chipeado;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "familiar", nullable = false)
+    @JoinColumn(name = "familiar", nullable = true)
     private Usuario familiar;
 
 }

@@ -41,6 +41,18 @@ public class MascotaService {
     }
 
     @Transactional
+    public MascotaDTOSaveSucces saveMascotaSinFamiliar(MascotaDTORequest mascotaDTORequest){
+
+        Mascota mascota = mascotaMapper.toAnonimousEntity(mascotaDTORequest);
+        mascota = mascotaRepository.save(mascota);
+
+        return MascotaDTOSaveSucces.builder()
+                .id(mascota.getId())
+                .nombre(mascota.getNombre())
+                .build();
+    }
+
+    @Transactional
     public MascotaDTOSaveSucces putMascota(Long idMascota, MascotaDTORequest mascotaDTORequest){
 
         this.getMascotaEntityById(idMascota);

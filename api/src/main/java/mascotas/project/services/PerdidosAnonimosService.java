@@ -23,12 +23,10 @@ public class PerdidosAnonimosService {
         ExtravioRequestDTO extravio = perdido.getDatosExtravio();
         MascotaDTORequest mascotaRequest = perdido.getDatosMascota();
 
-        //tengo que mapear la mascota, persistirla
         MascotaDTOSaveSucces mascotaEntity = mascotaService.saveMascotaSinFamiliar(mascotaRequest);
-        perdido.getDatosExtravio().setMascotaId(  mascotaEntity.getId() );
 
-        extravioService.saveExtravio(extravio);
-        //tengo que mapear el extravio, persistirlo
+        extravio.setMascotaId( mascotaEntity.getId() );
 
+        extravioService.saveExtravio(extravio, Boolean.TRUE);
     }
 }

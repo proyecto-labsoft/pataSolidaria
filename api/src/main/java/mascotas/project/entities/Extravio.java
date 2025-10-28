@@ -1,6 +1,7 @@
 package mascotas.project.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -39,4 +40,7 @@ public class Extravio {
     private String observacion;
 
     private Boolean resuelto;
+
+    @Column(name = "creado_by_familiar")
+    private Boolean creadoByFamiliar;
 }

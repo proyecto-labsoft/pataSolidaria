@@ -44,7 +44,7 @@ public class ExtravioController {
     )
     public ResponseEntity<Object> publicarExtravio (@RequestBody ExtravioRequestDTO extravioDTO){
 
-        extravioService.saveExtravio(extravioDTO);
+        extravioService.saveExtravio(extravioDTO, Boolean.FALSE);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(null);
     }

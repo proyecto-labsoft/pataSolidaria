@@ -20,6 +20,7 @@ public interface ExtravioRepository extends JpaRepository<Extravio, Long> {
         e.hora,
         e.observacion,
         e.resuelto,
+        e.creadoByFamiliar,
         null
     )
     FROM Extravio e
@@ -38,6 +39,7 @@ public interface ExtravioRepository extends JpaRepository<Extravio, Long> {
         e.hora,
         e.observacion,
         e.resuelto,
+        e.creadoByFamiliar,
         null
     )
     FROM Extravio e
@@ -53,6 +55,7 @@ public interface ExtravioRepository extends JpaRepository<Extravio, Long> {
         e.hora,
         e.observacion,
         e.resuelto,
+        e.creadoByFamiliar,
         null
     )
     FROM Extravio e
@@ -70,6 +73,7 @@ public interface ExtravioRepository extends JpaRepository<Extravio, Long> {
         e.hora,
         e.observacion,
         e.resuelto,
+        e.creadoByFamiliar,
         null
     )
     FROM Extravio e

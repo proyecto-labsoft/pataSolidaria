@@ -32,7 +32,7 @@ public class ExtravioService {
     private ExtravioRepository extravioRepository;
 
     @Transactional
-    public void saveExtravio(ExtravioRequestDTO extravioDto) {
+    public void saveExtravio(ExtravioRequestDTO extravioDto, Boolean animalAnonimo) {
 
         Optional.of(extravioDto)
                 .map(
@@ -42,7 +42,7 @@ public class ExtravioService {
                             //busco el usuario
                             usuarioService.getUsuarioById(extravioDTO.getCreador());
 
-                           return extravioMapper.toEntity(extravioDto); //mapeo el dto
+                           return extravioMapper.toEntity(extravioDto, animalAnonimo); //mapeo el dto
                     }
                 )
                 .map(

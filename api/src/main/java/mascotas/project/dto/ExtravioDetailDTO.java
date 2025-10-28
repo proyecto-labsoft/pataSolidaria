@@ -21,6 +21,6 @@ public class ExtravioDetailDTO {
     private LocalDateTime hora;
     private String observacion;
     private Boolean resuelto;
-
+    private Boolean creadoByFamiliar;
     private MascotaDTODetail mascotaDetalle;
 }

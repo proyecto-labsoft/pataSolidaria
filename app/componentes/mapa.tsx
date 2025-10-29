@@ -7,13 +7,14 @@ import { ActivityIndicator } from 'react-native-paper';
 
 type MapProps = {
   localizar?: boolean;
+  puntoModificable?: boolean;
   latitude: number | null;
   longitude: number | null;
   style?: object;
   modificarDomicilio?: (domicilio: string) => void;
 };
 
-export const Mapa: FC<MapProps> = ({ localizar= false, latitude, longitude, style, modificarDomicilio }) => {
+export const Mapa: FC<MapProps> = ({ localizar = false, puntoModificable = true, latitude, longitude, style, modificarDomicilio }) => {
 
   const mapRef = useRef<MapView>();
   const [status, requestPermissionLocation] = useForegroundPermissions();
@@ -122,7 +123,7 @@ export const Mapa: FC<MapProps> = ({ localizar= false, latitude, longitude, styl
                   latitude: location.latitude, 
                   longitude: location.longitude 
                 }}
-              draggable
+              draggable={ puntoModificable }
               onDragEnd={ handleMarkerPoint }
             />
             <Circle

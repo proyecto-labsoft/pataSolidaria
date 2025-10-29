@@ -106,9 +106,14 @@ export const Mapa: FC<MapProps> = ({ localizar= false, latitude, longitude, styl
         onPress={ handleMarkerPoint }
       >
         <UrlTile
-          urlTemplate="https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png"
+        // urlTemplate="https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png"
+        // urlTemplate="https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png"
+          urlTemplate="https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
           maximumZ={19}
+          minimumZ={1}
           flipY={false}
+          zIndex={-1}
+          shouldReplaceMapContent={true}
         />
         {location.latitude && location.longitude && 
           <>

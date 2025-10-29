@@ -23,21 +23,19 @@ public class Mascota {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(nullable = false, length = 255)
+    @Column(length = 255)
     private String nombre;
 
-    @Column(nullable = false)
     private String especie;
 
-    @Column(nullable = false)
     private String raza;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 1)
+    @Column(length = 1)
     private SexoEnum sexo;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 255)
+    @Column(length = 255)
     private TamanioEnum tamanio;
 
     @Column(nullable = true)

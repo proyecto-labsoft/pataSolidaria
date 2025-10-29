@@ -9,6 +9,7 @@ import mascotas.project.dto.MascotaDTODetail;
 import mascotas.project.dto.MascotaDTORequest;
 import mascotas.project.dto.MascotaDTOSaveSucces;
 import mascotas.project.entities.Mascota;
+import mascotas.project.exceptions.BadRequestException;
 import mascotas.project.exceptions.NotFoundException;
 import mascotas.project.mapper.MascotaMapper;
 import mascotas.project.repositories.MascotaRepository;
@@ -24,9 +25,35 @@ public class MascotaService {
     private UsuarioService usuarioService;
     private MascotaMapper mascotaMapper;
 
+    /**
+     * Valida que los campos obligatorios de la mascota no sean nulos
+     */
+    private void validateMascotaRequiredFields(MascotaDTORequest mascotaDTORequest) {
+        if (mascotaDTORequest.getNombre() == null || mascotaDTORequest.getNombre().trim().isEmpty()) {
+            throw new BadRequestException(ErrorsEnums.MASCOTA_NOMBRE_REQUIRED.getDescription());
+        }
+        if (mascotaDTORequest.getEspecie() == null || mascotaDTORequest.getEspecie().trim().isEmpty()) {
+            throw new BadRequestException(ErrorsEnums.MASCOTA_ESPECIE_REQUIRED.getDescription());
+        }
+        if (mascotaDTORequest.getRaza() == null || mascotaDTORequest.getRaza().trim().isEmpty()) {
+            throw new BadRequestException(ErrorsEnums.MASCOTA_RAZA_REQUIRED.getDescription());
+        }
+        if (mascotaDTORequest.getSexo() == null) {
+            throw new BadRequestException(ErrorsEnums.MASCOTA_SEXO_REQUIRED.getDescription());
+        }
+        if (mascotaDTORequest.getTamanio() == null) {
+            throw new BadRequestException(ErrorsEnums.MASCOTA_TAMANIO_REQUIRED.getDescription());
+        }
+        if (mascotaDTORequest.getFamiliarId() == null) {
+            throw new BadRequestException(ErrorsEnums.MASCOTA_FAMILIAR_REQUIRED.getDescription());
+        }
+    }
 
     @Transactional
     public MascotaDTOSaveSucces saveMascota(MascotaDTORequest mascotaDTORequest){
+
+        // Validar campos obligatorios
+        validateMascotaRequiredFields(mascotaDTORequest);
 
         usuarioService.getUsuarioById(mascotaDTORequest.getFamiliarId());
 
@@ -54,6 +81,9 @@ public class MascotaService {
 
     @Transactional
     public MascotaDTOSaveSucces putMascota(Long idMascota, MascotaDTORequest mascotaDTORequest){
+
+        // Validar campos obligatorios
+        validateMascotaRequiredFields(mascotaDTORequest);
 
         this.getMascotaEntityById(idMascota);
         usuarioService.getUsuarioById(mascotaDTORequest.getFamiliarId());

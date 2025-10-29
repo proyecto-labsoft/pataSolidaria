@@ -1,6 +1,6 @@
 import React, { FC, useState, useEffect, useRef } from 'react';
 import { Linking, StyleSheet, View } from 'react-native';
-import MapView, { Marker, UrlTile } from 'react-native-maps';
+import MapView, { Marker, UrlTile, Circle } from 'react-native-maps';
 import { getCurrentPositionAsync, PermissionStatus, requestForegroundPermissionsAsync, reverseGeocodeAsync, useForegroundPermissions } from 'expo-location';
 import { ActivityIndicator } from 'react-native-paper';
 
@@ -72,6 +72,8 @@ export const Mapa: FC<MapProps> = ({ localizar= false, latitude, longitude, styl
 
     if (localizar) {
       fetchLocation();
+    } else {
+      setLoading(false);
     }
   }, [localizar]);
   
@@ -85,7 +87,7 @@ export const Mapa: FC<MapProps> = ({ localizar= false, latitude, longitude, styl
     try {
       let [address] = await reverseGeocodeAsync(ubi);
       if (address) {
-        modificarDomicilio((address.street === null ? 'sin calle' : address.street) + ' ' + (address.streetNumber === null ? 'sin altura' : address.streetNumber));
+        modificarDomicilio?.((address.street === null ? 'sin calle' : address.street) + ' ' + (address.streetNumber === null ? 'sin altura' : address.streetNumber));
       }
     } catch (error) {
       console.error('Error al obtener la dirección:', error);
@@ -104,15 +106,31 @@ export const Mapa: FC<MapProps> = ({ localizar= false, latitude, longitude, styl
         onPress={ handleMarkerPoint }
       >
         <UrlTile
-          urlTemplate="https://a.tile.openstreetmap.de/{z}/{x}/{y}.png"
+          urlTemplate="https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png"
           maximumZ={19}
+          flipY={false}
         />
         {location.latitude && location.longitude && 
-          <Marker
-            coordinate={ location }
-            draggable
-            onDragEnd={ handleMarkerPoint }
-          />
+          <>
+            <Marker
+              coordinate={{ 
+                  latitude: location.latitude, 
+                  longitude: location.longitude 
+                }}
+              draggable
+              onDragEnd={ handleMarkerPoint }
+            />
+            <Circle
+              center={{
+                latitude: location.latitude,
+                longitude: location.longitude
+              }}
+              radius={250} // Radio en metros
+              strokeWidth={2}
+              strokeColor="rgba(220, 152, 88, 0.1)"
+              fillColor="rgba(220, 152, 88, 0.5)"
+            />
+          </>
         }
       </MapView>
       {loading && <ActivityIndicator style={ styles.loading } size="large" color="#0000ff" />}

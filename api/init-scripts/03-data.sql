@@ -16,9 +16,9 @@ INSERT INTO adopcion (administrador, mascota, requisitos, transito) VALUES
 (2, 2, 'Hogar sin otros gatos, ambiente tranquilo', false);
 
 -- Insertar extravíos de ejemplo
-INSERT INTO extravio (creador, mascota, zona, hora, tiempo_gracia, atencion_medica, observacion, resuelto) VALUES
-(1, 3, 'Parque Central', '2025-08-27 15:30:00', '2025-08-28 15:30:00', false, 'Visto por última vez cerca de la fuente', false),
-(3, 1, 'Plaza Mayor', '2025-08-26 18:45:00', '2025-08-27 18:45:00', true, 'Lleva collar rojo con placa de identificación', false);
+INSERT INTO extravio (creador, mascota, zona, hora, observacion, resuelto, latitud, longitud, direccion) VALUES
+(1, 3, 'Parque Central', '2025-08-27 15:30:00', 'Visto por última vez cerca de la fuente', false, -54.8019, -68.3030, 'Parque Central, Ushuaia, Tierra del Fuego'),
+(3, 1, 'Plaza Mayor', '2025-08-26 18:45:00', 'Lleva collar rojo con placa de identificación', false, -54.8055, -68.3025, 'Plaza Mayor, Ushuaia, Tierra del Fuego');
 
 -- Insertar postulaciones de ejemplo
 INSERT INTO postulacion (usuario, adopcion, fecha) VALUES

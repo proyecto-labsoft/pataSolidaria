@@ -26,12 +26,16 @@ export default function VistaExtravio({route}: any) {
 
     const [esBuscado,setEsBuscado] = useState(false)
     const [datosAnimal, setDatosAnimal] = useState(null);
+    const [datosExtravio, setDatosExtravio] = useState(null);
     useEffect(() => {
         if ( route.params?.data?.mascotaDetalle) {
             setDatosAnimal(route.params.data.mascotaDetalle);
         }
         if (route.params?.data?.mascotaId) {
             setEsBuscado(true)
+        }
+        if (route.params?.data) {
+            setDatosExtravio(route.params?.data)
         }
     },[route.params?.data])
 
@@ -43,9 +47,9 @@ export default function VistaExtravio({route}: any) {
             <ScrollView contentContainerStyle={{margin:12}} > 
                 <Portal>
                     <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={{...styles.containerStyle,backgroundColor:theme.colors.surface}}>
-                        <Mapa style={{width:width,height:height}} latitude={null} longitude={null}/>
+                        <Mapa style={{width:width,height:height}} latitude={datosExtravio?.latitude} longitude={datosExtravio?.longitude}/>
                         <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained"  onPress={()=> setVisible(false)}>
-                            <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Volver atrás</Text>
+                            <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Volver atrás{datosExtravio?.latitude}</Text>
                         </Button>
                     </Modal>
                 </Portal>

@@ -23,4 +23,7 @@ public class ExtravioDetailDTO {
     private Boolean resuelto;
     private Boolean creadoByFamiliar;
     private MascotaDTODetail mascotaDetalle;
+    private Double latitud;
+    private Double longitud;
+    private String direccion;
 }

@@ -21,7 +21,10 @@ public interface ExtravioRepository extends JpaRepository<Extravio, Long> {
         e.observacion,
         e.resuelto,
         e.creadoByFamiliar,
-        null
+        null,
+        e.latitud,
+        e.longitud,
+        e.direccion
     )
     FROM Extravio e
     JOIN Mascota m ON e.mascota = m.id
@@ -40,7 +43,10 @@ public interface ExtravioRepository extends JpaRepository<Extravio, Long> {
         e.observacion,
         e.resuelto,
         e.creadoByFamiliar,
-        null
+        null,
+        e.latitud,
+        e.longitud,
+        e.direccion
     )
     FROM Extravio e
     WHERE e.creador = :usuario
@@ -56,7 +62,10 @@ public interface ExtravioRepository extends JpaRepository<Extravio, Long> {
         e.observacion,
         e.resuelto,
         e.creadoByFamiliar,
-        null
+        null,
+        e.latitud,
+        e.longitud,
+        e.direccion
     )
     FROM Extravio e
     JOIN Mascota m ON e.mascota = m.id
@@ -74,7 +83,10 @@ public interface ExtravioRepository extends JpaRepository<Extravio, Long> {
         e.observacion,
         e.resuelto,
         e.creadoByFamiliar,
-        null
+        null,
+        e.latitud,
+        e.longitud,
+        e.direccion
     )
     FROM Extravio e
     JOIN Mascota m ON e.mascota = m.id

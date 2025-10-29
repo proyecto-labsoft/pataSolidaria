@@ -6,6 +6,12 @@ import lombok.Getter;
 public enum ErrorsEnums {
 
     MASCOTA_NOT_FOUND(0, "No se encontró a la MASCOTA con ID: "),
+    MASCOTA_NOMBRE_REQUIRED(0, "El nombre de la mascota es obligatorio"),
+    MASCOTA_ESPECIE_REQUIRED(0, "La especie de la mascota es obligatoria"),
+    MASCOTA_RAZA_REQUIRED(0, "La raza de la mascota es obligatoria"),
+    MASCOTA_SEXO_REQUIRED(0, "El sexo de la mascota es obligatorio"),
+    MASCOTA_TAMANIO_REQUIRED(0, "El tamaño de la mascota es obligatorio"),
+    MASCOTA_FAMILIAR_REQUIRED(0, "El familiar de la mascota es obligatorio"),
 
     EXTRAVIO_NOT_FOUND_ERROR(0, "No se encontró el EXTRAVIO con ID: "),
     EXTRAVIO_FORBIDDEN_ERROR(0, "El usuario no es CREADOR del extravio con ID: "),

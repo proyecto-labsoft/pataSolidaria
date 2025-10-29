@@ -22,8 +22,8 @@ import java.time.LocalDateTime;
 @Table(name = "extravio", schema = "public")
 public class Extravio {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "adopcion_id_seq")
-    @SequenceGenerator(name = "adopcion_id_seq", sequenceName = "adopcion_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "extravio_id_seq")
+    @SequenceGenerator(name = "extravio_id_seq", sequenceName = "extravio_id_seq", allocationSize = 1)
     private Long id;
 
     private Long creador;
@@ -43,4 +43,10 @@ public class Extravio {
 
     @Column(name = "creado_by_familiar")
     private Boolean creadoByFamiliar;
+
+    private Double latitud;
+
+    private Double longitud;
+
+    private String direccion;
 }

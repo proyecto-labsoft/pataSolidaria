@@ -30,4 +30,10 @@ public class ExtravioRequestDTO {
     private LocalDateTime hora;
     @Schema(type = "boolean", example = "false")
     private Boolean resuelto;
+    @Schema(type = "double", example = "-54.8019")
+    private Double latitud;
+    @Schema(type = "double", example = "-68.3030")
+    private Double longitud;
+    @Schema(type = "string", example = "calle falsa 123")
+    private String direccion;
 }

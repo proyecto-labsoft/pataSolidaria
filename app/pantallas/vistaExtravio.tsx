@@ -47,7 +47,7 @@ export default function VistaExtravio({route}: any) {
             <ScrollView contentContainerStyle={{margin:12}} > 
                 <Portal>
                     <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={{...styles.containerStyle,backgroundColor:theme.colors.surface}}>
-                        <Mapa style={{width:width,height:height}} latitude={datosExtravio?.latitude} longitude={datosExtravio?.longitude}/>
+                        <Mapa puntoModificable={false} style={{width:width,height:height}} latitude={datosExtravio?.latitude} longitude={datosExtravio?.longitude}/>
                         <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained"  onPress={()=> setVisible(false)}>
                             <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Volver atrás{datosExtravio?.latitude}</Text>
                         </Button>

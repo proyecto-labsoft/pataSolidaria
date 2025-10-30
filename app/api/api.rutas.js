@@ -9,14 +9,14 @@
  */
 // const URL_API = "http://172.24.96.1:8083" // WSL/Docker IP
 // const URL_API = "http://localhost:8083" // Funciona con WiFi y Ethernet
-// const URL_API = "http://192.168.49.65:8083" // Muni
+const URL_API = "http://192.168.49.93:8083" // Muni
 // const URL_API = "http://192.168.0.44:8083" 
 // const URL_API = "http://192.168.1.127:8083"
-const URL_API = "http://192.168.1.14:8083"
 
 export const rutas = {
   extravios: `${URL_API}/extravios`, // Query Params: resueltos=${resueltos}
-  registrarExtravio: `${URL_API}/extravios`,
+  extravioFamiliar: `${URL_API}/extravios`,
+  extravioSinFamiliar: `${URL_API}/extravios/sin-familiar`,
   extraviosPorUsuario: `${URL_API}/extravios/user/{id}`, // GET
   extraviosPorMascota: `${URL_API}/extravios/mascota/{id}`, // GET
   

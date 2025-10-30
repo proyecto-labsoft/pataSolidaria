@@ -11,7 +11,7 @@ import DescripcionVista from '../descripcionVista'
 import BackdropSuccess from '../backdropSuccess'
 import CampoSelectorModal from './campos/campoSelectorModal'
 import CampoFecha from './campos/campoFecha'
-import { useApiPostRegistrarExtravio } from '@/app/api/hooks'
+import { useApiPostExtravioFamiliar } from '@/app/api/hooks'
 import { format } from 'date-fns'
 interface Props {
     data: {
@@ -47,7 +47,7 @@ export default function FormularioConfirmarBuscado({ data } : Props) {
 
     const [successMensaje, setSuccessMensaje] = useState(false);
      
-    const { mutateAsync: declararExtraviado } = useApiPostRegistrarExtravio({
+    const { mutateAsync: declararExtraviado } = useApiPostExtravioFamiliar({
         params: {id: data?.id},
         onSuccess: () => {setSuccessMensaje(true);setVisible(false)},
     });
@@ -91,7 +91,7 @@ export default function FormularioConfirmarBuscado({ data } : Props) {
                 <BackdropSuccess
                     texto="Nuevo extravío reportado con éxito"
                     onTap={() => {
-                        navigation.goBack()
+                        navigation.navigate("Home")
                     }}
                 />
                 )}

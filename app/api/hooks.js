@@ -116,10 +116,18 @@ export function useApiGetExtravioPorMascota({ params, ...opciones }) {
         configuracion: { ...opciones }
     });
 }
-export function useApiPostRegistrarExtravio({ ...opciones }) {
+export function useApiPostExtravioFamiliar({ ...opciones }) {
     return usePost({
-        nombreHook: "useApiPostRegistrarExtravio",
-        url: rutas.registrarExtravio,
+        nombreHook: "useApiPostExtravioFamiliar",
+        url: rutas.extravioFamiliar,
+        configuracion: { ...opciones, queriesToInvalidate:['useApiGetExtravios'] }
+    });
+}
+
+export function useApiPostExtravioSinFamiliar({ ...opciones }) {
+    return usePost({
+        nombreHook: "useApiPostExtravioSinFamiliar",
+        url: rutas.extravioSinFamiliar,
         configuracion: { ...opciones, queriesToInvalidate:['useApiGetExtravios'] }
     });
 }

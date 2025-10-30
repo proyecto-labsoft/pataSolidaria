@@ -11,10 +11,12 @@ type MapProps = {
   latitude: number | null;
   longitude: number | null;
   style?: object;
+  onLatitudChange?: (latitud: number) => void;
+  onLongitudChange?: (longitud: number) => void;
   modificarDomicilio?: (domicilio: string) => void;
 };
 
-export const Mapa: FC<MapProps> = ({ localizar = false, puntoModificable = true, latitude, longitude, style, modificarDomicilio }) => {
+export const Mapa: FC<MapProps> = ({ localizar = false, puntoModificable = true, latitude, longitude, style, modificarDomicilio, onLatitudChange,onLongitudChange }) => {
 
   const mapRef = useRef<MapView>();
   const [status, requestPermissionLocation] = useForegroundPermissions();
@@ -38,6 +40,8 @@ export const Mapa: FC<MapProps> = ({ localizar = false, puntoModificable = true,
       const location = await getCurrentPositionAsync();
       const { latitude, longitude } = location.coords;
       setLocation({ latitude, longitude });
+      onLongitudChange?.(longitude);
+      onLatitudChange?.(latitude);
 
       mapRef.current?.animateCamera({
         center: { latitude, longitude },
@@ -78,9 +82,11 @@ export const Mapa: FC<MapProps> = ({ localizar = false, puntoModificable = true,
     }
   }, [localizar]);
   
-  const handleMarkerPoint = (e) => {
+  const handleMarkerPoint = (e: any) => { 
     const { latitude, longitude } = e.nativeEvent.coordinate;
     setLocation({ latitude, longitude });
+    onLongitudChange?.(longitude);
+    onLatitudChange?.(latitude);
     getAddress({ latitude, longitude });
   };
 
@@ -104,12 +110,10 @@ export const Mapa: FC<MapProps> = ({ localizar = false, puntoModificable = true,
         // initialRegion={INITIAL_REGION}
         initialCamera={ INITIAL_CAMERA }
         mapType='none'
-        onPress={ handleMarkerPoint }
+        onPress={ puntoModificable ? handleMarkerPoint : () => {} } // PAra no poder moficiar la ubicacion
       >
         <UrlTile
-        // urlTemplate="https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png"
-        // urlTemplate="https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png"
-          urlTemplate="https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          urlTemplate="https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png"
           maximumZ={19}
           minimumZ={1}
           flipY={false}
@@ -123,7 +127,7 @@ export const Mapa: FC<MapProps> = ({ localizar = false, puntoModificable = true,
                   latitude: location.latitude, 
                   longitude: location.longitude 
                 }}
-              draggable={ puntoModificable }
+              draggable={puntoModificable}
               onDragEnd={ handleMarkerPoint }
             />
             <Circle

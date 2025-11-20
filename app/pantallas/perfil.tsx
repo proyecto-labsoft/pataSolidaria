@@ -41,8 +41,7 @@ export default function Perfil() {
   } 
 
   const onSumbit = (e: any) => {
-    setEdicion(!edicion)
-    console.log(e)
+    setEdicion(!edicion) 
   };
 
   return (

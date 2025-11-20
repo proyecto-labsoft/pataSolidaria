@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Controller } from 'react-hook-form';
-import { View, Platform } from 'react-native';
+import { View, Platform, Pressable } from 'react-native';
 import { 
     TextInput, 
     Modal, 
@@ -86,27 +86,31 @@ export default function CampoFecha({
                 
                 return (
                     <View style={{ width: '100%', alignItems: 'center' }}>
-                        <TextInput
-                            mode='outlined'
-                            label={label}
-                            editable={false}
-                            placeholder={placeholder}
-                            value={value || ''}
-                            style={{ 
-                                width: '90%', 
-                                backgroundColor: 'transparent',
-                                ...style 
-                            }}
-                            onBlur={onBlur}
-                            error={!!error}
-                            right={
-                                <TextInput.Icon 
-                                    onPress={showModal} 
-                                    icon="calendar" 
-                                    size={20} 
-                                />
-                            }
-                        />
+                        <Pressable onPress={showModal} style={{ alignItems: 'center', width: '100%' }}>
+                            <TextInput
+                                mode='outlined'
+                                label={label}
+                                showSoftInputOnFocus={false} // evita que se abra el teclado
+                                editable={false}
+                                placeholder={placeholder}
+                                value={value || ''}
+                                style={{ 
+                                    width: '90%', 
+                                    backgroundColor: 'transparent',
+                                    ...style 
+                                }}
+                                onBlur={onBlur}
+                                error={!!error}
+                                onPressIn={() => showModal()}
+                                right={
+                                    <TextInput.Icon 
+                                        onPress={showModal} 
+                                        icon="calendar" 
+                                        size={20} 
+                                    />
+                                }
+                            />
+                        </Pressable>
                         {error && (
                             <Text style={{ 
                                 color: theme.colors.error, 

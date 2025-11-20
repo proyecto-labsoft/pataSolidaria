@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Controller } from 'react-hook-form';
-import { View, FlatList, TouchableOpacity } from 'react-native';
+import { View, FlatList, TouchableOpacity, Pressable } from 'react-native';
 import { 
     TextInput, 
     Modal, 
@@ -53,27 +53,31 @@ export default function CampoSelectorModal({
             control={control}
             render={({ field: { onChange, value, onBlur }, fieldState: { error } }) => (
                 <View style={{ width: '100%', alignItems: 'center' }}>
-                    <TextInput
-                        mode='outlined'
-                        label={label}
-                        editable={false}
-                        placeholder={placeholder}
-                        value={value || ''}
-                        style={{ 
-                            width: '90%', 
-                            backgroundColor: 'transparent',
-                            ...style 
-                        }}
-                        onBlur={onBlur}
-                        error={!!error}
-                        right={
-                            <TextInput.Icon 
-                                onPress={showModal} 
-                                icon="chevron-down" 
-                                size={20} 
-                            />
-                        }
-                    />
+                    <Pressable onPress={showModal} style={{ width: '90%' }}>
+                        <TextInput
+                            mode='outlined'
+                            label={label}
+                            placeholder={placeholder}
+                            value={value || ''}
+                            style={{ 
+                                width: '100%', 
+                                backgroundColor: 'transparent',
+                                ...style 
+                            }}
+                            onBlur={onBlur}
+                            error={!!error}
+                            showSoftInputOnFocus={false}
+                            editable={false}
+                            pointerEvents="none"
+                            right={
+                                <TextInput.Icon 
+                                    onPress={showModal} 
+                                    icon="chevron-down" 
+                                    size={20} 
+                                />
+                            }
+                        />
+                    </Pressable>
                     {error && (
                         <Text style={{ 
                             color: theme.colors.error, 

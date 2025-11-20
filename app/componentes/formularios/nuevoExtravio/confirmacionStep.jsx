@@ -7,18 +7,20 @@ export default function ConfirmacionStep({valores, ubic}) {
     
     const theme = useTheme()
 
+    console.log("Confirmacion",valores)
+
     return (
         <View style={{gap:15}}>
             <Text style={{textAlign:'center'}} variant="headlineSmall">Confirmar datos del extravío</Text>
             
             <View style={{padding: 16, backgroundColor: theme.colors.surfaceVariant, borderRadius: 8}}>
                 <Text variant="titleMedium" style={{marginBottom: 8, color: theme.colors.primary}}>Ubicación</Text>
-                <Text>{ubic || 'No especificada'}</Text>
+                <Text>{valores?.ubicacion || 'No especificada'}</Text>
             </View>
 
             <View style={{padding: 16, backgroundColor: theme.colors.surfaceVariant, borderRadius: 8}}>
                 <Text variant="titleMedium" style={{marginBottom: 8, color: theme.colors.primary}}>Fecha y hora</Text>
-                <Text>{valores?.fechaHora || 'No especificada'}</Text>
+                <Text>{`${valores?.fecha} ${valores?.hora}` || 'No especificada'}</Text>
                 {valores?.identificacion && (
                     <Text style={{marginTop: 4}}>ID: {valores?.identificacion}</Text>
                 )}
@@ -41,7 +43,9 @@ export default function ConfirmacionStep({valores, ubic}) {
 
 ConfirmacionStep.propTypes = {
     valores: PropTypes.shape({
-        fechaHora: PropTypes.string,
+        fecha: PropTypes.string,
+        hora: PropTypes.string,
+        ubicacion: PropTypes.string,
         identificacion: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
         especie: PropTypes.string,
         raza: PropTypes.string,

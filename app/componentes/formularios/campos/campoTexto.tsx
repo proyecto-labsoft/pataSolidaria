@@ -1,6 +1,7 @@
 import { TextInput } from "react-native-paper";
 import { Controller } from "react-hook-form";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+
 type Props = {
     label?: string,
     nombre: string,
@@ -11,14 +12,22 @@ type Props = {
     defaultValue?: any,
 }
 export default function CampoTexto({label,valor,nombre,defaultValue,disabled,control,style}: Props) {
+    const onChangeRef = useRef<Function>(); 
 
-    useEffect(() =>{},[valor])
+    // Sincronizar cambios externos (como 'valor') con el formulario
+    useEffect(() => {
+        if (valor !== undefined && onChangeRef.current) {
+            onChangeRef.current(valor);
+        }
+    }, [valor]);
+
     return (
         <Controller 
-            defaultValue={defaultValue}
+            defaultValue={defaultValue || valor || ''}
             name={nombre}
             control={control}
             render={({field: {onChange,value, onBlur}} ) => {
+                onChangeRef.current = onChange;
                 return (
                 <TextInput 
                     disabled={disabled}

@@ -9,7 +9,7 @@ import CarruselImagenes from '../componentes/carrusel/carruselImagenes';
 import AppbarNav from '../componentes/navegacion/appbarNav';
 import { TakePictureBtn } from '../componentes/TakePictureBtn';
 import { useRoute } from '@react-navigation/native';
-import { useApiDeleteMascota, useApiGetExtravioPorMascota, useApiGetMascotaPorId, useApiPostRegistrarExtravio, useApiPutActualizarMascota } from '../api/hooks';
+import { useApiDeleteMascota, useApiGetExtravioPorMascota, useApiGetMascotaPorId, useApiPostExtravioFamiliar, useApiPutActualizarMascota } from '../api/hooks';
 import BackdropSuccess from '../componentes/backdropSuccess'; 
 import { useNavigation } from '@react-navigation/native'
 import { format } from 'date-fns';
@@ -34,10 +34,8 @@ export default function VistaFamiliar() {
 
   // Hook para obtener datos actualizados
   const { data, refetch } = useApiGetMascotaPorId({params: { id: familiarId } });
-
-  console.log("familiarId",familiarId)
-  const datosFamiliar = useMemo(() => {
-    console.log("datosFamiliar",data)
+ 
+  const datosFamiliar = useMemo(() => { 
     if (!data) return null;
     return data
   }, [data]);
@@ -48,15 +46,14 @@ export default function VistaFamiliar() {
 
   const { data: isExtraviado } = useApiGetExtravioPorMascota({ params: {id: familiarId}})
 
-  useEffect(() => {
-    console.log("isExtraviado:", isExtraviado);
+  useEffect(() => { 
     if (isExtraviado?.estaExtraviado) {
       setPerdido(true);
     } else {
       setPerdido(false);
     }
   }, [isExtraviado]);
-  const { mutateAsync: declararExtraviado } = useApiPostRegistrarExtravio({
+  const { mutateAsync: declararExtraviado } = useApiPostExtravioFamiliar({
     params: {id: familiarId},
     onSuccess: () => {setPerdido(true)}
   });
@@ -103,8 +100,7 @@ export default function VistaFamiliar() {
       }
 
       data.familiarId = 2; // TODO - ID del usuario, reemplazar con el ID real del usuario autenticado
-
-      console.log("onSubmit actualizarFamiliar",data)
+ 
       actualizarFamiliar({ data: data })
   }
   

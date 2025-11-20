@@ -8,12 +8,13 @@ import UbicacionStep from './ubicacionStep'
 import FechaStep from './fechaStep'
 import ConfirmacionStep from './confirmacionStep'
 import AspectoStep from './aspectoStep'
+import { useApiPostExtravioSinFamiliar } from '@/app/api/hooks' 
+import { obtenerValorSexo, obtenerValorTamanio } from '@/app/utiles/obtenerValorEnum'
 
 export default function FormularioNuevoExtravio() {
-    const theme = useTheme()
-    const [ubic, setUbic] = useState("");
+    const theme = useTheme() 
     const [visible,setVisible] = useState(false)
-    const [post,setPost] = useState(false)
+    const [successMensaje,setSuccessMensaje] = useState(false)
     const [currentStep, setCurrentStep] = useState(1)
     const navigation = useNavigation()
 
@@ -31,6 +32,9 @@ export default function FormularioNuevoExtravio() {
         new Animated.Value(0), // Línea 3-4
     ]).current
 
+    const { mutateAsync: declararExtraviado } = useApiPostExtravioSinFamiliar({ 
+        onSuccess: () => {setSuccessMensaje(true);setVisible(false)},
+    });
     const { control, handleSubmit, formState: {errors}, watch } = useForm();
 
     const watchedValues = watch(); // Para mostrar valores en confirmación
@@ -58,10 +62,26 @@ export default function FormularioNuevoExtravio() {
         })
     }, [currentStep, stepAnimations, lineAnimations])
     
-    const onSubmit = (data: any) => {
-        data.ubicacion = ubic
-        setVisible(false)
-        setPost(true)
+    const onSubmit = (formData: any) => { 
+        const fechaHora = `${formData?.fecha} ${formData?.hora}:00`;
+        declararExtraviado({ data: {
+            datosExtravio: { 
+                "creador": 2,
+                "hora": fechaHora,
+                "resuelto": false,
+                "latitud": formData?.latitud,
+                "longitud": formData?.longitud,
+                "direccion": formData?.ubicacion
+            },
+            datosMascota: {
+                "especie": formData?.especie,
+                "raza": formData?.raza,
+                "color": formData?.color,
+                "sexo": obtenerValorSexo(formData?.sexo),
+                "tamanio": obtenerValorTamanio(formData?.tamanio),
+            } 
+        }
+        })
     }
 
     const nextStep = () => {
@@ -79,17 +99,17 @@ export default function FormularioNuevoExtravio() {
     const renderStep = useCallback(() => {
         switch (currentStep) {
             case 1:
-                return <UbicacionStep control={control} ubic={ubic} setUbic={setUbic} />
+                return <UbicacionStep control={control} />
             case 2:
                 return <FechaStep control={control} />
             case 3:
                 return <AspectoStep control={control} />
             case 4:
-                return <ConfirmacionStep ubic={ubic} valores={watchedValues} />
+                return <ConfirmacionStep valores={watchedValues} />
             default:
-                return <UbicacionStep control={control} ubic={ubic} setUbic={setUbic} />
+                return <UbicacionStep control={control} />
         }
-    }, [currentStep, control, ubic, setUbic, watchedValues])
+    }, [currentStep, control, watchedValues])
 
     const renderNavigationButtons = () => (
         <View style={{ 
@@ -226,19 +246,7 @@ export default function FormularioNuevoExtravio() {
                 </View>
             ))}
         </View>
-    )
-
-    //  private Long familiarId; -> null
-    // private String nombre;
-    // private String especie;
-    // private String raza;
-    // private String color;
-    // private String descripcion;
-    // private Boolean esterilizado;
-    // private Boolean chipeado;
-    // private SexoEnum sexo;
-    // private TamanioEnum tamanio;
-    // private LocalDate fechaNacimiento;
+    ) 
 
     // TODO: Post del nuevo caso de busqueda
     return(
@@ -254,7 +262,7 @@ export default function FormularioNuevoExtravio() {
             >
                 <View style={{flex: 1, gap:20}}>
                     <Portal>
-                        {!visible && post && (<BackdropSuccess texto="Nueva extravío confirmado" onTap={() => navigation.navigate('Home')}/>)}
+                        {successMensaje && (<BackdropSuccess texto="Nueva extravío confirmado" onTap={() => navigation.navigate('Home')}/>)}
                         <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={{...styles.containerStyle,backgroundColor:theme.colors.surface}}>
                             <Text style={{textAlign: 'center'}}>Al reportar el extravío compartirá sus datos de contacto con los demás usuarios para que se comuniquen con usted.</Text>
                             <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={handleSubmit(onSubmit)}>

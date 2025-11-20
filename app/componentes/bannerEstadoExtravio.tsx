@@ -1,13 +1,13 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Text, useTheme, Icon } from 'react-native-paper';
-import { LinearGradient } from 'expo-linear-gradient';
+import { Text, useTheme } from 'react-native-paper'; 
 
 interface Props {
-  esBuscado: boolean;
+  tipo: boolean;
+  titulo: string;
 }
 
-export default function BannerEstadoExtravio({ esBuscado }: Props) {
+export default function BannerEstadoExtravio({ tipo, titulo }: Props) {
   const theme = useTheme();
 
   return (
@@ -16,14 +16,14 @@ export default function BannerEstadoExtravio({ esBuscado }: Props) {
         style={[
           styles.solapa, 
           { 
-            backgroundColor: esBuscado ? theme.colors.errorContainer : '#D1ECF1', 
+            backgroundColor: theme.colors.errorContainer 
           }
         ]}
       >
         {/* <Icon 
-          source={esBuscado ? "magnify" : "check-circle"} 
+          source={tipo ? "magnify" : "check-circle"} 
           size={24} 
-          color={esBuscado ?  theme.colors.onErrorContainer : '#0C5460'} 
+          color={tipo ?  theme.colors.onErrorContainer : '#0C5460'} 
         /> */}
         <Text 
           variant="titleMedium" 
@@ -31,11 +31,11 @@ export default function BannerEstadoExtravio({ esBuscado }: Props) {
             
             { 
               fontWeight: 'bold',
-              color: esBuscado ? theme.colors.onErrorContainer : '#0C5460' // Texto más oscuro para contraste
+              color: theme.colors.onErrorContainer
             }
           ]}
         >
-          {esBuscado ? 'BUSCADO' : 'EXTRAVIADO'}
+          {titulo ? titulo : tipo ? 'BUSCADO' : 'EXTRAVIADO'}
         </Text>
       </View>
     </View>

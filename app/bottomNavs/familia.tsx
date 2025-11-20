@@ -21,9 +21,6 @@ export default function VistaFamilia() {
           <View style={{width: '100%', alignItems: 'center', gap: 10, paddingVertical: 10}}>
             <CardUsuario />
             <Divider style={{ width: '70%', height: 2, backgroundColor: theme.colors.outlineVariant, borderRadius: 20, alignSelf: 'center', marginVertical: 10 }} />
-            <Button icon="plus" mode="contained" onPress={() => navigation.navigate('NuevoFamiliar')} style={{ width: '90%', alignSelf: 'center', marginBottom: 20 }}>
-              Cargar nuevo familiar
-            </Button>
           </View>
           {isFetching ? (
             <Text style={{ alignSelf: 'center', marginTop: 20 }}>Cargando...</Text>

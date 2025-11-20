@@ -1,18 +1,28 @@
-import { FlatList, View } from "react-native";
+import { FlatList, View, RefreshControl } from "react-native";
 import CardAnimal from "../componentes/cards/cardAnimal"; 
 import { useApiGetExtravios } from "../api/hooks";
 import { Text, useTheme } from "react-native-paper";
-import VisitVetIcon from "../componentes/iconos/VisitVetIcon"; 
+import VisitVetIcon from "../componentes/iconos/VisitVetIcon";
+import { parse } from "date-fns"; 
 
 export default function VistaCasos() {
-  const {data: extravios, isFetching } = useApiGetExtravios({enabled: true }) 
+  const {data: extravios, isFetching, refetch } = useApiGetExtravios({enabled: true }) 
 
   const theme = useTheme();
 
+  // Ordenar extravíos por hora (más reciente primero)
+  const extraviosOrdenados = Array.isArray(extravios)
+    ? [...extravios].sort((a, b) => {
+        const fechaA = a.hora ? parse(a.hora, 'dd-MM-yyyy HH:mm:ss', new Date()).getTime() : 0;
+        const fechaB = b.hora ? parse(b.hora, 'dd-MM-yyyy HH:mm:ss', new Date()).getTime() : 0;
+        return fechaB - fechaA; // Descendente (más reciente primero)
+      })
+    : [];
+
   // Agrupa los datos de a dos por fila
-  const extraviosPorFila = Array.isArray(extravios)
-    ? Array.from({ length: Math.ceil(extravios.length / 2) }, (_, idx) =>
-        extravios.slice(idx * 2, idx * 2 + 2)
+  const extraviosPorFila = Array.isArray(extraviosOrdenados)
+    ? Array.from({ length: Math.ceil(extraviosOrdenados.length / 2) }, (_, idx) =>
+        extraviosOrdenados.slice(idx * 2, idx * 2 + 2)
       )
     : [];
 
@@ -21,7 +31,15 @@ export default function VistaCasos() {
       <FlatList
         data={extraviosPorFila}
         keyExtractor={(_, idx) => idx.toString()}
-        contentContainerStyle={{ justifyContent: 'center', alignItems: "center", paddingBottom: 80 }}
+        contentContainerStyle={{ justifyContent: 'center', alignItems: "center", paddingVertical: 10, gap: 5 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={isFetching}
+            onRefresh={refetch}
+            colors={[theme.colors.primary]}
+            tintColor={theme.colors.primary}
+          />
+        }
         renderItem={({ item }) => (
           <View style={{ flexDirection: 'row', width: '100%' }}>
             <CardAnimal navigateTo="VistaExtravio" data={item[0]} />

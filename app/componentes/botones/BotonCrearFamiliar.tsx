@@ -20,15 +20,15 @@ export default function BotonCrearFamiliar({onPress,showButton} : Props) {
             <FAB.Group
                 open={open}
                 visible={showButton}
-                icon={open ? 'arrow-up-bold-outline' : 'plus'}
+                icon={open ? 'close' : 'plus'}
                 color="white"
                 actions={[
                     {
-                        icon: 'eye-outline',
+                        icon: 'plus',
                         style: { ...styles.fabItem, backgroundColor: theme?.colors.secondaryContainer},
-                        label: 'Encontré un animal perdido',
+                        label: 'Agregar nuevo familiar',
                         labelStyle: { ...styles.labelFab },
-                        onPress: () => onPress("NuevoExtraviado"),
+                        onPress: () => onPress("NuevoFamiliar"),
                     },
                     {
                         style: { ...styles.fabItem, backgroundColor: theme?.colors.secondaryContainer},
@@ -60,7 +60,8 @@ const styles = StyleSheet.create({
     },
     labelFab:{
         bottom: 80,
-        right: 20,
+        fontSize: 20,
+        fontWeight: 'bold',
     },
     fabItem:{
         justifyContent:'center',

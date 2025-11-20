@@ -1,9 +1,10 @@
 
 import { View } from 'react-native' 
 import { useTheme, Text } from 'react-native-paper'  
-import CampoFechaHora from '../campos/campoFechaHora'
 import TimeNoteIcon from '../../iconos/TimeNoteIcon'
 import PropTypes from 'prop-types'
+import CampoHora from '../campos/campoHora'
+import CampoFecha from '../campos/campoFecha'
 
 export default function FechaStep({control}) {
     const theme = useTheme()
@@ -13,14 +14,19 @@ export default function FechaStep({control}) {
             <View style={{alignItems: 'center', marginVertical: -50}}>
                 <TimeNoteIcon width={250} height={250} color={theme.colors.primary} />
             </View>
-            <Text variant="headlineMedium" style={{textAlign: 'center',color: theme.colors.secondary }}>Fecha y hora</Text>
-            <Text variant="titleLarge" style={{textAlign: 'center',color: theme.colors.secondary }}>¿Cuándo ocurrió?</Text>
+            <Text variant="headlineMedium" style={{textAlign: 'center',color: theme.colors.primary }}>Fecha y hora</Text>
+            <Text variant="titleLarge" style={{textAlign: 'center',color: theme.colors.primary }}>¿Cuándo ocurrió?</Text>
             <View style={{width:'100%',justifyContent:'center',alignContent:'center',gap:10}}>
-                <CampoFechaHora
+                <CampoFecha
                     label="Fecha y hora del avistamiento"
-                    nombre="fechaHora"
+                    nombre="fecha"
                     control={control}
                     placeholder="Seleccione fecha y hora"
+                />
+                <CampoHora
+                    control={control}
+                    label="Hora (HH:mm)"
+                    nombre="hora"
                 />
             </View> 
         </View>

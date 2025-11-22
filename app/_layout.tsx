@@ -23,6 +23,8 @@ import NuevoExtraviado from "./pantallas/nuevoExtraviado";
 import NuevoBuscado from "./pantallas/nuevoBuscado";
 import NuevoFamiliar from "./pantallas/nuevoFamiliar";
 import QueryClientProviderBase from "./api/QueryClientProviderBase";
+import { AuthProvider } from "./contexts/AuthContext";
+import AuthNavigator from "./navegacion/AuthNavigator";
 
 const generatedColors = {
    primary: '#0776A0',
@@ -72,33 +74,17 @@ export const theme = {
 };
 
 export default function Layout() {
-  const Stack = createNativeStackNavigator();
-  
-  const navigationRef = useNavigationContainerRef();
-
   return (   
     <PaperProvider theme={theme} >
-      <QueryClientProviderBase>
-      <SafeAreaProvider>
-        <FondoGradiente>
-        <NavigationContainer ref={navigationRef} independent={true}>
-          <Stack.Navigator initialRouteName="Home" screenOptions={{ contentStyle:{backgroundColor:'transparent'},headerShown: false}} >
-            <Stack.Screen name="Home" component={Home} options={{ headerShown:false }} />
-            <Stack.Screen name="Familiar" component={VistaFamiliar} options={{ headerShown:false }}/>
-            <Stack.Screen name="NuevoBuscado" component={NuevoBuscado} options={{ headerShown:false }} />
-            <Stack.Screen name="NuevoExtraviado" component={NuevoExtraviado} options={{ headerShown:false }} />
-            <Stack.Screen name="Perfil" component={Perfil} options={{ headerShown:false }} />
-            <Stack.Screen name="Notificaciones" component={Notificaciones} options={{ headerShown:false }} />
-            <Stack.Screen name="ConfirmarBuscado" component={ConfirmarBuscado} options={{ headerShown:false }} />
-            <Stack.Screen name="Faq" component={FAQ} options={{ headerShown:false }} />
-            <Stack.Screen name="VistaExtravio" component={VistaExtravio} options={{ headerShown:false }} />
-            <Stack.Screen name="NuevoAvistamiento" component={NuevoAvistamiento} options={{ headerShown:false }} />
-            <Stack.Screen name="NuevoFamiliar" component={NuevoFamiliar} options={{ headerShown:false }} />
-          </Stack.Navigator>
-        </NavigationContainer>
-        </FondoGradiente>
-      </SafeAreaProvider>
-      </QueryClientProviderBase>
+      <AuthProvider>
+        <QueryClientProviderBase>
+          <SafeAreaProvider>
+            <FondoGradiente>
+              <AuthNavigator />
+            </FondoGradiente>
+          </SafeAreaProvider>
+        </QueryClientProviderBase>
+      </AuthProvider>
     </PaperProvider>
   );
 }

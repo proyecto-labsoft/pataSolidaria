@@ -36,6 +36,16 @@ public class Usuario {
     @Column(nullable = true)
     private Boolean administrador;
 
+    // Campos para autenticación y notificaciones
+    @Column(name = "firebase_uid", unique = true)
+    private String firebaseUid;
+
+    @Column(name = "push_token")
+    private String pushToken;
+
+    @Column(name = "notificaciones_habilitadas")
+    private Boolean notificacionesHabilitadas = true;
+
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "COMPANIERO_ID")
     @ToString.Exclude

@@ -31,3 +31,11 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Firebase - Archivos de configuración sensibles ###
+**/firebase-service-account.json
+**/google-services.json
+**/GoogleService-Info.plist
+.env
+.env.local
+.env.production

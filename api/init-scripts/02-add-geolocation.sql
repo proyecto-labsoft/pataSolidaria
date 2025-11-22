@@ -24,6 +24,18 @@ BEGIN
                    WHERE table_name = 'extravio' AND column_name = 'longitud') THEN
         ALTER TABLE extravio ADD COLUMN longitud DOUBLE PRECISION;
     END IF;
+
+    -- Agregar campo latitud (obligatorio)
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                   WHERE table_name = 'avistamiento' AND column_name = 'latitud') THEN
+    ALTER TABLE avistamiento ADD COLUMN latitud DOUBLE PRECISION;
+    END IF;
+
+    -- Agregar campo longitud (obligatorio)
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                   WHERE table_name = 'avistamiento' AND column_name = 'longitud') THEN
+    ALTER TABLE avistamiento ADD COLUMN longitud DOUBLE PRECISION;
+    END IF;
     
     -- Agregar campo direccion (opcional)
     IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
@@ -44,3 +56,4 @@ COMMENT ON COLUMN extravio.direccion IS 'Dirección textual obtenida por geocodi
 
 -- Crear índice para futuras búsquedas por proximidad
 CREATE INDEX IF NOT EXISTS idx_extravio_location ON extravio (latitud, longitud);
+CREATE INDEX IF NOT EXISTS idx_avistamiento_location ON avistamiento (latitud, longitud);

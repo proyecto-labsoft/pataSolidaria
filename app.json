@@ -1,20 +1,28 @@
 {
   "expo": {
     "name": "pataSolidaria",
-    "slug": "pataSolidaria",
+    "slug": "pata-solidaria-app",
     "jsEngine": "hermes",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
+    "owner": "esaizar",
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.pataSolidaria.app",
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "remote-notification"
+        ]
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -23,14 +31,21 @@
       },
       "permissions": [
         "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION"
+        "ACCESS_COARSE_LOCATION",
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE",
+        "android.permission.CAMERA",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
       ],
       "usesCleartextTraffic": true,
       "config": {
         "googleMaps": {
           "apiKey": ""
         }
-      }
+      },
+      "googleServicesFile": "./google-services.json",
+      "package": "com.pataSolidaria.app"
     },
     "web": {
       "bundler": "metro",
@@ -52,10 +67,28 @@
         {
           "locationAlwaysAndWhenInUsePermission": "Permite a $(PRODUCT_NAME) acceder a su localización."
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/notification-icon.png",
+          "color": "#ffffff",
+          "sounds": [
+            "./assets/sounds/notification.wav"
+          ]
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "4497077a-84c0-4c6d-9bc3-8e5694a713bc"
+      }
     }
   }
 }

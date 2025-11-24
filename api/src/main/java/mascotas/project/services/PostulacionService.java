@@ -3,14 +3,11 @@ package mascotas.project.services;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mascotas.project.Enums.ErrorsEnums;
-import mascotas.project.dto.PostulacionDTO;
+import mascotas.project.dto.PostulacionRequestDTO;
 import mascotas.project.entities.Postulacion;
 import mascotas.project.exceptions.NoContentException;
-import mascotas.project.exceptions.NotFoundException;
 import mascotas.project.mapper.PostulacionMapper;
-import mascotas.project.repositories.AdopocionRepository;
 import mascotas.project.repositories.PostulacionRepository;
-import mascotas.project.repositories.UsuarioRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,22 +18,20 @@ import java.util.Optional;
 @AllArgsConstructor
 public class PostulacionService {
 
-    private PostulacionRepository postulacionRepository;
-    private UsuarioRepository usuarioRepository;
-    private AdopocionRepository adopcionRepository;
-    private PostulacionMapper postulacionMapper;
+    private final PostulacionRepository postulacionRepository;
+    private final PostulacionMapper postulacionMapper;
+    private final UsuarioService usuarioService;
+    private final AdopcionService adopcionService;
 
 
-    public Postulacion savePostulacion(PostulacionDTO postulacion){
+    public Postulacion savePostulacion(PostulacionRequestDTO postulacion){
 
         return Optional.of(postulacion)
                      .map(
                             p -> {
-                                usuarioRepository.findById(p.getUsuario())
-                                                 .orElseThrow(() -> new NotFoundException(ErrorsEnums.USUARIO_NOT_FOUND_ERROR.getDescription() + postulacion.getUsuario() ));
 
-                                adopcionRepository.findById(p.getAdopcion())
-                                                    .orElseThrow( () -> new NotFoundException(ErrorsEnums.ADOPCION_NOT_FOUND_ERROR.getDescription() + postulacion.getAdopcion()));
+                                usuarioService.getUsuarioById(p.getUsuarioId());
+                                adopcionService.getAdopcionById(p.getAdopcionId());
 
                                 return postulacionMapper.toPostulacionEntity(postulacion);
                      })
@@ -51,21 +46,33 @@ public class PostulacionService {
     }
 
 
-    public List<PostulacionDTO> getAllPostulacionesByUsuario(Long  usuarioId){
+    public List<PostulacionRequestDTO> getAllPostulacionesByUsuario(Long  usuarioId){
 
        return Optional.of(usuarioId)
                 .map(usuario ->{
-                            usuarioRepository.findById(usuario)
-                                             .orElseThrow(
-                                                       () -> new NotFoundException(ErrorsEnums.USUARIO_NOT_FOUND_ERROR.getDescription() + usuario )
-                                             );
 
-                           return postulacionRepository.findPostulacionesByUsuarioId(usuarioId)
-                                    .orElseThrow( () -> new NoContentException(ErrorsEnums.NO_CONTENT_ERROR.getDescription()) );
-                        }
-                )
-                .map(
-                        postulaciones -> postulacionMapper.toPostulacionDTOList(postulaciones)
-                ).orElseThrow(RuntimeException::new);
+                    usuarioService.getUsuarioById(usuario);
+
+                   return postulacionRepository.findPostulacionesByUsuarioId(usuarioId)
+                            .orElseThrow( () -> new NoContentException(ErrorsEnums.NO_CONTENT_ERROR.getDescription()) );
+
+                })
+                .map(postulacionMapper::toPostulacionDTOList)
+               .orElseThrow( () -> new NoContentException(ErrorsEnums.NO_CONTENT_ERROR.getDescription()));
+    }
+
+    public List<PostulacionRequestDTO> getAllPostulacionesByAdopcion(Long  adopcionId){
+
+        return Optional.of(adopcionId)
+                .map(adopcion ->{
+
+                    adopcionService.getAdopcionById(adopcion);
+
+                    return postulacionRepository.findPostulacionesByAdopcionIdOrderByFechaDesc(adopcion)
+                            .orElseThrow( () -> new NoContentException(ErrorsEnums.NO_CONTENT_ERROR.getDescription()) );
+
+                })
+                .map(postulacionMapper::toPostulacionDTOList)
+                .orElseThrow( () -> new NoContentException(ErrorsEnums.NO_CONTENT_ERROR.getDescription()));
     }
 }

@@ -3,6 +3,7 @@ package mascotas.project.services;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mascotas.project.Enums.ErrorsEnums;
+import mascotas.project.dto.AvistamientoDetailDTO;
 import mascotas.project.dto.AvistamientoRequestDTO;
 import mascotas.project.entities.Avistamiento;
 import mascotas.project.exceptions.NoContentException;
@@ -23,6 +24,7 @@ public class AvistamientoService {
     private final ExtravioService  extravioService;
     private final AvistamientoRepository avistamientoRepository;
     private final AvistamientoMapper mapper;
+    private final AvistamientoMapper avistamientoMapper;
 
 
     @Transactional
@@ -36,24 +38,18 @@ public class AvistamientoService {
 
         Avistamiento avistamiento = mapper.toEntity(requestDTO);
 
-        log.info("SAVE_AVISTAMIENTO_ENTITYYYY {}", avistamiento.toString());
-
         return avistamientoRepository.save(avistamiento);
     }
 
-    public List<Avistamiento> getAvistamientosByExtravio(Long extravioId){
+    public List<AvistamientoDetailDTO> getAvistamientosByExtravio(Long extravioId){
 
         extravioService.getExtravioEntityById(extravioId);
 
-        List <Avistamiento> avistamientos = Optional.of(extravioId)
-                                                    .map(avistamientoRepository::findByExtravioIdOrderByHoraDesc)
-                                                    .orElseThrow( ()-> new NoContentException(ErrorsEnums.NO_CONTENT_ERROR.getDescription() ) );
+        return Optional.ofNullable(avistamientoRepository.findByExtravioIdOrderByHoraDesc(extravioId))
+                .filter(list -> !list.isEmpty())
+                .map( avistamientoMapper::toDetailList )
+                .orElseThrow(() -> new NoContentException(ErrorsEnums.NO_CONTENT_ERROR.getDescription()));
 
-        return avistamientos;
+
     }
-
-    //put de avistamiento
-
-    //get de avistamiento by id
-
 }

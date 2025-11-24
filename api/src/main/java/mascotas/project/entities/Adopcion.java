@@ -1,11 +1,11 @@
 package mascotas.project.entities;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @Entity
 @Table(name = "Adopcion", schema = "public")
 public class Adopcion {

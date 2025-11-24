@@ -5,8 +5,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Getter
-@Setter
+@Data
 public class AdopcionDTO {
 
     private Long publicadorID;

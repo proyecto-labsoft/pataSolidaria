@@ -18,7 +18,9 @@ import java.time.LocalDateTime;
 @Data
 public class PostulacionRequestDTO {
 
+    @Schema(description ="id del publicador de la adopcion", example = "1", type = "long", nullable = false)
     private Long usuarioId;
+    @Schema(description ="id de la adopcion", example = "47", type = "long", nullable = false)
     private Long adopcionId;
 
     @Schema(type = "string", example = "23-11-2025 20:15:10")

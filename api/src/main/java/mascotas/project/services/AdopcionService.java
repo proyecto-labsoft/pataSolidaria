@@ -4,7 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mascotas.project.Enums.ErrorsEnums;
-import mascotas.project.dto.AdopcionDTO;
+import mascotas.project.dto.AdopcionRequestDTO;
 import mascotas.project.dto.AdopcionDetailDTO;
 import mascotas.project.entities.Adopcion;
 import mascotas.project.entities.Mascota;
@@ -13,7 +13,6 @@ import mascotas.project.exceptions.NoContentException;
 import mascotas.project.exceptions.NotFoundException;
 import mascotas.project.mapper.AdopcionMapper;
 import mascotas.project.repositories.AdopocionRepository;
-import mascotas.project.repositories.MascotaRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
@@ -26,12 +25,11 @@ public class AdopcionService {
 
     private AdopocionRepository adopcionRepository;
     private AdopcionMapper adopcionMapper;
-    private MascotaRepository mascotaRepository;
     private MascotaService mascotaService;
 
     @Transactional
-    public Adopcion saveAdopcion(AdopcionDTO adopcionDtoRequest) {
-        return Optional.ofNullable(adopcionDtoRequest)
+    public AdopcionDetailDTO saveAdopcion(AdopcionRequestDTO adopcionRequestDtoRequest) {
+        return Optional.ofNullable(adopcionRequestDtoRequest)
                     .map(
                         dto -> {
                             //verifico que el animal exista
@@ -39,8 +37,8 @@ public class AdopcionService {
 
                             //verifico que el publicador sea familiar del animal
                             return Optional.of(mascota)
-                                           .filter(m -> Objects.equals( m.getFamiliar().getId(), adopcionDtoRequest.getPublicadorID() ))
-                                           .map(m -> adopcionMapper.toEntity(adopcionDtoRequest))
+                                           .filter(m -> Objects.equals( m.getFamiliar().getId(), adopcionRequestDtoRequest.getPublicadorID() ))
+                                           .map(m -> adopcionMapper.toEntity(adopcionRequestDtoRequest))
                                            .orElseThrow(
                                                     () -> new BadRequestException(ErrorsEnums.NO_FAMILIAR_ERROR.getDescription() + dto.getMascotaID())
                                            );
@@ -48,21 +46,25 @@ public class AdopcionService {
                         }
                     )
                     .map(adopcionRepository::save)
+                    .map(adopcionMapper::toDetailDto)
                     .orElseThrow(() -> new BadRequestException(ErrorsEnums.BODY_NOT_NULL_ERROR.getDescription()));
     }
 
 
     public List<AdopcionDetailDTO> getAdopciones() {
 
-        List<Adopcion> adopcionesEntity = adopcionRepository.findAll();
+        List<Adopcion> adopciones = adopcionRepository.findAll();
 
-        return Optional.of(adopcionesEntity)
-                        .filter(adopciones -> !adopcionesEntity.isEmpty())
-                       .map(  adopciones -> adopciones.stream().map(adopcionMapper::toDetailDto).toList())
+        return Optional.of(adopciones)
+                        .filter(adopcionesList -> !adopcionesList.isEmpty())
+                       .map(  adopcionMapper::toDetailDtoList)
                        .orElseThrow( () -> new NoContentException(ErrorsEnums.NO_CONTENT_ERROR.getDescription()) );
     }
 
-    //implementar MIS adopciones que publico (solo ARAF)
+    public AdopcionDetailDTO getAdopcionById(Long adopcionId) {
 
-
+        return adopcionRepository.findById(adopcionId)
+                .map(adopcionMapper::toDetailDto)
+                .orElseThrow( () -> new NotFoundException(ErrorsEnums.ADOPCION_NOT_FOUND_ERROR.getDescription()  + adopcionId));
+    }
 }

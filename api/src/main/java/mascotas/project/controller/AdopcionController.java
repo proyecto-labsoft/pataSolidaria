@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mascotas.project.dto.AdopcionDTO;
+import mascotas.project.dto.AdopcionRequestDTO;
 import mascotas.project.dto.AdopcionDetailDTO;
 import mascotas.project.entities.Adopcion;
 import mascotas.project.services.AdopcionService;
@@ -28,8 +28,8 @@ public class AdopcionController {
             summary = "Persiste una nueva adopcion",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Datos para la nueva adopcion")
     )
-    public ResponseEntity<Adopcion> saveAdopcion(@RequestBody AdopcionDTO mascotaDTORequest){
-        Adopcion adopcion = adopcionService.saveAdopcion(mascotaDTORequest);
+    public ResponseEntity<AdopcionDetailDTO> saveAdopcion(@RequestBody AdopcionRequestDTO mascotaDTORequest){
+        AdopcionDetailDTO adopcion = adopcionService.saveAdopcion(mascotaDTORequest);
         return  ResponseEntity.ok().body(adopcion);
     }
 

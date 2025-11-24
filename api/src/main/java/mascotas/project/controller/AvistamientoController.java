@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mascotas.project.dto.AvistamientoDetailDTO;
 import mascotas.project.dto.AvistamientoRequestDTO;
 import mascotas.project.entities.Avistamiento;
 import mascotas.project.services.AvistamientoService;
@@ -50,7 +51,7 @@ public class AvistamientoController {
     )
     public ResponseEntity<Object> getAvistamientos ( @PathVariable(name = "id", required = true) Long extravioID){
 
-        List<Avistamiento> avistamientos = avistamientoService.getAvistamientosByExtravio(extravioID);
+        List<AvistamientoDetailDTO> avistamientos = avistamientoService.getAvistamientosByExtravio(extravioID);
 
         return ResponseEntity.status(HttpStatus.OK).body(avistamientos);
     }

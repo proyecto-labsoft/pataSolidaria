@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mascotas.project.dto.PostulacionDTO;
+import mascotas.project.dto.PostulacionRequestDTO;
 import mascotas.project.entities.Postulacion;
 import mascotas.project.services.PostulacionService;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +33,7 @@ public class PostulacionController {
             summary = "Persiste una nueva Postulacion",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Datos para la nueva postulacion")
     )
-    public ResponseEntity<Postulacion> savePostulacion(@RequestBody PostulacionDTO postulacionRequest){
+    public ResponseEntity<Postulacion> savePostulacion(@RequestBody PostulacionRequestDTO postulacionRequest){
 
         Postulacion postulacion = postulacionService.savePostulacion(postulacionRequest);
         return  ResponseEntity.ok().body(postulacion);
@@ -45,9 +45,23 @@ public class PostulacionController {
             summary = "Postulaciones publicados por un usuario especifico",
             parameters = {@Parameter(name="id", description = "Id del usuario", example = "1", required = true)}
     )
-    public ResponseEntity<Object> postualcionesByUsuarioId(@PathVariable(name = "id", required = true) Long idUsuario){
+    public ResponseEntity<Object> postualcionesByUsuario(@PathVariable(name = "id", required = true) Long idUsuario){
 
-        List<PostulacionDTO> postulaciones = postulacionService.getAllPostulacionesByUsuario(idUsuario);
+        List<PostulacionRequestDTO> postulaciones = postulacionService.getAllPostulacionesByUsuario(idUsuario);
+
+        return  ResponseEntity.ok().body(postulaciones);
+    }
+
+
+    @GetMapping(value =  "/adopcion/{id}")
+    @Operation(
+            operationId = "postulacionesByAdopcion",
+            summary = "Postulaciones de una Adopcion particular",
+            parameters = {@Parameter(name="id", description = "Id de la adopcion", example = "1", required = true)}
+    )
+    public ResponseEntity<Object> postualcionesByAdopcion(@PathVariable(name = "id", required = true) Long adopcionId){
+
+        List<PostulacionRequestDTO> postulaciones = postulacionService.getAllPostulacionesByAdopcion(adopcionId);
 
         return  ResponseEntity.ok().body(postulaciones);
     }

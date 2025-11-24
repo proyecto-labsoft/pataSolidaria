@@ -12,8 +12,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Builder
 @Entity
-@Getter
-@Setter
+@Data
 @Table(name = "companiero", schema = "public")
 public class Mascota {
 

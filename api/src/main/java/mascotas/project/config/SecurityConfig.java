@@ -29,7 +29,14 @@ public class SecurityConfig {
             .sessionManagement(session -> 
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
+                // 🌐 Endpoints públicos (sin autenticación)
                 .requestMatchers("/api/public/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                .requestMatchers("/usuarios/sync").permitAll()  // Registro/Login inicial
+                
+                // 👑 Endpoints solo para administradores
+                .requestMatchers("/usuarios/set-admin").hasAuthority("ROLE_ADMIN")
+                
+                // 🔒 Todos los demás endpoints requieren autenticación (ROLE_USER o ROLE_ADMIN)
                 .anyRequest().authenticated()
             )
             .addFilterBefore(firebaseAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

@@ -204,4 +204,45 @@ public class UsuarioController {
         }
     }
 
+    @PostMapping("/set-admin")
+    @Operation(
+            operationId = "setAdmin",
+            summary = "Establece o quita el rol de administrador a un usuario (solo para admins)",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                description = "Firebase UID del usuario y si debe ser admin",
+                required = true
+            )
+    )
+    public ResponseEntity<?> setAdmin(
+            @RequestBody Map<String, Object> payload,
+            Authentication authentication
+    ) {
+        try {
+            // Spring Security ya verificó que el usuario tiene ROLE_ADMIN
+            // Si llegó aquí, es porque es admin ✅
+            
+            String currentUserUid = authentication.getName();
+            String targetUserUid = (String) payload.get("firebaseUid");
+            Boolean isAdmin = (Boolean) payload.get("isAdmin");
+            
+            if (targetUserUid == null || isAdmin == null) {
+                return ResponseEntity.badRequest().body(Map.of("error", "firebaseUid y isAdmin son requeridos"));
+            }
+            
+            log.info("👑 Admin {} cambiando rol de {} a isAdmin={}", 
+                currentUserUid, targetUserUid, isAdmin);
+            
+            usuarioService.setAdminRole(targetUserUid, isAdmin);
+            
+            return ResponseEntity.ok(Map.of(
+                "message", "Rol actualizado exitosamente",
+                "firebaseUid", targetUserUid,
+                "isAdmin", isAdmin
+            ));
+        } catch (Exception e) {
+            log.error("❌ Error al cambiar rol: {}", e.getMessage());
+            return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
+        }
+    }
+
 }

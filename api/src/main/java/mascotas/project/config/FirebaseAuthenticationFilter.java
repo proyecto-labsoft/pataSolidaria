@@ -8,12 +8,15 @@ import mascotas.project.services.FirebaseAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import com.google.firebase.auth.FirebaseToken;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class FirebaseAuthenticationFilter extends OncePerRequestFilter {
@@ -31,14 +34,33 @@ public class FirebaseAuthenticationFilter extends OncePerRequestFilter {
             String token = authHeader.substring(7);
             
             try {
-                String firebaseUid = firebaseAuthService.verifyToken(token);
+                // Obtener el token completo con los custom claims
+                FirebaseToken decodedToken = firebaseAuthService.getTokenInfo(token);
                 
-                if (firebaseUid != null) {
+                if (decodedToken != null) {
+                    String firebaseUid = decodedToken.getUid();
+                    
+                    // Extraer el rol del custom claim
+                    String rol = (String) decodedToken.getClaims().get("rol");
+                    
+                    // Crear las authorities (roles) de Spring Security
+                    List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+                    
+                    if ("admin".equals(rol)) {
+                        authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+                        logger.info("🔑 Usuario autenticado como ADMIN: " + firebaseUid);
+                    } else {
+                        logger.info("🔑 Usuario autenticado como USER: " + firebaseUid);
+                    }
+                    
+                    // Todos los usuarios autenticados tienen ROLE_USER
+                    authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+                    
                     UsernamePasswordAuthenticationToken authentication =
                             new UsernamePasswordAuthenticationToken(
                                     firebaseUid,
                                     null,
-                                    new ArrayList<>()
+                                    authorities  // ✅ AHORA INCLUYE LOS ROLES
                             );
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);

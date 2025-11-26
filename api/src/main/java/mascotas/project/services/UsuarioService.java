@@ -1,6 +1,8 @@
 package mascotas.project.services;
 
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +14,9 @@ import mascotas.project.mapper.UsuarioMapper;
 import mascotas.project.repositories.UsuarioRepository;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -156,7 +161,35 @@ public class UsuarioService {
         
         usuarioRepository.save(usuario);
         log.info("✅ Usuario sincronizado exitosamente: {}", email);
+        
+        // Establecer custom claims con el ID de la base de datos y rol
+        // CRÍTICO: Si esto falla, el usuario no puede usar la app correctamente
+        setCustomClaims(firebaseUid, usuario);
+        
         return usuario;
+    }
+
+    /**
+     * Establece custom claims en el token de Firebase
+     * Incluye: ID de usuario, rol (admin/user) y timestamp de sincronización
+     * 
+     * @throws RuntimeException si no puede establecer los claims (crítico para el funcionamiento)
+     */
+    private void setCustomClaims(String firebaseUid, Usuario usuario) {
+        try {
+            Map<String, Object> claims = new HashMap<>();
+            claims.put("usuarioId", usuario.getId());
+            claims.put("rol", usuario.getAdministrador() ? "admin" : "user");
+            claims.put("lastSync", System.currentTimeMillis());
+            
+            FirebaseAuth.getInstance().setCustomUserClaims(firebaseUid, claims);
+            log.info("🔐 Custom claims establecidos para usuario: {} (ID: {}, Rol: {})", 
+                firebaseUid, usuario.getId(), claims.get("rol"));
+        } catch (FirebaseAuthException e) {
+            log.error("❌ ERROR CRÍTICO: No se pudieron establecer custom claims para firebaseUid {} - usuarioId {} - {}", 
+                firebaseUid, usuario.getId(), e.getMessage());
+            throw new RuntimeException("No se pudieron establecer los custom claims de Firebase. El usuario no puede continuar.", e);
+        }
     }
 
     /**
@@ -202,6 +235,36 @@ public class UsuarioService {
         usuario.setNotificacionesHabilitadas(false); // Deshabilitar notificaciones al eliminar el token
         usuarioRepository.save(usuario);
         log.info("✅ Push token eliminado exitosamente");
+    }
+
+    /**
+     * Verifica si un usuario es administrador
+     */
+    @Transactional
+    public boolean isAdmin(String firebaseUid) {
+        Usuario usuario = usuarioRepository.findByFirebaseUid(firebaseUid)
+                .orElseThrow(() -> new NotFoundException("Usuario no encontrado con firebaseUid: " + firebaseUid));
+        
+        return usuario.getAdministrador() != null && usuario.getAdministrador();
+    }
+
+    /**
+     * Cambia el rol de administrador de un usuario
+     * También actualiza los custom claims en Firebase
+     */
+    @Transactional
+    public void setAdminRole(String firebaseUid, boolean isAdmin) {
+        Usuario usuario = usuarioRepository.findByFirebaseUid(firebaseUid)
+                .orElseThrow(() -> new NotFoundException("Usuario no encontrado con firebaseUid: " + firebaseUid));
+        
+        log.info("👑 Cambiando rol de usuario {} a isAdmin={}", usuario.getEmail(), isAdmin);
+        usuario.setAdministrador(isAdmin);
+        usuarioRepository.save(usuario);
+        
+        // Actualizar custom claims con el nuevo rol
+        setCustomClaims(firebaseUid, usuario);
+        
+        log.info("✅ Rol actualizado exitosamente para: {}", usuario.getEmail());
     }
 
 }

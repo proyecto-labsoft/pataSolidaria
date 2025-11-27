@@ -11,6 +11,7 @@ import mascotas.project.dto.UsuarioDTO;
 import mascotas.project.entities.Extravio;
 import mascotas.project.entities.Mascota;
 import mascotas.project.exceptions.ForbiddenException;
+import mascotas.project.exceptions.NoContentException;
 import mascotas.project.exceptions.NotFoundException;
 import mascotas.project.mapper.ExtravioMapper;
 import mascotas.project.repositories.ExtravioRepository;
@@ -67,9 +68,12 @@ public class ExtravioService {
 
     public List<ExtravioDetailDTO> getAllExtravios(Boolean resueltos) {
 
-        List<ExtravioDetailDTO> extraviosDtos = Optional.ofNullable(resueltos)
+        List<ExtravioDetailDTO> extraviosDtos = Optional.of(resueltos)
                                                .map(extravioRepository::findAllByResuelto)
-                                               .orElseGet(extravioRepository::findAllWithMascota);
+                                                .orElseThrow(
+                                                        ()-> new NoContentException(ErrorsEnums.NO_CONTENT_ERROR.getDescription())
+                                                );
+
 
         return setMascotaDetailToExtravioDtoList(extraviosDtos);
     }

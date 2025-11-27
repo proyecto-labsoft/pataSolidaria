@@ -140,7 +140,7 @@ public class ExtravioService {
 
         if (extravio.isPresent()){
             return PerdidoDTO.builder()
-                    .extravio(extravioMapper.toDtoRequest(extravio.get()))
+                    .extravio(extravioMapper.toDtoResponse(extravio.get()))
                     .estaExtraviado(Boolean.TRUE).build();
         }
 

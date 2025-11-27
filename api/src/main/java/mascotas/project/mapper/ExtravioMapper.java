@@ -17,7 +17,8 @@ public interface ExtravioMapper {
 
     @Mapping(target = "id", source = "extravioId")
     @Mapping(target = "mascota", source = "dto.mascotaId")
-    Extravio putToEntity(ExtravioRequestDTO dto, Long  extravioId);
+    @Mapping(target = "creadoByFamiliar", source = "creadoByFamiliar")
+    Extravio putToEntity(ExtravioRequestDTO dto, Long  extravioId, Boolean creadoByFamiliar);
 
     @Mapping(target = "mascotaDetalle", source = "mascotaEntity")
     ExtravioDetailDTO  toDtoDetail(ExtravioDetailDTO extravioDetailDTO, Mascota mascotaEntity);

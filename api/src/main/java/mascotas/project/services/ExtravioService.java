@@ -117,6 +117,22 @@ public class ExtravioService {
     }
 
 
+    // public PerdidoDTO getIsExtraviadoByMascotaId(Long mascotaId){
+
+    //     mascotaService.getMascotaEntityById(mascotaId);
+    //     Optional<Extravio> extravio = extravioRepository.findByMascotaAndResueltoIsFalse(mascotaId); //busca el extravio abierto
+
+    //     if (extravio.isPresent()){
+    //         return PerdidoDTO.builder()
+    //                 .extravioId(extravio.get().getId())
+    //                 .estaExtraviado(Boolean.TRUE).build();
+    //     }
+
+    //     return  PerdidoDTO.builder()
+    //             .extravioId(null)
+    //             .estaExtraviado(Boolean.FALSE).build();
+    // }
+
     public PerdidoDTO getExtravioByMascotaId(Long mascotaId){
 
         mascotaService.getMascotaEntityById(mascotaId);
@@ -124,15 +140,14 @@ public class ExtravioService {
 
         if (extravio.isPresent()){
             return PerdidoDTO.builder()
-                    .extravioId(extravio.get().getId())
+                    .extravio(extravioMapper.toDtoRequest(extravio.get()))
                     .estaExtraviado(Boolean.TRUE).build();
         }
 
         return  PerdidoDTO.builder()
-                .extravioId(null)
+                .extravio(null)
                 .estaExtraviado(Boolean.FALSE).build();
     }
-
 
     private List<ExtravioDetailDTO> setMascotaDetailToExtravioDtoList(List<ExtravioDetailDTO> extravioDtos){
 

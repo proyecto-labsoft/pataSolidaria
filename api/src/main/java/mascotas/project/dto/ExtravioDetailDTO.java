@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @Data
 public class ExtravioDetailDTO {
 
+    private Long extravioId;
     private Long creadorId;
     private Long mascotaId;
     private String zona;

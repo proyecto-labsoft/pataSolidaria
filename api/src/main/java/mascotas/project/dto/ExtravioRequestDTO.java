@@ -28,8 +28,8 @@ public class ExtravioRequestDTO {
     @Schema(type = "string", example = "23-01-2025 20:15:10")
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime hora;
-    @Schema(type = "boolean", example = "false")
-    private Boolean resuelto;
+    @Schema(type = "boolean", example = "false", defaultValue = "false")
+    private Boolean resuelto = false;
     @Schema(type = "double", example = "-54.8019")
     private Double latitud;
     @Schema(type = "double", example = "-68.3030")

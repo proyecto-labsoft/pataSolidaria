@@ -21,4 +21,6 @@ public interface ExtravioMapper {
     @Mapping(target = "mascotaDetalle", source = "mascotaEntity")
     ExtravioDetailDTO  toDtoDetail(ExtravioDetailDTO extravioDetailDTO, Mascota mascotaEntity);
 
+    @Mapping(target = "mascotaId", source = "mascota")
+    ExtravioRequestDTO toDtoRequest(Extravio extravio);
 }

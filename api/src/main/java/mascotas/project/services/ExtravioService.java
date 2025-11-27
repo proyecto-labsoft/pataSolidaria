@@ -89,7 +89,7 @@ public class ExtravioService {
             throw new ForbiddenException(ErrorsEnums.EXTRAVIO_FORBIDDEN_ERROR.getDescription() + extravio.getId());
         }
 
-        extravio = extravioMapper.putToEntity(extravioRequest, extravioId);
+        extravio = extravioMapper.putToEntity(extravioRequest, extravioId, extravio.getCreadoByFamiliar());
 
         return extravioRepository.save(extravio);
     }

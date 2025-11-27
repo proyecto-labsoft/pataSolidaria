@@ -9,7 +9,7 @@ import lombok.Data;
 public class PerdidoDTO {
 
     @Schema(description = "Datos del extravio si existe", example = "")
-    private ExtravioRequestDTO extravio;
+    private ExtravioResponseDTO extravio;
     @Schema(description = "Valor para indicar si existe extravio activo", example = "true")
     private Boolean estaExtraviado;
 }

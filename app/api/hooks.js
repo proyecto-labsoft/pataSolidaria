@@ -1,3 +1,4 @@
+import { useUsuario } from "../hooks/useUsuario";
 import { rutas } from "./api.rutas";
 import { useDelete, useGet, usePost, usePut } from "./reactQueryHooks";
 
@@ -39,11 +40,11 @@ export function useApiGetMascotasPorUsuario({ parametros, ...opciones }) {
     });
 }
 
-export function useApiPostRegistrarMascota({ ...opciones }) {
+export function useApiPostRegistrarMascota({ params ,...opciones }) {
     return usePost({
         nombreHook: "useApiPostRegistrarMascota",
         url: rutas.registrarMascota,
-        configuracion: { ...opciones, queriesToInvalidate: ['useApiGetMascotasPorUsuario', { idUsuario: 2 }] }
+        configuracion: { ...opciones, queriesToInvalidate: ['useApiGetMascotasPorUsuario', { idUsuario: params?.id }] }
     });
 }
 
@@ -55,11 +56,11 @@ export function useApiPutActualizarMascota({ ...opciones }) {
     });
 }
 
-export function useApiDeleteMascota({ ...opciones }) { 
+export function useApiDeleteMascota({ params, ...opciones}) { 
     return useDelete({
         nombreHook: "useApiDeleteMascota",
         url: rutas.mascotaPorId, 
-        configuracion: { ...opciones, queriesToInvalidate:['useApiGetMascotasPorUsuario', { idUsuario: 2 }] }
+        configuracion: { ...opciones, queriesToInvalidate:['useApiGetMascotasPorUsuario', { idUsuario: params?.id }] }
     });
 }
 // Adopciones
@@ -91,15 +92,17 @@ export function useApiPutActualizarAdopcion({ parametros, ...opciones }) {
 }
 
 // Extravíos
-export function useApiGetExtravios({ ...opciones }) {
+export function useApiGetExtravios({ params,...opciones }) {
+    console.log("useApiGetExtravios", params)
     return useGet({
         nombreHook: "useApiGetExtravios",
         url: rutas.extravios,
+        params,
         configuracion: { ...opciones }
     });
 }
 
-export function useApiGetExtraviosPorUsuario({ params, ...opciones }) {
+export function useApiGetExtraviosPorUsuario({ params, ...opciones }) { 
     return useGet({
         nombreHook: "useApiGetExtraviosPorUsuario",
         url: rutas.extraviosPorUsuario,
@@ -125,10 +128,20 @@ export function useApiPostExtravioFamiliar({ ...opciones }) {
 }
 
 export function useApiPostExtravioSinFamiliar({ ...opciones }) {
+    const { token } = useUsuario() 
     return usePost({
         nombreHook: "useApiPostExtravioSinFamiliar",
         url: rutas.extravioSinFamiliar,
-        configuracion: { ...opciones, queriesToInvalidate:['useApiGetExtravios'] }
+        configuracion: { ...opciones, token: token, queriesToInvalidate:['useApiGetExtravios'] }
+    });
+}
+
+export function useApiPutActualizarExtravio({ params, ...opciones }) {
+    return usePut({
+        nombreHook: "useApiPutActualizarExtravio",
+        url: rutas.extravioPorId,
+        params,
+        configuracion: { ...opciones, queriesToInvalidate:['useApiGetExtravios', 'useApiGetExtraviosPorUsuario'] }
     });
 }
 

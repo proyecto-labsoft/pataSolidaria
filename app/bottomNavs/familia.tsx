@@ -1,89 +1,48 @@
 import React from "react";
 import { FlatList, View } from "react-native";
-import { Divider,useTheme, Button, Text } from 'react-native-paper'
+import { useTheme, Text } from 'react-native-paper'
 import CardFamiliar from "../componentes/cards/cardFamiliar";
-import CardUsuario from "../componentes/cards/cardUsuarios";
 import { useNavigation } from "@react-navigation/native";
 import { useApiGetExtraviosPorUsuario, useApiGetMascotasPorUsuario } from "../api/hooks";
+import { useUsuario } from "../hooks/useUsuario";
 
 export default function VistaFamilia() {
   const theme = useTheme(); 
   const navigation = useNavigation();
 
-  const {data:familiares, isFetching, refetch } = useApiGetMascotasPorUsuario({ parametros: {idUsuario: 2}}) 
+  const { usuarioId } = useUsuario()
+  
+  const {data:familiares, isFetching, refetch } = useApiGetMascotasPorUsuario({ parametros: {idUsuario: usuarioId}}) 
 
-  const {data: extravios } = useApiGetExtraviosPorUsuario({params: {id: 2}, enabled: false })
+  const {data: extravios } = useApiGetExtraviosPorUsuario({params: {queryParams: {resueltos: false},id: usuarioId}})
+
+  // Crear un mapa de mascotas extraviadas para búsqueda rápida
+  const extraviadosMap = React.useMemo(() => {
+    if (!extravios || !Array.isArray(extravios)) return new Set();
+    return new Set(extravios.map((e: any) => e.mascotaId));
+  }, [extravios]);
 
   return (
-      
-        <View style={{ flex: 1, marginTop: 20 }}>
-          {/* <DescripcionVista texto="Aquí podrás ver la información de tus familiares" /> */}
-          <View style={{width: '100%', alignItems: 'center', gap: 10, paddingVertical: 10}}>
-            <CardUsuario />
-            <Divider style={{ width: '70%', height: 2, backgroundColor: theme.colors.outlineVariant, borderRadius: 20, alignSelf: 'center', marginVertical: 10 }} />
-          </View>
-          {isFetching ? (
-            <Text style={{ alignSelf: 'center', marginTop: 20 }}>Cargando...</Text>
-          ) : (
-            <FlatList
-              data={Array.isArray(familiares) ? familiares : []}
-              keyExtractor={(item, idx) => item.id?.toString() || idx.toString()}
-              contentContainerStyle={{ alignItems: "center", gap: 40, padding: 20, width: '100%' }}
-              renderItem={({ item }) => (
-                <CardFamiliar navigateTo="Familiar" data={item} />
-              )}
-              ListEmptyComponent={
-                <Text style={{ alignSelf: 'center', marginTop: 20 }}>No hay familiares cargados.</Text>
-              }
+    <View style={{ flex: 1, marginTop: 20 }}>
+      {isFetching ? (
+        <Text style={{ alignSelf: 'center', marginTop: 20 }}>Cargando...</Text>
+      ) : (
+        <FlatList
+          data={Array.isArray(familiares) ? familiares : []}
+          keyExtractor={(item, idx) => item.id?.toString() || idx.toString()}
+          contentContainerStyle={{ alignItems: "center", gap: 40, padding: 20, width: '100%' }}
+          renderItem={({ item }) => (
+            <CardFamiliar 
+              navigateTo="Familiar" 
+              data={item} 
+              estaExtraviado={extraviadosMap.has(item.id)}
             />
           )}
-        </View>
+          ListEmptyComponent={
+            <Text style={{ alignSelf: 'center', marginTop: 20 }}>No hay familiares cargados.</Text>
+          }
+        />
+      )}
+    </View>
   );
 }
-
-// <View style={{flex:1}}>
-      //     <DescripcionVista texto="Aquí podrás ver la información de tus familiares" />
-        
-      //     <ScrollView contentContainerStyle={{ alignItems: "center",gap:40,padding:20,width: '100%'}}>
-      //     <CardUsuario />
-      //     <Divider style={{ width: '70%', height: 2, backgroundColor: theme.colors.outlineVariant, borderRadius: 20 }} />
-      //     <Button icon="plus" mode="contained" onPress={() => navigation.navigate('NuevoFamiliar')} style={{width: '90%'}}>
-      //       Cargar nuevo familiar
-      //     </Button>
-          
-            {/* <FlatList
-              data={}
-              keyExtractor={(item) => item.id.toString()}
-              showsVerticalScrollIndicator={false}
-              renderItem={({item}) => (
-                Manera de renderizar mas de u familiar en una lista
-              )}
-            > 
-              <Pressable
-                onPress={() => navigation.navigate("Familiar")}
-                style={({pressed}) => [
-                  {
-                    backgroundColor: pressed ? 'rgb(210, 230, 255)' : 'white',
-                  },
-                ]
-              >
-              <View
-                  style={ styles.cardAnimal }
-                >
-                  <Image
-                    source={{ uri: "https://static.fundacion-affinity.org/cdn/farfuture/PVbbIC-0M9y4fPbbCsdvAD8bcjjtbFc0NSP3lRwlWcE/mtime:1643275542/sites/default/files/los-10-sonidos-principales-del-perro.jpg" }}
-                    style={ styles.fotoAnimal }
-                  />
-                  <Text>Chili</Text>
-                </View>
-              </Pressable>             
-              <CardFamiliar navigateTo="Familiar" data={{nombre: 'Chili', especie: 'Canino'}} />
-              <CardFamiliar navigateTo="Familiar" data={{nombre: 'Duque', especie: 'Canino'}} />
-              <CardFamiliar navigateTo="Familiar" data={{nombre: 'Draco', especie: 'Canino'}} />
-              <CardFamiliar navigateTo="Familiar" data={{nombre: 'Sur', especie: 'Felino'}} />
-              <CardFamiliar navigateTo="Familiar" data={{nombre: 'Duque', especie: 'Canino'}} />
-              <CardFamiliar navigateTo="Familiar" data={{nombre: 'Draco', especie: 'Canino'}} />
-              <CardFamiliar navigateTo="Familiar" data={{nombre: 'Sur', especie: 'Felino'}} />
-              
-          </ScrollView>          
-        </View> */}

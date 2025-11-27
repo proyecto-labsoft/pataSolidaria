@@ -13,7 +13,7 @@
 // const URL_API = "http://192.168.0.44:8083" 
 // const URL_API = "http://192.168.1.127:8083"
 // const URL_API = "http://192.168.1.14:8083"  // eze
- const URL_API = "192.168.49.54"; // muni eze
+ const URL_API ="http://192.168.0.44:8083" // muni eze
 
 export const rutas = {
   extravios: `${URL_API}/extravios`, // Query Params: resueltos=${resueltos}
@@ -21,6 +21,7 @@ export const rutas = {
   extravioSinFamiliar: `${URL_API}/extravios/sin-familiar`,
   extraviosPorUsuario: `${URL_API}/extravios/user/{id}`, // GET
   extraviosPorMascota: `${URL_API}/extravios/mascota/{id}`, // GET
+  extravioPorId: `${URL_API}/extravios/{id}`, // GET, PUT, DELETE
   
   mascotaPorId: `${URL_API}/mascotas/{id}`, // GET, PUT, DELETE
   registrarMascota: `${URL_API}/mascotas`, // POST

@@ -299,6 +299,7 @@ export const useGenericMutation = ({
       // Unificamos headers
       const headers = { 
         ...customHeaders,
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       };
       const queryParams = params && params.queryParams ? params.queryParams : {};
       try {

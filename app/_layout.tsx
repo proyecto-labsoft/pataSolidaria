@@ -5,23 +5,8 @@ import {
   MD3LightTheme as DefaultTheme,
   PaperProvider,
 } from 'react-native-paper';
-
-import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Home from "./pantallas/home";
-import VistaFamiliar from "./pantallas/vistaFamiliar";
-
 import lightheme from '../assets/light-theme.json'
-import ConfirmarBuscado from "./pantallas/confirmar-buscado";
-import Notificaciones from "./pantallas/notificaciones";
-import Perfil from "./pantallas/perfil";
-import FAQ from "./pantallas/faq";
-import VistaExtravio from "./pantallas/vistaExtravio";
-import NuevoAvistamiento from "./pantallas/nuevoAvistamiento";
 import FondoGradiente from "./fondoGradiente";
-import NuevoExtraviado from "./pantallas/nuevoExtraviado";
-import NuevoBuscado from "./pantallas/nuevoBuscado";
-import NuevoFamiliar from "./pantallas/nuevoFamiliar";
 import QueryClientProviderBase from "./api/QueryClientProviderBase";
 import { AuthProvider } from "./contexts/AuthContext";
 import AuthNavigator from "./navegacion/AuthNavigator";

@@ -1,4 +1,4 @@
-import React,{ useState} from "react"
+import React from "react"
 import { StyleSheet, FlatList, View } from "react-native";
 import CardFamiliar from "../componentes/cards/cardFamiliar";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -6,10 +6,12 @@ import AppbarNav from "../componentes/navegacion/appbarNav";
 import DescripcionVista from "../componentes/descripcionVista";
 import { useApiGetMascotasPorUsuario } from "../api/hooks"; 
 import { Text } from "react-native-paper";
+import { useUsuario } from "../hooks/useUsuario";
 
 export default function NuevoBuscado() {
 
-    const {data:familiares, isFetching, refetch } = useApiGetMascotasPorUsuario({ parametros: {idUsuario: 2}}) 
+    const { usuarioId } = useUsuario()
+    const {data:familiares, isFetching, refetch } = useApiGetMascotasPorUsuario({ parametros: {idUsuario: usuarioId}}) 
 
     return (
         <>

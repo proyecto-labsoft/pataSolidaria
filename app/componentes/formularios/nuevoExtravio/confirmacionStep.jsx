@@ -7,8 +7,6 @@ export default function ConfirmacionStep({valores, ubic}) {
     
     const theme = useTheme()
 
-    console.log("Confirmacion",valores)
-
     return (
         <View style={{gap:15}}>
             <Text style={{textAlign:'center'}} variant="headlineSmall">Confirmar datos del extravío</Text>

@@ -36,11 +36,11 @@ export default function VistaAdopciones() {
           ListEmptyComponent={
             isFetching
               ? (<View style={{alignItems: 'center',marginVertical: 50}}> 
-                    <Text variant="headlineMedium" style={{textAlign: 'center',color: theme.colors.secondary }}>Cargando adopciones...</Text>
+                    <Text variant="headlineMedium" style={{textAlign: 'center',color: theme.colors.primary }}>Cargando adopciones...</Text>
                 </View>)
               : (<View style={{alignItems: 'center',marginVertical: 50}}>
                     <DogHouseIcon width={250} height={250} color={theme.colors.primary} />
-                    <Text variant="headlineMedium" style={{textAlign: 'center',color: theme.colors.secondary }}>No tenemos compas en adopción</Text>
+                    <Text variant="headlineMedium" style={{textAlign: 'center',color: theme.colors.primary }}>No tenemos compas en adopción</Text>
                 </View>)
           }
         />

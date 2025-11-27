@@ -13,6 +13,7 @@ import CampoSelectorModal from './campos/campoSelectorModal'
 import CampoFecha from './campos/campoFecha'
 import { useApiPostExtravioFamiliar } from '@/app/api/hooks'
 import { format } from 'date-fns'
+import { useUsuario } from '@/app/hooks/useUsuario'
 interface Props {
     data: {
         nombre: string,
@@ -35,6 +36,7 @@ export default function FormularioConfirmarBuscado({ data } : Props) {
     const [cambiarDomicilio, setCambiarDomicilio] = useState(false);
     const [domic, setDomicilio] = useState("");
     const [visible,setVisible] = useState(false) 
+    const {usuarioId} = useUsuario()
     const navigation = useNavigation()
 
     const { control,setValue, watch, handleSubmit, formState: {errors} } = useForm({
@@ -72,8 +74,12 @@ export default function FormularioConfirmarBuscado({ data } : Props) {
 
         declararExtraviado({
             data: {
-            creador: 2, // TODO - ID del usuario, reemplazar con el ID real del usuario autenticado
+            creador: usuarioId, // TODO - ID del usuario, reemplazar con el ID real del usuario autenticado
             mascotaId: data?.id,
+            resuelto: false, 
+            latitud: formData?.latitud || null,
+            longitud: formData?.longitud || null,
+            direccion: formData?.direccion || null,
             zona: "", // TODO - zona, reemplazar con la zona real, datos de geoloocalizacion
             hora: format(new Date(), 'dd-MM-yyyy HH:mm:ss'),
             observacion: formData?.observacionExtravio || null,

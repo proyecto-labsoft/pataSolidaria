@@ -26,22 +26,7 @@ const Stack = createNativeStackNavigator();
 export default function AuthNavigator() {
   const { user, loading } = useAuth();
   const navigationRef = useNavigationContainerRef();
-  const [rol, setRol] = useState<string | null>(null);
-  const [usuarioId, setUsuarioId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchUserClaims = async () => {
-      if (user) {
-        const tokenResult = await user.getIdTokenResult(true);
-        setRol(tokenResult.claims.rol as string);
-        setUsuarioId(tokenResult.claims.usuarioId as string);
-        console.log('Rol:', tokenResult.claims.rol);
-        console.log('UsuarioId:', tokenResult.claims.usuarioId);
-      }
-    };
-    fetchUserClaims();
-  }, [user]);
-
+  
   // Mostrar loading mientras verifica autenticación
   if (loading) {
     return (

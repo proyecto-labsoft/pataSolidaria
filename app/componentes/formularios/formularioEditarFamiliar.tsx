@@ -1,8 +1,7 @@
 import { View } from 'react-native'
 import { Text, Button, useTheme, Divider, Switch } from 'react-native-paper'
 import CampoTexto from './campos/campoTexto'
-import CampoTextoArea from './campos/campoTextoArea'
-import CampoSelector from './campos/campoSelector'
+import CampoTextoArea from './campos/campoTextoArea' 
 import { useForm } from 'react-hook-form'
 import CampoFecha from './campos/campoFecha'
 import CampoSelectorModal from './campos/campoSelectorModal'
@@ -82,21 +81,7 @@ export default function FormularioEditarFamiliar({data, onCancel, onSubmit} : Pr
                     label="Descripción adicional"
                     nombre="descripcion"
                 />
-            </View>
-
-            {/* <View style={{justifyContent:'center',alignContent:'center',gap:10,marginTop: 20}}>
-                <Text style={{textAlign:'center',width:'100%'}} variant="headlineSmall">Domicilio</Text>
-                <Divider style={{marginBottom: 20 , width: "90%", alignSelf: 'center'}}/>    
-
-                <CampoTexto
-                    control={control}
-                    // label="Domicilio"
-                    nombre="domicilio"
-                />
-                <Button icon="map-marker" buttonColor={theme.colors.primary} style={{width: '90%',alignSelf:'center',borderRadius:10}} uppercase mode="contained" onPress={() => console.log('Pressed')}>
-                    Cambiar domicilio
-                </Button> 
-            </View> */}
+            </View> 
             <View style={{justifyContent:'center',alignContent:'center',gap:10,marginTop: 20}}>
                 <Text style={{textAlign:'center',width:'100%'}} variant="headlineSmall">Identificación y esterilización</Text>
                 <Divider style={{marginBottom: 20 , width: "90%", alignSelf: 'center'}}/>    
@@ -132,8 +117,8 @@ export default function FormularioEditarFamiliar({data, onCancel, onSubmit} : Pr
                 
             <View style={{ flexDirection:'row', justifyContent:'space-evenly', width: '100%'}}>
                 
-                <Button  buttonColor={theme.colors.secondary} style={{  marginVertical: 8 ,borderRadius:10}} uppercase mode="contained" onPress={onCancel}>
-                    <Text variant='labelLarge' style={{color: theme.colors.onSecondary, marginLeft: "5%"}}>Cancelar</Text>
+                <Button  buttonColor={theme.colors.error} style={{  marginVertical: 8 ,borderRadius:10}} uppercase mode="contained" onPress={onCancel}>
+                    <Text variant='labelLarge' style={{color: theme.colors.onError, marginLeft: "5%"}}>Cancelar</Text>
                 </Button>
                 <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={handleSubmit(onSubmit)}>
                     <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Guardar</Text>

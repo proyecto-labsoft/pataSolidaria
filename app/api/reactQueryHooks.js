@@ -323,7 +323,7 @@ export const useGenericMutation = ({
 
         return response.data;
       } catch (error) {
-        console.error('Error en la mutación:', error);
+        console.error('Error en la mutación:', error, error.response?.data);
         throw error;
       }
     },

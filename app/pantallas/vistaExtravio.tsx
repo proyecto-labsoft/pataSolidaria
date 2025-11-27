@@ -34,7 +34,7 @@ export default function VistaExtravio({route}: any) {
 
     const [datosAnimal, setDatosAnimal] = useState<any>(null);
     const [datosExtravio, setDatosExtravio] = useState<any>(null);
-    
+    const esBuscado = datosExtravio?.creadoByFamiliar;
     useEffect(() => { 
         if ( route.params?.data?.mascotaDetalle) {
             setDatosAnimal(route.params.data.mascotaDetalle);
@@ -48,13 +48,9 @@ export default function VistaExtravio({route}: any) {
     const esCreadorDelExtravio = datosExtravio?.creadorId === usuarioId;
 
     const { mutateAsync: actualizarExtravio } = useApiPutActualizarExtravio({
-        params: { id: datosExtravio?.id },
+        params: { id: datosExtravio?.extravioId },
         onSuccess: () => {
             setSuccessMensaje(true);
-            // Actualizar datos locales
-            if (route.params?.data) {
-                setDatosExtravio({...datosExtravio, ...route.params.data});
-            }
         }
     });
 
@@ -87,6 +83,30 @@ export default function VistaExtravio({route}: any) {
         });
     };
 
+    const [successResolver, setSuccessResolver] = useState(false);
+
+    const { mutateAsync: resolverExtravio } = useApiPutActualizarExtravio({
+        params: { id: datosExtravio?.extravioId },
+        onSuccess: () => {
+            setSuccessResolver(true);
+        }
+    });
+
+    const resolverCaso = () => {
+        console.log("datosExtravio",datosExtravio)
+        const {extravioId, mascotaDetalle, creadoByFamiliar, creadorId, ...restoDAta} = datosExtravio;
+        console.log("payload de resuelto",{
+            ...restoDAta,
+            creador: creadorId,
+            resuelto: true
+        })
+        resolverExtravio({data: {
+            ...restoDAta,
+            creador: creadorId,
+            resuelto: true
+        }});
+    }   
+
     return (
         <View style={{height: height,width:width,alignItems:'center'}}>      
 
@@ -100,9 +120,20 @@ export default function VistaExtravio({route}: any) {
                         }}
                     />
                 )}
+                {successResolver && (
+                    <BackdropSuccess
+                        backgroundColor="#1db100ff"
+                        color={theme.colors.surface}
+                        texto="Caso resuelto"
+                        onTap={() => {
+                            setSuccessResolver(false);
+                            navigation.goBack();
+                        }}
+                    />
+                )}
             </Portal>
-            <AppbarNav titulo={route.params?.data?.creadoByFamiliar ? 'BUSCADO' : 'EXTRAVIADO'} />
-            <BannerEstadoExtravio titulo={ultimaModificacion} tipo={route.params?.data?.creadoByFamiliar} />
+            <AppbarNav titulo={esBuscado ? 'BUSCADO' : 'EXTRAVIADO'} />
+            <BannerEstadoExtravio titulo={ultimaModificacion} tipo={esBuscado} />
             <ScrollView contentContainerStyle={{margin:12}} > 
                 <Portal>
                     <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={{...styles.containerStyle,backgroundColor:theme.colors.surface}}>
@@ -118,17 +149,31 @@ export default function VistaExtravio({route}: any) {
                         <>
                             <View style={{ flexDirection:'column', justifyContent:'space-evenly', width: '100%'}}>
                                 {esCreadorDelExtravio ? (
-                                    <Button 
-                                        buttonColor={theme.colors.primary} 
-                                        style={{ marginVertical: 8, borderRadius: 20 }} 
-                                        uppercase 
-                                        mode="contained" 
-                                        onPress={() => setModoEdicion(true)}
-                                    >
-                                        <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>
-                                            Modificar datos del extravío
-                                        </Text>
-                                    </Button>
+                                    <>
+                                        <Button 
+                                            buttonColor={theme.colors.primary} 
+                                            style={{ marginVertical: 8, borderRadius: 20 }} 
+                                            uppercase 
+                                            mode="contained" 
+                                            onPress={() => resolverCaso()}
+                                        >
+                                            <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>
+                                                Resolver caso
+                                            </Text>
+                                        </Button>
+                                    
+                                        <Button 
+                                            buttonColor={theme.colors.primary} 
+                                            style={{ marginVertical: 8, borderRadius: 20 }} 
+                                            uppercase 
+                                            mode="contained" 
+                                            onPress={() => setModoEdicion(true)}
+                                        >
+                                            <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>
+                                                Modificar datos del extravío
+                                            </Text>
+                                        </Button>
+                                    </>
                                 ) : (
                                     <Button 
                                         buttonColor={theme.colors.primary} 
@@ -138,7 +183,7 @@ export default function VistaExtravio({route}: any) {
                                         onPress={() => navigation.navigate('NuevoAvistamiento')}
                                     >
                                         <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>
-                                            Ví / encontre este animal
+                                            Ví este animal
                                         </Text>
                                     </Button>
                                 )}

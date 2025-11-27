@@ -93,7 +93,6 @@ export function useApiPutActualizarAdopcion({ parametros, ...opciones }) {
 
 // Extravíos
 export function useApiGetExtravios({ params,...opciones }) {
-    console.log("useApiGetExtravios", params)
     return useGet({
         nombreHook: "useApiGetExtravios",
         url: rutas.extravios,
@@ -123,7 +122,7 @@ export function useApiPostExtravioFamiliar({ ...opciones }) {
     return usePost({
         nombreHook: "useApiPostExtravioFamiliar",
         url: rutas.extravioFamiliar,
-        configuracion: { ...opciones, queriesToInvalidate:['useApiGetExtravios'] }
+        configuracion: { queriesToInvalidate:['useApiGetExtravios'], ...opciones }
     });
 }
 

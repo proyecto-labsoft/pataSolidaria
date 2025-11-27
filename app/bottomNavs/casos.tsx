@@ -53,7 +53,8 @@ export default function VistaCasos() {
         ListEmptyComponent={
           isFetching
             ? (<View style={{alignItems: 'center', marginVertical: 50}}> 
-                  <Text variant="headlineMedium" style={{textAlign: 'center', color: theme.colors.primary}}>Buscando casos...</Text>
+                  <VisitVetIcon width={250} height={250} color={theme.colors.primary} />
+                  <Text variant="headlineMedium" style={{textAlign: 'center', color: theme.colors.primary}}>Obteniendo casos...</Text>
               </View>)
             : (<View style={{alignItems: 'center', marginVertical: 50}}>
                   <VisitVetIcon width={250} height={250} color={theme.colors.primary} />

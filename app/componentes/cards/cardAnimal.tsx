@@ -56,7 +56,7 @@ export default function CardAnimal({ data, navigateTo }: Props) {
             >
                 <View style={{ position: 'relative' }}>
                   <Card.Cover style={styles.fotoAnimal} source={randomImage} />
-                  {(esBuscado || creadorPorMi) && (
+                  {((esBuscado && creadorPorMi) || creadorPorMi) && (
                     <BannerCoverOverlay texto="Creado por ti" />
                   )}
                 </View>

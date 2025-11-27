@@ -89,7 +89,6 @@ export default function FormularioNuevoExtravio() {
                 "mascotaId": null,
                 "observacion": 'sin observacion',
                 "hora": fechaHora,
-                "resuelto": false,
                 "latitud": formData?.latitud,
                 "longitud": formData?.longitud,
                 "direccion": formData?.ubicacion
@@ -124,7 +123,6 @@ export default function FormularioNuevoExtravio() {
     }
     
     const handleTakePicture = (photoBase64: string) => {
-        // console.log('Imagen tomada:', photoBase64);
         setCapturedPhoto(photoBase64);
         // Cerrar la cámara para mostrar los pasos del formulario
         setShowCamera(false);
@@ -132,7 +130,6 @@ export default function FormularioNuevoExtravio() {
 
     const handleCloseCamera = useCallback(() => {
         setShowCamera(false);
-        console.log("handleCloseCamera",capturedPhoto)
         if (!capturedPhoto) {
             navigation.goBack();
         }

@@ -14,6 +14,7 @@ import CampoFecha from './campos/campoFecha'
 import { useApiPostExtravioFamiliar } from '@/app/api/hooks'
 import { format } from 'date-fns'
 import { useUsuario } from '@/app/hooks/useUsuario'
+import { QueriesObserver } from '@tanstack/react-query'
 interface Props {
     data: {
         nombre: string,
@@ -51,6 +52,7 @@ export default function FormularioConfirmarBuscado({ data } : Props) {
      
     const { mutateAsync: declararExtraviado } = useApiPostExtravioFamiliar({
         params: {id: data?.id},
+        queriesToInvalidate: ['useApiGetExtraviosPorUsuario','useApiGetExtravios'],
         onSuccess: () => {setSuccessMensaje(true);setVisible(false)},
     });
 
@@ -71,6 +73,17 @@ export default function FormularioConfirmarBuscado({ data } : Props) {
         } else if (formData?.tamanio === 'Muy grande') {
             formData.tamanio = 'GIGANTE';
         }
+        console.log("extraviado ", {
+            creador: usuarioId, // TODO - ID del usuario, reemplazar con el ID real del usuario autenticado
+            mascotaId: data?.id,
+            resuelto: false, 
+            latitud: formData?.latitud || null,
+            longitud: formData?.longitud || null,
+            direccion: formData?.direccion || null,
+            zona: "", // TODO - zona, reemplazar con la zona real, datos de geoloocalizacion
+            hora: format(new Date(), 'dd-MM-yyyy HH:mm:ss'),
+            observacion: formData?.observacionExtravio || null,
+            })
 
         declararExtraviado({
             data: {

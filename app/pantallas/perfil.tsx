@@ -36,7 +36,7 @@ export default function Perfil() {
           nombre: userProfile.nombre || user?.displayName || '',
           celular: userProfile.celular || '',
           domicilio: userProfile.direccion || '',
-          email: userProfile.email || user?.email || ''
+          email: user?.email || ''
         };
         setDatosPerfil(perfil);
         reset(perfil);
@@ -49,7 +49,7 @@ export default function Perfil() {
             nombre: profile.nombre || user?.displayName || '',
             celular: profile.celular || '',
             domicilio: profile.direccion || '',
-            email: profile.email || user?.email || ''
+            email: user?.email || ''
           };
           setDatosPerfil(perfil);
           reset(perfil);

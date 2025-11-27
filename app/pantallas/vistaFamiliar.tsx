@@ -10,7 +10,7 @@ import AppbarNav from '../componentes/navegacion/appbarNav';
 import BannerEstadoExtravio from '../componentes/bannerEstadoExtravio';
 import { TakePictureBtn } from '../componentes/TakePictureBtn';
 import { useRoute } from '@react-navigation/native';
-import { useApiDeleteMascota, useApiGetExtravioPorMascota, useApiGetMascotaPorId, useApiPostExtravioFamiliar, useApiPutActualizarMascota } from '../api/hooks';
+import { useApiDeleteMascota, useApiGetExtravioPorMascota, useApiGetMascotaPorId, useApiPostExtravioFamiliar, useApiPutActualizarExtravio, useApiPutActualizarMascota } from '../api/hooks';
 import BackdropSuccess from '../componentes/backdropSuccess'; 
 import { useNavigation } from '@react-navigation/native'
 import { format } from 'date-fns';
@@ -49,33 +49,46 @@ export default function VistaFamiliar() {
     onSuccess: () => {setSuccessMensaje(true) ; refetch()}
   }); 
 
-  const { data: isExtraviado } = useApiGetExtravioPorMascota({ params: {id: familiarId}})
+  const { data: extravio } = useApiGetExtravioPorMascota({ params: {id: familiarId}})
 
   useEffect(() => { 
-    if (isExtraviado?.estaExtraviado) {
-      setPerdido(true);
-    } else {
-      setPerdido(false);
-    }
-  }, [isExtraviado]);
+    console.log("extravio?.estaExtraviado",extravio?.estaExtraviado)
+    setPerdido(extravio?.estaExtraviado);
+  }, [extravio]);
   const { mutateAsync: declararExtraviado } = useApiPostExtravioFamiliar({
     params: {id: familiarId},
     onSuccess: () => {setPerdido(true)}
   });
 
+  const { mutateAsync: resolverExtravio } = useApiPutActualizarExtravio({
+    params: { id: extravio?.extravio?.id },
+    onSuccess: () => {
+      setPerdido(false);
+    }
+  });
+
+  const resolverCaso = () => {
+    const {id, ...restoDAta} = extravio?.extravio;
+
+    resolverExtravio({data: {
+      ...restoDAta,
+      resuelto: true
+    }});
+  }
+
   const handleDeclararExtravio = () => {
     declararExtraviado({
       data: {
-      creador: usuarioId,
-      mascotaId: familiarId,
-      resuelto: false,
-      // latitud: formData?.latitud || null,
-      // longitud: formData?.longitud || null,
-      // direccion: formData?.direccion || null,
-      zona: "", // TODO - zona, reemplazar con la zona real, datos de geoloocalizacion
-      hora: format(new Date(), 'dd-MM-yyyy HH:mm:ss'),
-      
-      observacion: observacionesExtravio || null,
+        creador: usuarioId,
+        mascotaId: familiarId,
+        resuelto: false,
+        // latitud: formData?.latitud || null,
+        // longitud: formData?.longitud || null,
+        // direccion: formData?.direccion || null,
+        zona: "", // TODO - zona, reemplazar con la zona real, datos de geoloocalizacion
+        hora: format(new Date(), 'dd-MM-yyyy HH:mm:ss'),
+        
+        observacion: observacionesExtravio || null,
       }
     })
     setCargarExtravio(false);
@@ -190,10 +203,10 @@ export default function VistaFamiliar() {
         </Portal>
         <AppbarNav titulo={datosFamiliar?.nombre} />
 
-        {perdido && isExtraviado && (
+        {perdido && (
           <BannerEstadoExtravio 
             tipo={false} 
-            titulo={`EXTRAVIADO - ${calcularTiempoTranscurrido(isExtraviado.hora)}`}
+            titulo={`EXTRAVIADO - ${calcularTiempoTranscurrido(extravio?.extravio.hora)}`}
           />
         )}
 
@@ -243,12 +256,16 @@ export default function VistaFamiliar() {
       
         <BotonAccionesFamiliarFAB
           showButton={!modoEdicion}
+          casoResuelto={perdido}
           onEditarDatos={() => setModoEdicion(true)}
           onEliminarFamiliar={() => {
             eliminarFamiliar({ params: { id: familiarId } });
           }}
           onDeclaraPerdido={() => {
             setCargarExtravio(true)
+          }}
+          onResolverCaso={() => {
+            resolverCaso()
           }}
         />
       

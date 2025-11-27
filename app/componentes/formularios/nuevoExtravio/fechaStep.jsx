@@ -22,11 +22,14 @@ export default function FechaStep({control}) {
                     nombre="fecha"
                     control={control}
                     placeholder="Seleccione fecha y hora"
+                    disableFutureDates={true}
                 />
                 <CampoHora
                     control={control}
                     label="Hora"
                     nombre="hora"
+                    disableFutureTimes={true}
+                    dateFieldName="fecha"
                 />
             </View> 
         </View>

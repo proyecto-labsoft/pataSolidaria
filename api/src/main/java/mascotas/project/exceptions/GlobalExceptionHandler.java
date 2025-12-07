@@ -82,15 +82,7 @@ public class GlobalExceptionHandler {
 
         log.info("Global_Exception_Handler: Handling NoContentException");
 
-        ErrorResponse errorBody = ErrorResponse.builder()
-                .error(HttpStatus.NO_CONTENT.name())
-                .message(ex.getMessage())
-                .status(HttpStatus.NO_CONTENT.value())
-                .requestTime(Instant.now())
-                .path(this.buildPathWithQueryParams(request))
-                .build();
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorBody);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @ExceptionHandler({ForbiddenException.class})

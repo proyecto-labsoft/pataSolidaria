@@ -57,8 +57,9 @@ public class PostulacionService {
                             .orElseThrow( () -> new NoContentException(ErrorsEnums.NO_CONTENT_ERROR.getDescription()) );
 
                 })
+                .filter(lista -> !lista.isEmpty())
                 .map(postulacionMapper::toPostulacionDTOList)
-               .orElseThrow( () -> new NoContentException(ErrorsEnums.NO_CONTENT_ERROR.getDescription()));
+                .orElseThrow( () -> new NoContentException(ErrorsEnums.NO_CONTENT_ERROR.getDescription()));
     }
 
     public List<PostulacionRequestDTO> getAllPostulacionesByAdopcion(Long  adopcionId){

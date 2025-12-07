@@ -81,4 +81,5 @@ CREATE TABLE IF NOT EXISTS  emergencia(
     hora TIMESTAMP  NOT NULL DEFAULT NOW(),
     observacion varchar(255) NULL,
     atendido BOOLEAN NOT NULL DEFAULT FALSE
+    CONSTRAINT emergencia_pkey PRIMARY KEY (id)
 )

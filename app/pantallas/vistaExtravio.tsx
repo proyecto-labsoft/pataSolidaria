@@ -1,6 +1,6 @@
 import { View, ScrollView, useWindowDimensions, StyleSheet } from 'react-native'
-import React, { useEffect, useState} from 'react'
-import {Button, Modal, Portal, Surface, Text, useTheme} from 'react-native-paper'
+import React, { useEffect, useMemo, useState} from 'react'
+import {Button, IconButton, Modal, Portal, Surface, Text, useTheme, List, TextInput} from 'react-native-paper'
 import ItemDato from '../componentes/itemDato';
 import { ImageSlider } from '../testData/sliderData';
 import CarruselImagenes from '../componentes/carrusel/carruselImagenes';
@@ -12,29 +12,36 @@ import { calcularTiempoTranscurrido } from '../utiles/calcularTiempoTranscurrido
 import { useUsuario } from '../hooks/useUsuario';
 import FormularioEditarExtravio from '../componentes/formularios/formularioEditarExtravio';
 import BackdropSuccess from '../componentes/backdropSuccess';
-import { useApiPutActualizarExtravio } from '../api/hooks';
+import { useApiGetAvistamientosPorExtravio, useApiPutActualizarExtravio } from '../api/hooks';
 import { obtenerValorSexo, obtenerValorTamanio } from '../utiles/obtenerValorEnum';
 
 // Basandose en colores de la pagina de ARAF
-// primario: 0f7599
+// primario: 0f7599 
 // secundario: e28325
 // terciario: efefef
 const imagenes = ImageSlider[0].imagenes
 
 export default function VistaExtravio({route}: any) {    
+    
     const theme = useTheme();
-
+    const { usuarioId } = useUsuario();
     const navigation = useNavigation()
     const {width,height} = useWindowDimensions()
+
     const [visible,setVisible] = useState(false)
     const [modoEdicion, setModoEdicion] = useState(false);
     const [successMensaje, setSuccessMensaje] = useState(false);
-
-    const { usuarioId } = useUsuario();
-
+    const [expandedInfo, setExpandedInfo] = useState(false);
+    const [observacionResolver, setObservacionResolver] = useState('');
+    const [verUltimoAvistamiento, setVerUltimoAvistamiento] = useState(true);
     const [datosAnimal, setDatosAnimal] = useState<any>(null);
     const [datosExtravio, setDatosExtravio] = useState<any>(null);
+    const [successResolver, setSuccessResolver] = useState(false);
+    
     const esBuscado = datosExtravio?.creadoByFamiliar;
+    const esCreadorDelExtravio = datosExtravio?.creadorId === usuarioId;
+    const ultimaModificacion = calcularTiempoTranscurrido(datosExtravio?.hora)
+
     useEffect(() => { 
         if ( route.params?.data?.mascotaDetalle) {
             setDatosAnimal(route.params.data.mascotaDetalle);
@@ -44,15 +51,45 @@ export default function VistaExtravio({route}: any) {
         }
     },[route.params?.data])
 
-    const ultimaModificacion = calcularTiempoTranscurrido(datosExtravio?.hora)
-    const esCreadorDelExtravio = datosExtravio?.creadorId === usuarioId;
-
     const { mutateAsync: actualizarExtravio } = useApiPutActualizarExtravio({
         params: { id: datosExtravio?.extravioId },
         onSuccess: () => {
             setSuccessMensaje(true);
         }
     });
+
+    const { data: avistamientos, isFetching: isLoadingAvistamientos } = useApiGetAvistamientosPorExtravio({
+        params: { id: datosExtravio?.extravioId },
+        enabled: !!datosExtravio?.extravioId
+    })
+
+    // Calcular la hora a mostrar: último avistamiento o hora del extravío
+    // const obtenerUltimaHora = () => {
+    //     if (avistamientos && avistamientos.length > 0) {
+    //         // Ordenar avistamientos por fecha (más reciente primero)
+    //         const avistamientosOrdenados = [...avistamientos].sort((a, b) => {
+    //             // Parsear fecha en formato dd-MM-yyyy HH:mm:ss
+    //             const parseFecha = (fechaStr: string) => {
+    //                 const partes = fechaStr.split(' ');
+    //                 const [dia, mes, anio] = partes[0].split('-').map(Number);
+    //                 const [hora, minuto] = partes[1].split(':').map(Number);
+    //                 return new Date(anio, mes - 1, dia, hora, minuto).getTime();
+    //             };
+    //             return parseFecha(b.hora) - parseFecha(a.hora);
+    //         });
+    //         return avistamientosOrdenados[0].hora;
+    //     }
+    //     return datosExtravio?.hora;
+    // }; 
+
+    const ultimoAvistamiento = useMemo(() => {
+        console.log("avistamientos",avistamientos)
+        if (avistamientos && avistamientos?.length > 0) {
+            // Ordenar avistamientos por fecha (más reciente primero)
+            return avistamientos[0]
+        }
+        return null;
+    }, [avistamientos]);
 
     const onSubmitEdicion = (data: any) => {
         // Combinar fecha y hora en un solo campo
@@ -83,33 +120,89 @@ export default function VistaExtravio({route}: any) {
         });
     };
 
-    const [successResolver, setSuccessResolver] = useState(false);
 
-    const { mutateAsync: resolverExtravio } = useApiPutActualizarExtravio({
+    const { mutateAsync: resolverExtravio, isPending: isPendingResolver } = useApiPutActualizarExtravio({
         params: { id: datosExtravio?.extravioId },
         onSuccess: () => {
             setSuccessResolver(true);
         }
     });
 
-    const resolverCaso = () => {
-        console.log("datosExtravio",datosExtravio)
+    const handleResolverCaso = () => {
         const {extravioId, mascotaDetalle, creadoByFamiliar, creadorId, ...restoDAta} = datosExtravio;
-        console.log("payload de resuelto",{
-            ...restoDAta,
-            creador: creadorId,
-            resuelto: true
-        })
+        
+        // Si hay observación nueva, la agrega a la existente
+        const observacionFinal = observacionResolver.trim() 
+            ? `${restoDAta.observacion || ''}. Resolución: ${observacionResolver}`.trim()
+            : restoDAta.observacion;
+        
         resolverExtravio({data: {
             ...restoDAta,
             creador: creadorId,
-            resuelto: true
+            resuelto: true,
+            observacion: observacionFinal
         }});
-    }   
+        
+        // Limpiar y cerrar modal
+        setObservacionResolver('');
+        setResolverCaso(false);
+    };
+
+    const [resolverCaso, setResolverCaso] = useState(false);
+    const habdleCloseResolver = () => {
+        setResolverCaso(false);
+        setObservacionResolver('');
+    }
+    
 
     return (
         <View style={{height: height,width:width,alignItems:'center'}}>      
-
+            <Portal>
+                <Modal
+                    visible={resolverCaso} 
+                    onDismiss={habdleCloseResolver}
+                    contentContainerStyle={{
+                        backgroundColor: theme.colors.surface,
+                        margin: 20,
+                        borderRadius: 8,
+                        padding: 20,
+                        maxHeight: '70%',
+                    }}
+                >
+                    <Text variant="titleLarge" style={{ textAlign: 'center', marginBottom: 16 }}>
+                        {`Resolver caso de ${datosAnimal?.nombre || 'extraviado'}`}
+                    </Text> 
+                    <TextInput
+                        mode='outlined'
+                        label="¿Cómo se resolvió el caso? (Opcional)"
+                        multiline
+                        numberOfLines={4}
+                        style={{ 
+                            width: '100%',
+                            backgroundColor: 'transparent',
+                        }}
+                        value={observacionResolver}
+                        onChangeText={setObservacionResolver}
+                    />
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between', gap: 10}}>
+                    <Button 
+                        mode="outlined"
+                        onPress={habdleCloseResolver}
+                        style={{ marginTop: 16 }}
+                    >
+                        Cancelar
+                    </Button>
+                    <Button 
+                        mode="outlined"
+                        onPress={handleResolverCaso}
+                        style={{ marginTop: 16 }}
+                        disabled={isPendingResolver}
+                    >
+                        Confirmar
+                    </Button>
+                    </View>
+                </Modal>
+            </Portal>
             <Portal>
                 {successMensaje && (
                     <BackdropSuccess
@@ -133,8 +226,8 @@ export default function VistaExtravio({route}: any) {
                 )}
             </Portal>
             <AppbarNav titulo={esBuscado ? 'BUSCADO' : 'EXTRAVIADO'} />
-            <BannerEstadoExtravio titulo={ultimaModificacion} tipo={esBuscado} />
-            <ScrollView contentContainerStyle={{margin:12}} > 
+            
+            <ScrollView> 
                 <Portal>
                     <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={{...styles.containerStyle,backgroundColor:theme.colors.surface}}>
                         <Mapa puntoModificable={false} style={{width:width,height:height}} latitude={datosExtravio?.latitud} longitude={datosExtravio?.longitud}/>
@@ -143,76 +236,113 @@ export default function VistaExtravio({route}: any) {
                         </Button>
                     </Modal>
                 </Portal>
-                <CarruselImagenes data={imagenes} />        
-                <Surface style={{gap: 20, borderRadius: 20, elevation: 2, backgroundColor: theme?.colors.surfaceVariant, paddingVertical: 20,marginVertical: 20, paddingHorizontal:20,alignItems: "center"}} >
-                    {!modoEdicion ? (
-                        <>
-                            <View style={{ flexDirection:'column', justifyContent:'space-evenly', width: '100%'}}>
-                                {esCreadorDelExtravio ? (
-                                    <>
-                                        <Button 
-                                            buttonColor={theme.colors.primary} 
-                                            style={{ marginVertical: 8, borderRadius: 20 }} 
-                                            uppercase 
-                                            mode="contained" 
-                                            onPress={() => resolverCaso()}
-                                        >
-                                            <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>
-                                                Resolver caso
-                                            </Text>
-                                        </Button>
-                                    
-                                        <Button 
-                                            buttonColor={theme.colors.primary} 
-                                            style={{ marginVertical: 8, borderRadius: 20 }} 
-                                            uppercase 
-                                            mode="contained" 
-                                            onPress={() => setModoEdicion(true)}
-                                        >
-                                            <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>
-                                                Modificar datos del extravío
-                                            </Text>
-                                        </Button>
-                                    </>
-                                ) : (
-                                    <Button 
-                                        buttonColor={theme.colors.primary} 
-                                        style={{ marginVertical: 8, borderRadius: 20 }} 
-                                        uppercase 
-                                        mode="contained" 
-                                        onPress={() => navigation.navigate('NuevoAvistamiento')}
-                                    >
-                                        <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>
-                                            Ví este animal
-                                        </Text>
-                                    </Button>
-                                )}
-                                <Button  buttonColor={theme.colors.secondary} style={{  marginVertical: 8 ,borderRadius:20}} uppercase mode="contained" onPress={()=> setVisible(true)} >
-                                    <Text variant='labelLarge' style={{color: theme.colors.onSecondary, marginLeft: "5%"}}>Ver ubicación</Text>
-                                </Button>
+
+                {/* Banner con posición absoluta */}
+                <View style={styles.bannerContainer}>
+                    <BannerEstadoExtravio titulo={ultimaModificacion} tipo={esBuscado} />
+                </View>
+
+                {/* Carrusel de imágenes - Segunda posición */}
+                <View style={{ margin: 18 }} >
+                    <CarruselImagenes data={imagenes} />
+                </View>
+                
+                <List.Accordion
+                    title={<Text variant='titleMedium' style={{ color: theme.colors.onPrimaryContainer }}>Último avistamiento</Text>}
+                    titleStyle={{fontWeight: 'bold'}}
+                    expanded={verUltimoAvistamiento}
+                    onPress={() => setVerUltimoAvistamiento(!verUltimoAvistamiento)}
+                    style={{backgroundColor: theme.colors.surfaceVariant }}
+                >
+                    <View style={styles.mapContainer}>
+                        <Mapa 
+                            puntoModificable={false} 
+                            latitude={ultimoAvistamiento?.latitud} 
+                            longitude={ultimoAvistamiento?.longitud}
+                            style={styles.map}
+                        />
+                        
+                    </View>
+                    <View style={{padding: 16 }}>
+                        {ultimoAvistamiento && <ItemDato style={{padding: 16 }} label='Fecha y hora' data={ultimoAvistamiento?.hora} />}
+                        {ultimoAvistamiento && <ItemDato style={{padding: 16 }} label='Observaciones' data={ultimoAvistamiento?.comentario} />}
+                    </View>
+                    
+                </List.Accordion>                
+
+                {/* Información adicional - Dropdown - Tercera posición */}  
+                {!modoEdicion ? (
+                    <Surface style={{...styles.infoContainer, backgroundColor: theme.colors.surface, borderColor: theme.colors.outline}}>
+                        <List.Accordion
+                            title={<Text variant='titleMedium' style={{ color: theme.colors.onPrimaryContainer }}>Información adicional</Text>} 
+                            titleStyle={{fontWeight: 'bold'}}
+                            expanded={expandedInfo}
+                            onPress={() => setExpandedInfo(!expandedInfo)}
+                            style={{backgroundColor: theme.colors.surfaceVariant, marginHorizontal: 0}}
+                        >
+                            <View style={{padding: 16, gap: 12}}>
+                                {datosAnimal?.nombre && <ItemDato label='Nombre' data={datosAnimal.nombre} />}
+                                {datosAnimal?.especie && <ItemDato label='Especie' data={datosAnimal.especie} />}
+                                {datosAnimal?.raza && <ItemDato label='Raza' data={datosAnimal.raza} />}
+                                {datosAnimal?.tamanio && <ItemDato label='Tamaño' data={datosAnimal.tamanio} />}
+                                {datosAnimal?.colores && <ItemDato label='Colores' data={datosAnimal.colores} />}
+                                {datosAnimal?.fechaNacimiento && <ItemDato label='Fecha de nacimiento' data={datosAnimal.fechaNacimiento} />}
+                                {datosAnimal?.genero && <ItemDato label='Género' data={datosAnimal.genero} />}
+                                {datosAnimal?.esterilizado !== undefined && <ItemDato label='¿Está esterilizado?' data={datosAnimal.esterilizado} />}
+                                {datosAnimal?.chipeado !== undefined && <ItemDato label='¿Está chipeado?' data={datosAnimal.chipeado} />}
+                                {datosAnimal?.domicilio && <ItemDato label='Domicilio' data={datosAnimal.domicilio} />}
+                                {datosAnimal?.descripcion && <ItemDato label='Observaciones' data={datosAnimal.descripcion} />}
                             </View>
-                            <ItemDato label='Nombre' data={datosAnimal?.nombre}  />
-                            <ItemDato label='Especie' data={datosAnimal?.especie}  />
-                            <ItemDato label='Raza' data={datosAnimal?.raza}  />
-                            <ItemDato label='Tamaño' data={datosAnimal?.tamanio}  />
-                            <ItemDato label='Colores' data={datosAnimal?.colores}  />
-                            <ItemDato label='Fecha de nacimiento' data={datosAnimal?.fechaNacimiento}  />
-                            <ItemDato label='Genero' data={datosAnimal?.genero}  />
-                            <ItemDato label='¿Está esterilizado?' data={datosAnimal?.esterilizado}  />
-                            <ItemDato label='¿Está chipeado?' data={datosAnimal?.chipeado} />
-                            <ItemDato label='Domicilio' data={datosAnimal?.domicilio}  />
-                            <ItemDato label='Observaciones' data={datosAnimal?.descripcion}  />  
-                        </>
-                    ) : (
+                        </List.Accordion>
+                    </Surface>
+                ) : (
+                    <Surface style={{...styles.infoContainer, backgroundColor: theme.colors.surface, borderColor: theme.colors.outline}}>
                         <FormularioEditarExtravio 
                             data={datosExtravio} 
                             onCancel={() => setModoEdicion(false)} 
                             onSubmit={onSubmitEdicion} 
                         />
-                    )}
-                </Surface>
+                    </Surface>
+                )} 
             
-            </ScrollView>
+             {/* Botones de acción */}
+                <View style={{ flexDirection:'row', justifyContent:'space-evenly', marginTop: 24, width: '100%'}}> 
+                    {esCreadorDelExtravio ? (
+                        <>
+                            <View style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                                <Button
+                                    icon="check-circle"
+                                    // containerColor={theme.colors.primary} 
+                                    // iconColor={theme.colors.onPrimary}
+                                    mode="contained" 
+                                    onPress={() => setResolverCaso(true)}
+                                >
+                                    Resolver caso
+                                </Button>
+                            </View>  
+                            <View style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                                <Button
+                                    icon="pencil"
+                                    // containerColor={theme.colors.primary} 
+                                    // iconColor={theme.colors.onPrimary}
+                                    mode="contained" 
+                                    onPress={() => setModoEdicion(true)}
+                                >
+                                    Editar información
+                                </Button>
+                            </View>  
+                        </>
+                    ) : (
+                        <Button
+                            mode='contained'
+                            uppercase
+                            onPress={() => navigation.navigate('NuevoAvistamiento', {data: {extravioId: datosExtravio?.extravioId}})}
+                        >
+                            ¡Ví este animal!
+                        </Button>
+                    )}  
+                </View> 
+            </ScrollView> 
         </View>
 )}
 
@@ -221,5 +351,28 @@ const styles = StyleSheet.create({
         alignItems: "center",
         width: '100%',
         height: '100%',
+    },
+    bannerContainer: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 1000,
+        alignItems: 'center',
+    },
+    mapContainer: {
+        width: '100%', 
+        elevation: 2, 
+        height: 250, 
+        overflow: 'hidden',
+    },
+    map: {
+        width: '100%',
+        height: '100%',
+    },
+    infoContainer: {  
+        elevation: 2, 
+        borderTopWidth: 1,
+        overflow: 'hidden',
     },
 });

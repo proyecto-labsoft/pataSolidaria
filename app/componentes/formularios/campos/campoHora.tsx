@@ -4,6 +4,7 @@ import { Controller, useWatch } from 'react-hook-form';
 import { View, Platform, Pressable, Alert } from 'react-native';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { format, parse } from 'date-fns';
+import { obtenerFechaHoraActualBuenosAires } from '@/app/utiles/fechaHoraBuenosAires';
 
 type Props = {
     label: string,
@@ -24,7 +25,7 @@ export default function CampoHora({
     disableFutureTimes = false,
     dateFieldName = 'fecha',
 }: Props) {
-    const [hora, setHora] = useState<Date>(valorInicial || new Date());
+    const [hora, setHora] = useState<Date>(valorInicial || obtenerFechaHoraActualBuenosAires());
     const theme = useTheme();
 
     // Observar el campo de fecha (siempre llamar al hook)
@@ -40,7 +41,7 @@ export default function CampoHora({
                     // Validar si la hora es futura
                     if (disableFutureTimes && watchedDate) {
                         const selectedDateParsed = parse(watchedDate, 'dd-MM-yyyy', new Date());
-                        const now = new Date();
+                        const now = obtenerFechaHoraActualBuenosAires();
                         
                         // Si la fecha seleccionada es hoy
                         if (format(selectedDateParsed, 'dd-MM-yyyy') === format(now, 'dd-MM-yyyy')) {
@@ -80,7 +81,7 @@ export default function CampoHora({
                 validate: (value) => {
                     if (disableFutureTimes && value && watchedDate) {
                         const selectedDateParsed = parse(watchedDate, 'dd-MM-yyyy', new Date());
-                        const now = new Date();
+                        const now = obtenerFechaHoraActualBuenosAires();
                         
                         // Si la fecha seleccionada es hoy
                         if (format(selectedDateParsed, 'dd-MM-yyyy') === format(now, 'dd-MM-yyyy')) {

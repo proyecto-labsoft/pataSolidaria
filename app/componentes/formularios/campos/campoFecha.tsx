@@ -10,6 +10,7 @@ import {
     Text 
 } from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { obtenerFechaHoraActualBuenosAires } from '@/app/utiles/fechaHoraBuenosAires';
 
 type Props = {
     label: string,
@@ -34,7 +35,7 @@ export default function CampoFecha({
 }: Props) {
     const theme = useTheme();
     const [visible, setVisible] = useState(false);
-    const [tempDate, setTempDate] = useState<Date>(new Date());
+    const [tempDate, setTempDate] = useState<Date>(obtenerFechaHoraActualBuenosAires());
 
     const showModal = () => setVisible(true);
     const hideModal = () => setVisible(false);
@@ -42,7 +43,7 @@ export default function CampoFecha({
     // Calcular fecha máxima permitida
     const getMaximumDate = () => {
         if (disableFutureDates) {
-            const today = new Date();
+            const today = obtenerFechaHoraActualBuenosAires();
             today.setHours(23, 59, 59, 999);
             return today;
         }

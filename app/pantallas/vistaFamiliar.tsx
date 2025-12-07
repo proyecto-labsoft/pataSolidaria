@@ -9,7 +9,7 @@ import CarruselImagenes from '../componentes/carrusel/carruselImagenes';
 import AppbarNav from '../componentes/navegacion/appbarNav';
 import BannerEstadoExtravio from '../componentes/bannerEstadoExtravio';
 import { TakePictureBtn } from '../componentes/TakePictureBtn';
-import { useRoute } from '@react-navigation/native';
+import { useRoute, useIsFocused } from '@react-navigation/native';
 import { useApiDeleteMascota, useApiGetExtravioPorMascota, useApiGetMascotaPorId, useApiPostExtravioFamiliar, useApiPutActualizarExtravio, useApiPutActualizarMascota } from '../api/hooks';
 import BackdropSuccess from '../componentes/backdropSuccess'; 
 import { useNavigation } from '@react-navigation/native'
@@ -27,6 +27,7 @@ export default function VistaFamiliar() {
   const route = useRoute();
   const navigation = useNavigation();
   const theme = useTheme();
+  const isFocused = useIsFocused(); // Hook para saber si la pantalla está enfocada
   const familiarId = route.params?.id;
 
   const { usuarioId } = useUsuario()
@@ -77,22 +78,8 @@ export default function VistaFamiliar() {
   }
 
   const handleDeclararExtravio = () => {
-    declararExtraviado({
-      data: {
-        creador: usuarioId,
-        mascotaId: familiarId,
-        resuelto: false,
-        // latitud: formData?.latitud || null,
-        // longitud: formData?.longitud || null,
-        // direccion: formData?.direccion || null,
-        zona: "", // TODO - zona, reemplazar con la zona real, datos de geoloocalizacion
-        hora: format(new Date(), 'dd-MM-yyyy HH:mm:ss'),
-        
-        observacion: observacionesExtravio || null,
-      }
-    })
+    navigation.navigate("ConfirmarBuscado", { ...datosFamiliar }) 
     setCargarExtravio(false);
-    setObservacionesExtravio('');
   }
 
   const handleCloseExtravio = () => {
@@ -133,7 +120,7 @@ export default function VistaFamiliar() {
   return (
       <View style={{height: '100%',width:width,alignItems:'center'}}>      
         <Portal>
-          {successMensaje && (
+          {successMensaje && !mascotaEliminada && (
             <BackdropSuccess
               texto="Se modificaron los datos del familiar"
               onTap={() => {
@@ -155,24 +142,9 @@ export default function VistaFamiliar() {
                   maxHeight: '70%',
               }}
           >
-              <Text variant="titleLarge" style={{ marginBottom: 16 }}>
+              <Text variant="titleLarge" style={{ textAlign: 'center', marginBottom: 16 }}>
                   {`¿Declarar extravío de ${datosFamiliar?.nombre}?`}
-              </Text>
-
-              <TextInput
-                mode='outlined'
-                label="Observaciones adicionales (opcional)"
-                placeholder="Escribe aquí..."
-                value={observacionesExtravio}
-                onChangeText={setObservacionesExtravio}
-                multiline
-                numberOfLines={4}
-                style={{ 
-                    width: '100%', 
-                    backgroundColor: 'transparent',
-                    marginBottom: 16,
-                }}
-              />
+              </Text> 
               <View style={{flexDirection: 'row', justifyContent: 'space-between', gap: 10}}>
               <Button 
                   mode="outlined"
@@ -255,7 +227,7 @@ export default function VistaFamiliar() {
         </ScrollView>
       
         <BotonAccionesFamiliarFAB
-          showButton={!modoEdicion}
+          showButton={!modoEdicion && isFocused}
           casoResuelto={perdido}
           onEditarDatos={() => setModoEdicion(true)}
           onEliminarFamiliar={() => {

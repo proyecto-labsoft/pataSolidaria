@@ -3,7 +3,7 @@ import { Appbar, Text, useTheme } from 'react-native-paper';
 import AccesoNotificaciones from "./accesoNotificaciones";
 
 type Props = {
-  titulo: string,
+  titulo?: string,
   tamanioTitulo?: string
 }
 export default function AppbarNav({titulo,tamanioTitulo} : Props) {

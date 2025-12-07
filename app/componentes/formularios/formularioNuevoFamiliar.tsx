@@ -116,10 +116,11 @@ export default function FormularioNuevoFamiliar() {
                 nombre="sexo"
                 opciones={['No lo sé','Macho','Hembra']}
             />
-            <Divider style={{marginVertical: 20}}/>
-            <View style={{justifyContent:'center',alignContent:'center',gap:10,marginTop: 20}}>
-                <Text style={{textAlign:'center',width:'100%'}} variant="headlineSmall">Identificación y esterilización</Text>
-                <Divider style={{marginBottom: 20 , width: "90%", alignSelf: 'center'}}/>    
+            <Divider style={{height: 2, marginVertical: 10}}/>
+            
+            <View style={{justifyContent:'center',alignContent:'center',gap:10}}>
+                {/* <Text style={{textAlign:'center', width:'100%', color: theme.colors.primary }} variant="headlineSmall">Identificación y esterilización</Text>
+                <Divider style={{marginBottom: 20 , width: "90%", alignSelf: 'center', height: 2 }}/>     */}
                 
                     <View style={{flexDirection:'row', marginHorizontal: 30,marginVertical: 8, alignItems:'center', justifyContent: 'space-between'}}>
                         <Text variant="titleLarge" onPress={() => {
@@ -148,7 +149,7 @@ export default function FormularioNuevoFamiliar() {
                     </View>
                 
             </View>
-            <Divider style={{marginVertical: 20}}/>
+            <Divider style={{height: 2, marginVertical: 10}}/>
             <View style={{width:'100%',justifyContent:'center',alignContent:'center',gap:10}}>
                 <Text style={{textAlign:'center'}} variant="headlineSmall">Aspecto del familiar</Text>
                 <CampoTexto

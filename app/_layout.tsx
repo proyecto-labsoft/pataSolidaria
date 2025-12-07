@@ -6,7 +6,6 @@ import {
   PaperProvider,
 } from 'react-native-paper';
 import lightheme from '../assets/light-theme.json'
-import FondoGradiente from "./fondoGradiente";
 import QueryClientProviderBase from "./api/QueryClientProviderBase";
 import { AuthProvider } from "./contexts/AuthContext";
 import AuthNavigator from "./navegacion/AuthNavigator";
@@ -64,9 +63,7 @@ export default function Layout() {
       <AuthProvider>
         <QueryClientProviderBase>
           <SafeAreaProvider>
-            <FondoGradiente>
-              <AuthNavigator />
-            </FondoGradiente>
+            <AuthNavigator />
           </SafeAreaProvider>
         </QueryClientProviderBase>
       </AuthProvider>

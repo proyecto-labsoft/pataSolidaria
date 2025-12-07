@@ -12,6 +12,7 @@ import { useApiPostExtravioSinFamiliar } from '@/app/api/hooks'
 import { obtenerValorSexo, obtenerValorTamanio } from '@/app/utiles/obtenerValorEnum'
 import { useUsuario } from '@/app/hooks/useUsuario'
 import { CameraModal } from '../../CameraModal'
+import { formatearFechaBuenosAires, formatearHoraBuenosAires } from '@/app/utiles/fechaHoraBuenosAires'
 
 export default function FormularioNuevoExtravio() {
     const theme = useTheme() 
@@ -36,14 +37,13 @@ export default function FormularioNuevoExtravio() {
         new Animated.Value(0), // Línea 3-4
     ]).current
 
-    const { mutateAsync: declararExtraviado } = useApiPostExtravioSinFamiliar({ 
+    const { mutateAsync: declararExtraviado, isPending: isPendingDeclararExtraviado } = useApiPostExtravioSinFamiliar({ 
         onSuccess: () => {setSuccessMensaje(true);setVisible(false)},
     });
     
-    // Obtener fecha y hora actual para valores por defecto
-    const now = new Date();
-    const defaultFecha = `${now.getDate().toString().padStart(2, '0')}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getFullYear()}`;
-    const defaultHora = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+    // Obtener fecha y hora actual de Buenos Aires para valores por defecto
+    const defaultFecha = formatearFechaBuenosAires();
+    const defaultHora = formatearHoraBuenosAires();
     
     const { control, handleSubmit, formState: {errors}, watch } = useForm({
         defaultValues: {
@@ -321,7 +321,7 @@ export default function FormularioNuevoExtravio() {
                                         <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Cancelar</Text>
                                     </Button>
 
-                                    <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={handleSubmit(onSubmit)}>
+                                    <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={handleSubmit(onSubmit)} disabled={isPendingDeclararExtraviado}>
                                         <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Confirmar</Text>
                                     </Button>
                                     </View>

@@ -4,7 +4,9 @@ import DescripcionVista from "../componentes/descripcionVista";
 import FormularioNuevoAvistamiento from "../componentes/formularios/formularioNuevoAvistamiento";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function NuevoAvistamiento() {
+export default function NuevoAvistamiento({ route }: any) {
+
+    const extravioId = route.params?.data?.extravioId;
     
     return(
         <>
@@ -12,8 +14,8 @@ export default function NuevoAvistamiento() {
         <SafeAreaView style={{ alignItems: "center",flex:1}}>
             <View style={{marginHorizontal:10,width: "100%",flex:1}}>
                 <ScrollView contentContainerStyle={{ paddingBottom: 20}}>
-                    <DescripcionVista texto="Complete los datos del nuevo avistamiento" />
-                    <FormularioNuevoAvistamiento /> 
+                    {/* <DescripcionVista texto="Complete los datos del nuevo avistamiento" /> */}
+                    <FormularioNuevoAvistamiento extravioId={extravioId} /> 
                 </ScrollView> 
             </View>
         </SafeAreaView>

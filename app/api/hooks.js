@@ -145,7 +145,7 @@ export function useApiPutActualizarExtravio({ params, ...opciones }) {
 }
 
 // Postulaciones
-export function useApiGetPostulacionPorId({ id, ...opciones }) {
+export function useApiGetPostulacionPorId({ ...opciones }) {
     return useGet({
         nombreHook: "useApiGetPostulacionPorId",
         url: rutas.listarPostulaciones,
@@ -162,6 +162,24 @@ export function useApiPostCrearPostulacion({ body, ...opciones }) {
     });
 }
 
+// AVISTAMIENTOS
+
+export function useApiGetAvistamientosPorExtravio({ params, ...opciones }) {
+    return useGet({
+        nombreHook: "useApiGetAvistamientosPorExtravio",
+        url: rutas.avistamientosPorExtravio,
+        params,
+        configuracion: { ...opciones }
+    });
+}
+
+export function useApiPostAvistamiento({ ...opciones }) {
+    return usePost({
+        nombreHook: "useApiPostAvistamiento",
+        url: rutas.avistamientos,
+        configuracion: { queriesToInvalidate:['useApiGetAvistamientosPorExtravio'], ...opciones }
+    });
+}
 
 // export function useApiGetTransporteLicenciaPorDominio({ parametros, ...opciones }) {
 //   return (useGet(

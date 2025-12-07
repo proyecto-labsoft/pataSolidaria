@@ -1,6 +1,6 @@
 import { View } from 'react-native'
-import {useState} from 'react'
-import { Button, useTheme, Text, Portal, Divider } from 'react-native-paper'
+import {useEffect, useState} from 'react'
+import { Button, useTheme, Text, Portal, Divider, Switch } from 'react-native-paper'
 import CampoTexto from './campos/campoTexto'
 import { useForm } from 'react-hook-form'
 import CampoTextoArea from './campos/campoTextoArea'
@@ -11,6 +11,7 @@ import CampoSelectorModal from './campos/campoSelectorModal'
 import CampoCheckbox from './campos/campoCheckbox'
 import CampoFecha from './campos/campoFecha'
 import { useApiPostRegistrarMascota } from '@/app/api/hooks'
+import { useUsuario } from '@/app/hooks/useUsuario'
 
 export default function FormularioNuevoFamiliar() {
     
@@ -19,13 +20,21 @@ export default function FormularioNuevoFamiliar() {
     const [successMensaje, setSuccessMensaje] = useState(false);
     const navigation = useNavigation()
 
-    const { control, handleSubmit } = useForm(); 
+    const { usuarioId } = useUsuario()
 
+    
+    const { control, setValue, watch, handleSubmit } = useForm({});
+    const esterilizado = watch('esterilizado');
+    const chipeado = watch('chipeado');
     const {mutateAsync: crearFamiliar } = useApiPostRegistrarMascota({
-        params: {id: 2},
+        params: {id: usuarioId},
         onSuccess: () => {setSuccessMensaje(true)}
     })
+
     
+    useEffect(() => {
+        console.log("usuario Id",usuarioId)
+    },[usuarioId])
     const onSubmit = (data: any) => { 
 
         if (data?.sexo === 'Macho') {
@@ -49,7 +58,7 @@ export default function FormularioNuevoFamiliar() {
         crearFamiliar({ 
             data: {
                 ...{ 
-                    familiarId: 2,
+                    familiarId: usuarioId,
                     nombre: null,
                     especie: null,
                     raza: null,
@@ -65,7 +74,7 @@ export default function FormularioNuevoFamiliar() {
             }
         })
     }
-
+    
     return(
         <View style={{gap:20}}>
             <Portal>
@@ -107,27 +116,40 @@ export default function FormularioNuevoFamiliar() {
                 nombre="sexo"
                 opciones={['No lo sé','Macho','Hembra']}
             />
-            <Divider style={{marginVertical: 20}}/>
+            <Divider style={{height: 2, marginVertical: 10}}/>
+            
             <View style={{justifyContent:'center',alignContent:'center',gap:10}}>
-                <Text style={{textAlign:'center'}} variant="headlineSmall">Identificadores y esterilización</Text>
+                {/* <Text style={{textAlign:'center', width:'100%', color: theme.colors.primary }} variant="headlineSmall">Identificación y esterilización</Text>
+                <Divider style={{marginBottom: 20 , width: "90%", alignSelf: 'center', height: 2 }}/>     */}
                 
-                <View style={{ justifyContent: 'flex-start', width: '100%' }}>
-                    <CampoCheckbox
-                        control={control}
-                        label="¿Está esterilizado?"
-                        nombre="esterilizado"
-                        description="Marque si el animal ha sido esterilizado"
-                    /> 
-                    <CampoCheckbox
-                        control={control}
-                        label="¿Está chipeado/identificado?"
-                        nombre="chipeado"
-                        disabled={false}
-                        description="Indique si tiene chip, collar o identificación"
-                    /> 
-                </View>
+                    <View style={{flexDirection:'row', marginHorizontal: 30,marginVertical: 8, alignItems:'center', justifyContent: 'space-between'}}>
+                        <Text variant="titleLarge" onPress={() => {
+                            setValue('esterilizado', !esterilizado);
+                        }}>Esterilizado</Text>
+                        <Switch
+                            value={esterilizado}
+                            style={{ transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }] }}
+                            onValueChange={() => {
+                                setValue('esterilizado', !esterilizado);
+                            }}
+                        />
+                        
+                    </View>
+                    <View style={{flexDirection:'row', marginHorizontal: 30, marginVertical: 8, alignItems:'center', justifyContent: 'space-between'}}>
+                        <Text variant="titleLarge" onPress={() => {
+                            setValue('chipeado', !chipeado);
+                        }}>Chipeado</Text>
+                        <Switch
+                            value={chipeado}
+                            style={{ transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }] }}
+                            onValueChange={() => {
+                                setValue('chipeado', !chipeado);
+                            }}
+                        />
+                    </View>
+                
             </View>
-            <Divider style={{marginVertical: 20}}/>
+            <Divider style={{height: 2, marginVertical: 10}}/>
             <View style={{width:'100%',justifyContent:'center',alignContent:'center',gap:10}}>
                 <Text style={{textAlign:'center'}} variant="headlineSmall">Aspecto del familiar</Text>
                 <CampoTexto
@@ -149,8 +171,8 @@ export default function FormularioNuevoFamiliar() {
                 nombre="descripcion"
             />
             <View style={{ flexDirection:'row', justifyContent:'space-evenly', width: '100%'}}>
-                <Button  buttonColor={theme.colors.secondary} style={{  marginHorizontal:'5%',marginVertical: 8 ,borderRadius:10}} uppercase mode="contained" onPress={() => navigation.goBack()}>
-                    <Text variant='labelLarge' style={{color: theme.colors.onSecondary, marginLeft: "5%"}}>Cancelar</Text>
+                <Button  buttonColor={theme.colors.error} style={{  marginHorizontal:'5%',marginVertical: 8 ,borderRadius:10}} uppercase mode="contained" onPress={() => navigation.goBack()}>
+                    <Text variant='labelLarge' style={{color: theme.colors.onError, marginLeft: "5%"}}>Cancelar</Text>
                 </Button>
                 <Button buttonColor={theme.colors.primary} style={{  marginHorizontal:'5%',marginVertical: 8,borderRadius:10}} uppercase mode="contained"  onPress={handleSubmit(onSubmit)}>
                     <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Guardar</Text>

@@ -1,3 +1,5 @@
+import { obtenerFechaHoraActualBuenosAires } from './fechaHoraBuenosAires';
+
 /**
  * Calcula el tiempo transcurrido desde una fecha y hora dada
  * @param fechaHora - Fecha y hora en formato "dd-MM-yyyy HH:mm:ss" o "dd-MM-yyyy HH:mm"
@@ -7,7 +9,7 @@
  * calcularTiempoTranscurrido("30-10-2025 14:30:00")
  * // Retorna: "hace 5 minutos" | "hace 2 horas 30 minutos" | "Hoy" | "Ayer" | "hace 2 días"
  */
-export const calcularTiempoTranscurrido = (fechaHora: string | undefined): string => {
+export const calcularTiempoTranscurrido = (fechaHora: string | undefined): string => { 
   try {
     // Validar que fechaHora no sea undefined o vacío
     if (!fechaHora || typeof fechaHora !== 'string') {
@@ -39,9 +41,10 @@ export const calcularTiempoTranscurrido = (fechaHora: string | undefined): strin
       return 'Hace poco';
     }
 
-    // Crear fecha en UTC
+    // Crear fecha del evento (asumiendo que ya está en zona horaria de Buenos Aires)
     const fechaEvento = new Date(anio, mes - 1, dia, horas, minutos, 0);
-    const ahora = new Date();
+    // Obtener hora actual de Buenos Aires
+    const ahora = obtenerFechaHoraActualBuenosAires();
 
     // Calcular diferencia en milisegundos
     const diferenciaMilisegundos = ahora.getTime() - fechaEvento.getTime();

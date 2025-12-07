@@ -6,7 +6,7 @@ import VisitVetIcon from "../componentes/iconos/VisitVetIcon";
 import { parse } from "date-fns"; 
 
 export default function VistaCasos() {
-  const {data: extravios, isFetching, refetch } = useApiGetExtravios({enabled: true }) 
+  const {data: extravios, isFetching, refetch } = useApiGetExtravios({params: { queryParams: {resueltos: false}}, enabled: true }) 
 
   const theme = useTheme();
 
@@ -53,11 +53,12 @@ export default function VistaCasos() {
         ListEmptyComponent={
           isFetching
             ? (<View style={{alignItems: 'center', marginVertical: 50}}> 
-                  <Text variant="headlineMedium" style={{textAlign: 'center', color: theme.colors.secondary}}>Buscando casos...</Text>
+                  <VisitVetIcon width={250} height={250} color={theme.colors.primary} />
+                  <Text variant="headlineMedium" style={{textAlign: 'center', color: theme.colors.primary}}>Obteniendo casos...</Text>
               </View>)
             : (<View style={{alignItems: 'center', marginVertical: 50}}>
                   <VisitVetIcon width={250} height={250} color={theme.colors.primary} />
-                  <Text variant="headlineMedium" style={{textAlign: 'center', color: theme.colors.secondary}}>No hay casos de extravío</Text>
+                  <Text variant="headlineMedium" style={{textAlign: 'center', color: theme.colors.primary}}>No hay casos de extravío</Text>
               </View>)
         }
       />

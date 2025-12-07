@@ -3,6 +3,7 @@ import { useApiGetAdopciones } from "../api/hooks";
 import CardAdopcion from "../componentes/cards/cardAdopcion";
 import DogHouseIcon from "../componentes/iconos/DogHouseIcon"; 
 import { Text, useTheme } from "react-native-paper";
+import VisitVetIcon from "../componentes/iconos/VisitVetIcon";
 
 export default function VistaAdopciones() {
 
@@ -18,7 +19,6 @@ export default function VistaAdopciones() {
 
   return (
     <View  style={{height: '100%', marginVertical: 10}}>
-        {/* <DescripcionVista texto="Compañeros en adopción bajo el cuidado de la asociación" /> */}
         <FlatList
           data={adopcionesPorFila}
           keyExtractor={(_, idx) => idx.toString()}
@@ -36,11 +36,12 @@ export default function VistaAdopciones() {
           ListEmptyComponent={
             isFetching
               ? (<View style={{alignItems: 'center',marginVertical: 50}}> 
-                    <Text variant="headlineMedium" style={{textAlign: 'center',color: theme.colors.secondary }}>Cargando adopciones...</Text>
+                    <VisitVetIcon width={250} height={250} color={theme.colors.primary} />
+                    <Text variant="headlineMedium" style={{textAlign: 'center',color: theme.colors.primary }}>Obteniendo adopciones...</Text>
                 </View>)
               : (<View style={{alignItems: 'center',marginVertical: 50}}>
                     <DogHouseIcon width={250} height={250} color={theme.colors.primary} />
-                    <Text variant="headlineMedium" style={{textAlign: 'center',color: theme.colors.secondary }}>No tenemos compas en adopción</Text>
+                    <Text variant="headlineMedium" style={{textAlign: 'center',color: theme.colors.primary }}>No existen compañeros en adopción</Text>
                 </View>)
           }
         />

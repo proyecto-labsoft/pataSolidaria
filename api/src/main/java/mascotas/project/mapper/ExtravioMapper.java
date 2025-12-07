@@ -2,6 +2,7 @@ package mascotas.project.mapper;
 
 import mascotas.project.dto.ExtravioDetailDTO;
 import mascotas.project.dto.ExtravioRequestDTO;
+import mascotas.project.dto.ExtravioResponseDTO;
 import mascotas.project.entities.Extravio;
 import mascotas.project.entities.Mascota;
 import org.mapstruct.Mapper;
@@ -16,9 +17,12 @@ public interface ExtravioMapper {
 
     @Mapping(target = "id", source = "extravioId")
     @Mapping(target = "mascota", source = "dto.mascotaId")
-    Extravio putToEntity(ExtravioRequestDTO dto, Long  extravioId);
+    @Mapping(target = "creadoByFamiliar", source = "creadoByFamiliar")
+    Extravio putToEntity(ExtravioRequestDTO dto, Long  extravioId, Boolean creadoByFamiliar);
 
     @Mapping(target = "mascotaDetalle", source = "mascotaEntity")
     ExtravioDetailDTO  toDtoDetail(ExtravioDetailDTO extravioDetailDTO, Mascota mascotaEntity);
 
+    @Mapping(target = "mascotaId", source = "mascota")
+    ExtravioResponseDTO toDtoResponse(Extravio extravio);
 }

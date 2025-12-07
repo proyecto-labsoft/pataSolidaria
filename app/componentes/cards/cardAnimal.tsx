@@ -5,6 +5,7 @@ import { ImageSlider } from '../../testData/sliderData';
 import { calcularTiempoTranscurrido } from "@/app/utiles/calcularTiempoTranscurrido";
 import { obtenerValorSexo } from "@/app/utiles/obtenerValorEnum";
 import BannerCoverOverlay from './bannerCoverOverlay';
+import { useUsuario } from "@/app/hooks/useUsuario";
 
 interface Props {
     data: {
@@ -21,12 +22,10 @@ interface Props {
 // (1*) Tener todo los avistamientos de este animal y mostrar el más reciente
 export default function CardAnimal({ data, navigateTo }: Props) {
     
-    console.log("Card extravio",data)
-    
-    const theme = useTheme();
-    console.log("first",theme.colors.primary)
+    const { usuarioId } = useUsuario()
+    const theme = useTheme(); 
     const esBuscado = data?.creadoByFamiliar;
-    const miUsuario = esBuscado
+    const creadorPorMi = data?.creadorId === usuarioId;
     const navigation = useNavigation();
     const randomImage = ImageSlider[0].imagenes[Math.floor(Math.random() * ImageSlider[0].imagenes.length)];
     return (
@@ -57,7 +56,7 @@ export default function CardAnimal({ data, navigateTo }: Props) {
             >
                 <View style={{ position: 'relative' }}>
                   <Card.Cover style={styles.fotoAnimal} source={randomImage} />
-                  {(esBuscado) && (
+                  {((esBuscado && creadorPorMi) || creadorPorMi) && (
                     <BannerCoverOverlay texto="Creado por ti" />
                   )}
                 </View>

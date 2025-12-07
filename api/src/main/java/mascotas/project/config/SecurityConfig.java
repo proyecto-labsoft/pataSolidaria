@@ -37,7 +37,7 @@ public class SecurityConfig {
                 .requestMatchers("/usuarios/set-admin").hasAuthority("ROLE_ADMIN")
                 
                 // 🔒 Todos los demás endpoints requieren autenticación (ROLE_USER o ROLE_ADMIN)
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()
             )
             .addFilterBefore(firebaseAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

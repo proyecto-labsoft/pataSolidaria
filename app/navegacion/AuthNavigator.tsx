@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ActivityIndicator, View } from 'react-native';
@@ -26,7 +26,7 @@ const Stack = createNativeStackNavigator();
 export default function AuthNavigator() {
   const { user, loading } = useAuth();
   const navigationRef = useNavigationContainerRef();
-
+  
   // Mostrar loading mientras verifica autenticación
   if (loading) {
     return (

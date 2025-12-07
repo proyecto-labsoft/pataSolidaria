@@ -4,14 +4,15 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-@Getter
-@Setter
+@Data
 @Entity
 @Builder
 @AllArgsConstructor
@@ -32,6 +33,6 @@ public class Postulacion {
     private Adopcion adopcion;
 
     @Column(nullable = false)
-    @JsonFormat(pattern="dd-MM-yyyy")
-    private LocalDate fecha;
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
+    private LocalDateTime fecha;
 }

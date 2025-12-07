@@ -14,6 +14,7 @@ public interface ExtravioRepository extends JpaRepository<Extravio, Long> {
 
     @Query("""
     SELECT new mascotas.project.dto.ExtravioDetailDTO(
+        e.id,
         e.creador,
         e.mascota,
         e.zona,
@@ -36,6 +37,7 @@ public interface ExtravioRepository extends JpaRepository<Extravio, Long> {
 
     @Query("""
     SELECT new mascotas.project.dto.ExtravioDetailDTO(
+        e.id,
         e.creador,
         e.mascota,
         e.zona,
@@ -55,6 +57,7 @@ public interface ExtravioRepository extends JpaRepository<Extravio, Long> {
 
     @Query("""
     SELECT new mascotas.project.dto.ExtravioDetailDTO(
+        e.id,
         e.creador,
         e.mascota,
         e.zona,
@@ -76,6 +79,7 @@ public interface ExtravioRepository extends JpaRepository<Extravio, Long> {
 
     @Query("""
     SELECT new mascotas.project.dto.ExtravioDetailDTO(
+        e.id,
         e.creador,
         e.mascota,
         e.zona,

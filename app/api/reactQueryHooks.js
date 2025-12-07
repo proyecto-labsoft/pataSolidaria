@@ -299,6 +299,7 @@ export const useGenericMutation = ({
       // Unificamos headers
       const headers = { 
         ...customHeaders,
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       };
       const queryParams = params && params.queryParams ? params.queryParams : {};
       try {
@@ -322,7 +323,7 @@ export const useGenericMutation = ({
 
         return response.data;
       } catch (error) {
-        console.error('Error en la mutación:', error);
+        console.error('Error en la mutación:', error, error.response?.data);
         throw error;
       }
     },

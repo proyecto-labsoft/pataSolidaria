@@ -10,6 +10,7 @@ import {
     Text 
 } from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { obtenerFechaHoraActualBuenosAires } from '@/app/utiles/fechaHoraBuenosAires';
 
 type Props = {
     label: string,
@@ -19,6 +20,7 @@ type Props = {
     placeholder?: string,
     maximumDate?: Date,
     minimumDate?: Date,
+    disableFutureDates?: boolean,
 }
 
 export default function CampoFecha({
@@ -28,14 +30,25 @@ export default function CampoFecha({
     style,
     placeholder = 'Seleccione una fecha',
     maximumDate,
-    minimumDate
+    minimumDate,
+    disableFutureDates = false,
 }: Props) {
     const theme = useTheme();
     const [visible, setVisible] = useState(false);
-    const [tempDate, setTempDate] = useState<Date>(new Date());
+    const [tempDate, setTempDate] = useState<Date>(obtenerFechaHoraActualBuenosAires());
 
     const showModal = () => setVisible(true);
     const hideModal = () => setVisible(false);
+
+    // Calcular fecha máxima permitida
+    const getMaximumDate = () => {
+        if (disableFutureDates) {
+            const today = obtenerFechaHoraActualBuenosAires();
+            today.setHours(23, 59, 59, 999);
+            return today;
+        }
+        return maximumDate;
+    };
 
     // Función para formatear fecha a dd/MM/yyyy
     const formatDate = (date: Date): string => {
@@ -81,6 +94,22 @@ export default function CampoFecha({
         <Controller 
             name={nombre}
             control={control}
+            rules={{
+                validate: (value) => {
+                    if (disableFutureDates && value) {
+                        const selectedDate = parseDate(value);
+                        if (selectedDate) {
+                            const today = new Date();
+                            today.setHours(23, 59, 59, 999);
+                            
+                            if (selectedDate > today) {
+                                return 'No puede seleccionar una fecha futura';
+                            }
+                        }
+                    }
+                    return true;
+                }
+            }}
             render={({ field: { onChange, value, onBlur }, fieldState: { error } }) => {
                 const currentDate = value ? parseDate(value) || new Date() : new Date();
                 
@@ -148,7 +177,7 @@ export default function CampoFecha({
                                                 setTempDate(selectedDate);
                                             }
                                         }}
-                                        maximumDate={maximumDate}
+                                        maximumDate={getMaximumDate()}
                                         minimumDate={minimumDate}
                                         style={{
                                             backgroundColor: 'transparent',
@@ -184,7 +213,7 @@ export default function CampoFecha({
                                     mode="date"
                                     display="default"
                                     onChange={(event, selectedDate) => onDateChange(event, selectedDate, onChange)}
-                                    maximumDate={maximumDate}
+                                    maximumDate={getMaximumDate()}
                                     minimumDate={minimumDate}
                                 />
                             )

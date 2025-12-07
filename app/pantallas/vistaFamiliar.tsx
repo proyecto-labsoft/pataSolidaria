@@ -1,18 +1,21 @@
 import { View, ScrollView, Dimensions } from 'react-native'
 import React, { useMemo, useEffect, useState} from 'react'
-import {Divider, Portal, Text, Chip, Modal, Button, TextInput, useTheme } from 'react-native-paper'
+import {Divider, Portal, Text, Modal, Button, TextInput, useTheme } from 'react-native-paper'
 import FormularioEditarFamiliar from '../componentes/formularios/formularioEditarFamiliar';
 import BotonAccionesFamiliarFAB from '../componentes/botones/botonAccionesFamiliarFAB';
 import ItemDato from '../componentes/itemDato';
 import { ImageSlider } from '../testData/sliderData';
 import CarruselImagenes from '../componentes/carrusel/carruselImagenes';
 import AppbarNav from '../componentes/navegacion/appbarNav';
+import BannerEstadoExtravio from '../componentes/bannerEstadoExtravio';
 import { TakePictureBtn } from '../componentes/TakePictureBtn';
-import { useRoute } from '@react-navigation/native';
-import { useApiDeleteMascota, useApiGetExtravioPorMascota, useApiGetMascotaPorId, useApiPostExtravioFamiliar, useApiPutActualizarMascota } from '../api/hooks';
+import { useRoute, useIsFocused } from '@react-navigation/native';
+import { useApiDeleteMascota, useApiGetExtravioPorMascota, useApiGetMascotaPorId, useApiPostExtravioFamiliar, useApiPutActualizarExtravio, useApiPutActualizarMascota } from '../api/hooks';
 import BackdropSuccess from '../componentes/backdropSuccess'; 
 import { useNavigation } from '@react-navigation/native'
 import { format } from 'date-fns';
+import { useUsuario } from '../hooks/useUsuario';
+import { calcularTiempoTranscurrido } from '../utiles/calcularTiempoTranscurrido';
 
 // Basandose en colores de la pagina de ARAF
 // primario: 0f7599
@@ -24,7 +27,10 @@ export default function VistaFamiliar() {
   const route = useRoute();
   const navigation = useNavigation();
   const theme = useTheme();
+  const isFocused = useIsFocused(); // Hook para saber si la pantalla está enfocada
   const familiarId = route.params?.id;
+
+  const { usuarioId } = useUsuario()
   
   const [modoEdicion, setModoEdicion] = useState(false);
   const [successMensaje, setSuccessMensaje] = useState(false);
@@ -44,32 +50,36 @@ export default function VistaFamiliar() {
     onSuccess: () => {setSuccessMensaje(true) ; refetch()}
   }); 
 
-  const { data: isExtraviado } = useApiGetExtravioPorMascota({ params: {id: familiarId}})
+  const { data: extravio } = useApiGetExtravioPorMascota({ params: {id: familiarId}})
 
   useEffect(() => { 
-    if (isExtraviado?.estaExtraviado) {
-      setPerdido(true);
-    } else {
-      setPerdido(false);
-    }
-  }, [isExtraviado]);
+    console.log("extravio?.estaExtraviado",extravio?.estaExtraviado)
+    setPerdido(extravio?.estaExtraviado);
+  }, [extravio]);
   const { mutateAsync: declararExtraviado } = useApiPostExtravioFamiliar({
     params: {id: familiarId},
     onSuccess: () => {setPerdido(true)}
   });
 
+  const { mutateAsync: resolverExtravio } = useApiPutActualizarExtravio({
+    params: { id: extravio?.extravio?.id },
+    onSuccess: () => {
+      setPerdido(false);
+    }
+  });
+
+  const resolverCaso = () => {
+    const {id, ...restoDAta} = extravio?.extravio;
+
+    resolverExtravio({data: {
+      ...restoDAta,
+      resuelto: true
+    }});
+  }
+
   const handleDeclararExtravio = () => {
-    declararExtraviado({
-      data: {
-      creador: 2, // TODO - ID del usuario, reemplazar con el ID real del usuario autenticado
-      mascotaId: familiarId,
-      zona: "", // TODO - zona, reemplazar con la zona real, datos de geoloocalizacion
-      hora: format(new Date(), 'dd-MM-yyyy HH:mm:ss'),
-      observacion: observacionesExtravio || null,
-      }
-    })
+    navigation.navigate("ConfirmarBuscado", { ...datosFamiliar }) 
     setCargarExtravio(false);
-    setObservacionesExtravio('');
   }
 
   const handleCloseExtravio = () => {
@@ -77,7 +87,7 @@ export default function VistaFamiliar() {
     setObservacionesExtravio('');
   }
 
-  const { mutateAsync: eliminarFamiliar, isSuccess: mascotaEliminada} = useApiDeleteMascota({ 
+  const { mutateAsync: eliminarFamiliar, isSuccess: mascotaEliminada} = useApiDeleteMascota({
     onSuccess: () => {setSuccessMensaje(true)}
   }); 
 
@@ -99,7 +109,7 @@ export default function VistaFamiliar() {
           data.tamanio = 'GIGANTE';
       }
 
-      data.familiarId = 2; // TODO - ID del usuario, reemplazar con el ID real del usuario autenticado
+      data.familiarId = usuarioId; // TODO - ID del usuario, reemplazar con el ID real del usuario autenticado
  
       actualizarFamiliar({ data: data })
   }
@@ -110,7 +120,7 @@ export default function VistaFamiliar() {
   return (
       <View style={{height: '100%',width:width,alignItems:'center'}}>      
         <Portal>
-          {successMensaje && (
+          {successMensaje && !mascotaEliminada && (
             <BackdropSuccess
               texto="Se modificaron los datos del familiar"
               onTap={() => {
@@ -132,24 +142,9 @@ export default function VistaFamiliar() {
                   maxHeight: '70%',
               }}
           >
-              <Text variant="titleLarge" style={{ marginBottom: 16 }}>
+              <Text variant="titleLarge" style={{ textAlign: 'center', marginBottom: 16 }}>
                   {`¿Declarar extravío de ${datosFamiliar?.nombre}?`}
-              </Text>
-
-              <TextInput
-                mode='outlined'
-                label="Observaciones adicionales (opcional)"
-                placeholder="Escribe aquí..."
-                value={observacionesExtravio}
-                onChangeText={setObservacionesExtravio}
-                multiline
-                numberOfLines={4}
-                style={{ 
-                    width: '100%', 
-                    backgroundColor: 'transparent',
-                    marginBottom: 16,
-                }}
-              />
+              </Text> 
               <View style={{flexDirection: 'row', justifyContent: 'space-between', gap: 10}}>
               <Button 
                   mode="outlined"
@@ -180,29 +175,16 @@ export default function VistaFamiliar() {
         </Portal>
         <AppbarNav titulo={datosFamiliar?.nombre} />
 
+        {perdido && (
+          <BannerEstadoExtravio 
+            tipo={false} 
+            titulo={`EXTRAVIADO - ${calcularTiempoTranscurrido(extravio?.extravio.hora)}`}
+          />
+        )}
+
         <ScrollView contentContainerStyle={{margin:12}} > 
           
           <CarruselImagenes data={imagenes} />    
-          
-          {perdido && (
-            <Chip
-              icon="alert-circle"
-              mode="flat"
-              style={{
-                marginTop: 16,
-                marginBottom: 8,
-                backgroundColor: '#FF6B6B',
-                alignSelf: 'center',
-              }}
-              textStyle={{
-                color: 'white',
-                fontWeight: 'bold',
-                fontSize: 14,
-              }}
-            >
-              Este familiar está extravioado
-            </Chip>
-          )}
           
           {modoEdicion && <TakePictureBtn setImagen={setFoto} />}
           <View style={{gap: 20,paddingVertical:40,alignItems: "center"}} >
@@ -232,7 +214,7 @@ export default function VistaFamiliar() {
                   <Text style={{textAlign:'center',width:'100%'}} variant="headlineSmall">Controles veterinarios</Text>
                   <Divider style={{marginBottom: 20 , width: "90%", alignSelf: 'center'}}/>    
                   <ItemDato label='¿Está esterilizado?' data={datosFamiliar?.esterilizado}  />
-                  <ItemDato label='¿Está chipeado?' data={datosFamiliar?.identificado} />
+                  <ItemDato label='¿Está chipeado?' data={datosFamiliar?.chipeado} />
                 </View>
                 
                 
@@ -245,13 +227,17 @@ export default function VistaFamiliar() {
         </ScrollView>
       
         <BotonAccionesFamiliarFAB
-          showButton={!modoEdicion}
+          showButton={!modoEdicion && isFocused}
+          casoResuelto={perdido}
           onEditarDatos={() => setModoEdicion(true)}
           onEliminarFamiliar={() => {
-            eliminarFamiliar();
+            eliminarFamiliar({ params: { id: familiarId } });
           }}
           onDeclaraPerdido={() => {
             setCargarExtravio(true)
+          }}
+          onResolverCaso={() => {
+            resolverCaso()
           }}
         />
       

@@ -72,6 +72,7 @@ export const loginUser = async (
     
     // NO es necesario sincronizar en login - los custom claims ya están establecidos desde el registro
     // Solo se sincroniza en el registro para crear el usuario en BD y establecer claims
+    await syncUserWithBackend(userCredential.user, token);
     
     return {
       success: true,

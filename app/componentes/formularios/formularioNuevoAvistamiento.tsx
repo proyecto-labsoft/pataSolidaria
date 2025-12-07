@@ -8,31 +8,48 @@ import { useForm } from "react-hook-form";
 import BackdropSuccess from '../backdropSuccess'
 import { Mapa } from '../mapa'
 import CampoHora from './campos/campoHora'
+import { useApiPostAvistamiento } from '@/app/api/hooks'
+import { useUsuario } from '@/app/hooks/useUsuario'
+import { formatearFechaBuenosAires } from '@/app/utiles/fechaHoraBuenosAires'
 
 // TODO: Falta parte del back
-export default function FormularioNuevoAvistamiento() {
+export default function FormularioNuevoAvistamiento({extravioId}: {extravioId: number}) {
     const theme = useTheme()
     const navigation = useNavigation()
     const [visible,setVisible] = useState(false)
-    const [post,setPost] = useState(false)
-
+    const [success,setSuccess] = useState(false)
+    const { usuarioId } = useUsuario()
     const { control, handleSubmit, formState: {errors} } = useForm();
 
-    const onSumbit = (data: any) => {
-        data.ubicacion=ubicacion
+    const { mutateAsync: crearAvistamiento, isPending: isPendingCrearAvistamiento } = useApiPostAvistamiento({
+        onSuccess: () => {
+            setSuccess(true)
+        }
+    })
+    const onSumbit = (formData: any) => {
         setVisible(false)
+        const fechaStr = formData?.fecha || formatearFechaBuenosAires()
+        const horaStr = formData?.hora || '00:00'
+        const fechaHora = `${fechaStr} ${horaStr}:00`
         
-        //Cuando el post tiene exito
-        setPost(true)
+        crearAvistamiento({data: {
+            usuarioId: usuarioId,
+            extravioId: extravioId,
+            zona: "",
+            comentario: formData?.descripcion,
+            hora: fechaHora,
+            latitud: formData?.latitud,
+            longitud: formData?.longitud,
+        }})
     }
     const [ubicacion,setUbicacion] = useState("")
     return(
         <View style={{gap:20}}>
             <Portal>
-                {!visible && post && (<BackdropSuccess texto="Nuevo avistamiento confirmado" onTap={() => navigation.goBack()}/>)}
+                {success && (<BackdropSuccess texto="Nuevo avistamiento confirmado" onTap={() => navigation.goBack()}/>)}
                 <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={{...styles.containerStyle,backgroundColor:theme.colors.surface}}>
                     <Text style={{textAlign: 'center'}}>Al reportar el nuevo avistamiento compartirá sus datos de contacto con los familiares del animal.</Text>
-                    <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={handleSubmit(onSumbit)}>
+                    <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={handleSubmit(onSumbit)} disabled={isPendingCrearAvistamiento}>
                         <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Confirmar avistamiento</Text>
                     </Button>
                 </Modal>

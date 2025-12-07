@@ -11,6 +11,7 @@ import mascotas.project.dto.UsuarioDTO;
 import mascotas.project.entities.Extravio;
 import mascotas.project.entities.Mascota;
 import mascotas.project.exceptions.ForbiddenException;
+import mascotas.project.exceptions.NoContentException;
 import mascotas.project.exceptions.NotFoundException;
 import mascotas.project.mapper.ExtravioMapper;
 import mascotas.project.repositories.ExtravioRepository;
@@ -67,9 +68,12 @@ public class ExtravioService {
 
     public List<ExtravioDetailDTO> getAllExtravios(Boolean resueltos) {
 
-        List<ExtravioDetailDTO> extraviosDtos = Optional.ofNullable(resueltos)
+        List<ExtravioDetailDTO> extraviosDtos = Optional.of(resueltos)
                                                .map(extravioRepository::findAllByResuelto)
-                                               .orElseGet(extravioRepository::findAllWithMascota);
+                                                .orElseThrow(
+                                                        ()-> new NoContentException(ErrorsEnums.NO_CONTENT_ERROR.getDescription())
+                                                );
+
 
         return setMascotaDetailToExtravioDtoList(extraviosDtos);
     }
@@ -85,7 +89,7 @@ public class ExtravioService {
             throw new ForbiddenException(ErrorsEnums.EXTRAVIO_FORBIDDEN_ERROR.getDescription() + extravio.getId());
         }
 
-        extravio = extravioMapper.putToEntity(extravioRequest, extravioId);
+        extravio = extravioMapper.putToEntity(extravioRequest, extravioId, extravio.getCreadoByFamiliar());
 
         return extravioRepository.save(extravio);
     }
@@ -113,6 +117,22 @@ public class ExtravioService {
     }
 
 
+    // public PerdidoDTO getIsExtraviadoByMascotaId(Long mascotaId){
+
+    //     mascotaService.getMascotaEntityById(mascotaId);
+    //     Optional<Extravio> extravio = extravioRepository.findByMascotaAndResueltoIsFalse(mascotaId); //busca el extravio abierto
+
+    //     if (extravio.isPresent()){
+    //         return PerdidoDTO.builder()
+    //                 .extravioId(extravio.get().getId())
+    //                 .estaExtraviado(Boolean.TRUE).build();
+    //     }
+
+    //     return  PerdidoDTO.builder()
+    //             .extravioId(null)
+    //             .estaExtraviado(Boolean.FALSE).build();
+    // }
+
     public PerdidoDTO getExtravioByMascotaId(Long mascotaId){
 
         mascotaService.getMascotaEntityById(mascotaId);
@@ -120,15 +140,14 @@ public class ExtravioService {
 
         if (extravio.isPresent()){
             return PerdidoDTO.builder()
-                    .extravioId(extravio.get().getId())
+                    .extravio(extravioMapper.toDtoResponse(extravio.get()))
                     .estaExtraviado(Boolean.TRUE).build();
         }
 
         return  PerdidoDTO.builder()
-                .extravioId(null)
+                .extravio(null)
                 .estaExtraviado(Boolean.FALSE).build();
     }
-
 
     private List<ExtravioDetailDTO> setMascotaDetailToExtravioDtoList(List<ExtravioDetailDTO> extravioDtos){
 

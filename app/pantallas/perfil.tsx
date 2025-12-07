@@ -36,7 +36,7 @@ export default function Perfil() {
           nombre: userProfile.nombre || user?.displayName || '',
           celular: userProfile.celular || '',
           domicilio: userProfile.direccion || '',
-          email: userProfile.email || user?.email || ''
+          email: user?.email || ''
         };
         setDatosPerfil(perfil);
         reset(perfil);
@@ -49,7 +49,7 @@ export default function Perfil() {
             nombre: profile.nombre || user?.displayName || '',
             celular: profile.celular || '',
             domicilio: profile.direccion || '',
-            email: profile.email || user?.email || ''
+            email: user?.email || ''
           };
           setDatosPerfil(perfil);
           reset(perfil);
@@ -159,7 +159,7 @@ export default function Perfil() {
                 <Item label='Número de teléfono' data={datosPerfil?.celular || 'No especificado'} />
                 <Item label='Domicilio' data={datosPerfil?.domicilio || 'No especificado'} />
                 <Button icon="pencil" buttonColor={theme.colors.primary} textColor={theme.colors.onPrimary} disabled={edicion} style={{ marginVertical: 8,borderRadius:50}} uppercase mode="contained" onPress={() => setEdicion(true)}>
-                  Editar información
+                  Modificar datos
                 </Button>
                 <Button 
                   icon="logout" 

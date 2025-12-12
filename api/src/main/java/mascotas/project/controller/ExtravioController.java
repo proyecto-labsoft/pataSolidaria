@@ -170,7 +170,10 @@ public class ExtravioController {
             summary = "Consulta su un  extravio es favorito o no de un user",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Datos para el nuevo extravio favorito")
     )
-    public ResponseEntity<Boolean> isFavorito(@RequestBody ExtravioFavRequestDTO request) {
+    public ResponseEntity<Boolean> isFavorito(@RequestParam(name = "usuarioId", required = true) Long usuarioId,
+                                              @RequestParam(name = "extravioId", required = true) Long extravioId) {
+
+        ExtravioFavRequestDTO request = ExtravioFavRequestDTO.builder().extravioId(extravioId).usuarioId(usuarioId).build();
 
         return ResponseEntity.ok( extraviosFavoritosService.isFavorito(request) );
     }

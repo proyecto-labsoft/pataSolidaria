@@ -8,6 +8,8 @@ import mascotas.project.entities.Mascota;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring", uses = {MascotaMapper.class}, imports = Mascota.class)
 public interface ExtravioMapper {
 
@@ -22,6 +24,16 @@ public interface ExtravioMapper {
 
     @Mapping(target = "mascotaDetalle", source = "mascotaEntity")
     ExtravioDetailDTO  toDtoDetail(ExtravioDetailDTO extravioDetailDTO, Mascota mascotaEntity);
+
+
+    @Mapping(target ="mascotaDetalle" , ignore = true)
+    @Mapping(target = "extravioId", source="id")
+    @Mapping(target = "creadorId", source="creador")
+    @Mapping(target = "mascotaId", source="mascota")
+    ExtravioDetailDTO toExtravioDetailDTO(Extravio extravioEntiry);
+
+    List<ExtravioDetailDTO> toExtravioDetailDTOList(List<Extravio> extravioEntiry);
+
 
     @Mapping(target = "mascotaId", source = "mascota")
     ExtravioResponseDTO toDtoResponse(Extravio extravio);

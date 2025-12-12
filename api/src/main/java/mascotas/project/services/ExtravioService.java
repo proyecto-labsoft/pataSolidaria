@@ -113,7 +113,7 @@ public class ExtravioService {
 
     public Extravio getExtravioEntityById(Long id){
         return extravioRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorsEnums.EXTRAVIO_NOT_FOUND_ERROR.getDescription() + id));
+                .orElseThrow(() -> new NoContentException(ErrorsEnums.EXTRAVIO_NOT_FOUND_ERROR.getDescription() + id));
     }
 
 
@@ -147,6 +147,21 @@ public class ExtravioService {
         return  PerdidoDTO.builder()
                 .extravio(null)
                 .estaExtraviado(Boolean.FALSE).build();
+    }
+
+
+    public List<ExtravioDetailDTO> getAllExtraviosByIds(List<Long> extraviosIds){
+
+        List<Extravio> extravios = Optional.of( extravioRepository.findAllByIdIn(extraviosIds) )
+                                                                .filter( exts -> !exts.isEmpty() )
+                                                                .orElseThrow(
+                                                                        () -> new NoContentException(ErrorsEnums.NO_CONTENT_ERROR.getDescription())
+                                                                );
+
+        List<ExtravioDetailDTO> extraviosDetail = extravioMapper.toExtravioDetailDTOList(extravios);
+
+        return this.setMascotaDetailToExtravioDtoList(extraviosDetail);
+
     }
 
     private List<ExtravioDetailDTO> setMascotaDetailToExtravioDtoList(List<ExtravioDetailDTO> extravioDtos){

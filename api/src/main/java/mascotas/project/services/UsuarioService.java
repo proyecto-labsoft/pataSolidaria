@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import mascotas.project.Enums.ErrorsEnums;
 import mascotas.project.dto.UsuarioDTO;
 import mascotas.project.entities.Usuario;
+import mascotas.project.exceptions.NoContentException;
 import mascotas.project.exceptions.NotFoundException;
 import mascotas.project.mapper.UsuarioMapper;
 import mascotas.project.repositories.UsuarioRepository;
@@ -30,7 +31,7 @@ public class UsuarioService {
     public UsuarioDTO getUsuarioById(Long idUsuario){
 
         Usuario usuario = usuarioRepository.findById(idUsuario)
-                .orElseThrow(() -> new NotFoundException(ErrorsEnums.USUARIO_NOT_FOUND_ERROR.getDescription() + idUsuario ));
+                .orElseThrow(() -> new NoContentException(ErrorsEnums.USUARIO_NOT_FOUND_ERROR.getDescription() + idUsuario ));
 
         return  usuarioMapper.toUsuarioDto(usuario);
     }

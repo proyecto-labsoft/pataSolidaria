@@ -1,7 +1,7 @@
 import { ScrollView, View } from "react-native";
 import AppbarNav from "../componentes/navegacion/appbarNav";
 import DescripcionVista from "../componentes/descripcionVista";
-import FormularioNuevoAvistamiento from "../componentes/formularios/formularioNuevoAvistamiento";
+import FormularioNuevoAvistamiento from "../componentes/formularios/nuevoAvistamiento/formularioNuevoAvistamiento";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function NuevoAvistamiento({ route }: any) {

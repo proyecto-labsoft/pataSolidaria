@@ -152,7 +152,7 @@ public class ExtravioService {
 
     public List<ExtravioDetailDTO> getAllExtraviosByIds(List<Long> extraviosIds){
 
-        List<Extravio> extravios = Optional.of( extravioRepository.findAllByIdIn(extraviosIds) )
+        List<Extravio> extravios = Optional.of( extravioRepository.findAllByIdInOrderByHoraDesc(extraviosIds) )
                                                                 .filter( exts -> !exts.isEmpty() )
                                                                 .orElseThrow(
                                                                         () -> new NoContentException(ErrorsEnums.NO_CONTENT_ERROR.getDescription())

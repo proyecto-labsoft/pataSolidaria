@@ -81,5 +81,5 @@ public interface ExtravioRepository extends JpaRepository<Extravio, Long> {
     Optional<Extravio> findByMascotaAndResueltoIsFalse(Long mascota);
 
 
-    List<Extravio> findAllByIdIn(Collection<Long> ids);
+    List<Extravio> findAllByIdInOrderByHoraDesc(Collection<Long> ids);
 }

@@ -6,10 +6,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mascotas.project.dto.ExtravioDetailDTO;
+import mascotas.project.dto.ExtravioFavRequestDTO;
 import mascotas.project.dto.ExtravioRequestDTO;
 import mascotas.project.dto.PerdidoDTO;
 import mascotas.project.dto.PerdidoSinFamiliarDTO;
 import mascotas.project.entities.Extravio;
+import mascotas.project.services.ExtravioFavService;
 import mascotas.project.services.ExtravioService;
 import mascotas.project.services.PerdidosAnonimosService;
 import org.springframework.http.HttpStatus;
@@ -24,7 +26,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/extravios")
@@ -34,6 +38,7 @@ import java.util.List;
 public class ExtravioController {
 
     private ExtravioService extravioService;
+    private ExtravioFavService extraviosFavoritosService;
     private PerdidosAnonimosService perdidosAnonimosService;
 
     @PostMapping(value = "")
@@ -127,5 +132,49 @@ public class ExtravioController {
 
         PerdidoDTO perdido = extravioService.getExtravioByMascotaId(mascotaId);
         return ResponseEntity.ok().body(perdido);
+    }
+
+
+    /// EXTRAVIOS FAVORITOS ///
+
+
+    @GetMapping(value = "favoritos/user/{id}")
+    @Operation(
+            operationId = "extraviosFavoritosByUsuario",
+            summary = "Extravios favoritos de un usuario especifico",
+            parameters = {@Parameter(name="id", description = "Id del usuario", example = "1", required = true)}
+    )
+    public ResponseEntity<Object> extraviosFavoritosPorIdUsuario (@PathVariable(name = "id", required = true) Long usuarioId){
+
+        List<ExtravioDetailDTO> extravios = extraviosFavoritosService.getExtFavoritosByUser(usuarioId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(extravios);
+    }
+
+    @PostMapping(value = "/favoritos")
+    @Operation(
+            operationId = "postExtravioFavoritos",
+            summary = "Persiste un nuevo extravio favorito para un userId",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Datos para el nuevo extravio favorito")
+    )
+    public ResponseEntity<Object> publicarExtravioFavorito(@RequestBody ExtravioFavRequestDTO request) {
+
+        extraviosFavoritosService.saveExtravioFav(request);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(null);
+    }
+
+    @GetMapping(value = "/es-favorito")
+    @Operation(
+            operationId = "getExtravioFavoritos",
+            summary = "Consulta su un  extravio es favorito o no de un user",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Datos para el nuevo extravio favorito")
+    )
+    public ResponseEntity<Boolean> isFavorito(@RequestParam(name = "usuarioId", required = true) Long usuarioId,
+                                              @RequestParam(name = "extravioId", required = true) Long extravioId) {
+
+        ExtravioFavRequestDTO request = ExtravioFavRequestDTO.builder().extravioId(extravioId).usuarioId(usuarioId).build();
+
+        return ResponseEntity.ok( extraviosFavoritosService.isFavorito(request) );
     }
 }

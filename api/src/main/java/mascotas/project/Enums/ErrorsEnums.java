@@ -15,6 +15,9 @@ public enum ErrorsEnums {
 
     EXTRAVIO_NOT_FOUND_ERROR(0, "No se encontró el EXTRAVIO con ID: "),
     EXTRAVIO_FORBIDDEN_ERROR(0, "El usuario no es CREADOR del extravio con ID: "),
+    EXTRAVIO_FAVORITO_FORBIDDEN_ERROR(0, "El extravio ya es favorito para el usuario, ID: "),
+
+    EMERGENCIA_FORBIDDEN_ERROR(0, "El usuario no es CREADOR de la emergencia con ID: "),
 
     USUARIO_NOT_FOUND_ERROR(1, "No se encontró al USUARIO con ID: "),
 

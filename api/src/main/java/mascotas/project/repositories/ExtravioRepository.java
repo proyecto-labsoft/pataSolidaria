@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -77,28 +78,8 @@ public interface ExtravioRepository extends JpaRepository<Extravio, Long> {
     List<ExtravioDetailDTO> findAllByResuelto(@Param("resueltos") Boolean resueltos);
 
 
-    @Query("""
-    SELECT new mascotas.project.dto.ExtravioDetailDTO(
-        e.id,
-        e.creador,
-        e.mascota,
-        e.zona,
-        e.hora,
-        e.observacion,
-        e.resuelto,
-        e.creadoByFamiliar,
-        null,
-        e.latitud,
-        e.longitud,
-        e.direccion
-    )
-    FROM Extravio e
-    JOIN Mascota m ON e.mascota = m.id
-    """)
-    List<ExtravioDetailDTO> findAllWithMascota();
-
-
     Optional<Extravio> findByMascotaAndResueltoIsFalse(Long mascota);
 
 
+    List<Extravio> findAllByIdInOrderByHoraDesc(Collection<Long> ids);
 }

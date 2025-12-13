@@ -1,4 +1,4 @@
-package mascotas.project.services;
+package mascotas.project.services.impl;
 
 
 import jakarta.transaction.Transactional;
@@ -9,12 +9,12 @@ import mascotas.project.dto.EmergenciaDetailDTO;
 import mascotas.project.dto.EmergenciaRequestDTO;
 import mascotas.project.dto.UsuarioDTO;
 import mascotas.project.entities.Emergencia;
-import mascotas.project.entities.Emergencia;
 import mascotas.project.exceptions.ForbiddenException;
 import mascotas.project.exceptions.NoContentException;
-import mascotas.project.exceptions.NotFoundException;
 import mascotas.project.mapper.EmergenciaMapper;
 import mascotas.project.repositories.EmergenciaRepository;
+import mascotas.project.services.interfaces.EmergenciaService;
+import mascotas.project.services.interfaces.UsuarioService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,12 +23,13 @@ import java.util.Optional;
 @Slf4j
 @Service
 @AllArgsConstructor
-public class EmergenciaService {
+public class EmergenciaServiceImpl implements EmergenciaService {
 
     private final UsuarioService usuarioService;
     private final EmergenciaMapper mapper;
     private final EmergenciaRepository repository;
 
+    @Override
     @Transactional
     public void saveEmergencia(EmergenciaRequestDTO request){
 
@@ -50,6 +51,7 @@ public class EmergenciaService {
 
 
 
+    @Override
     public List<EmergenciaDetailDTO> getAllEmergencias(Boolean atendidos) {
 
         List<EmergenciaDetailDTO> emergenciaDtos = Optional.of(atendidos)
@@ -65,6 +67,7 @@ public class EmergenciaService {
     }
 
 
+    @Override
     public EmergenciaDetailDTO getEmergenciaById(Long id){
 
         EmergenciaDetailDTO emergencia = repository.findById(id)
@@ -77,6 +80,7 @@ public class EmergenciaService {
     }
 
 
+    @Override
     @Transactional
     public Emergencia putEmergencia(EmergenciaRequestDTO request, Long idEmergencia){
 
@@ -95,7 +99,7 @@ public class EmergenciaService {
     }
 
 
-
+    @Override
     @Transactional
     public void deleteEmergencia( Long emergenciaId, Long usuarioId){
 

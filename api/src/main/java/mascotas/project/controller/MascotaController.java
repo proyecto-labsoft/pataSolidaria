@@ -9,8 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import mascotas.project.dto.MascotaDTODetail;
 import mascotas.project.dto.MascotaDTORequest;
 import mascotas.project.dto.MascotaDTOSaveSucces;
-import mascotas.project.dto.PerdidoDTO;
-import mascotas.project.services.MascotaService;
+import mascotas.project.services.interfaces.MascotaService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +22,7 @@ import java.util.List;
 @Tag(name= "Mascotas", description = "Servicios relacionados a compañeros")
 public class MascotaController {
 
-    private MascotaService mascotaService;
+    private final MascotaService mascotaService;
 
     @PostMapping
     @Operation(

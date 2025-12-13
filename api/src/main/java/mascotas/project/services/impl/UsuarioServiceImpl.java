@@ -1,4 +1,4 @@
-package mascotas.project.services;
+package mascotas.project.services.impl;
 
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -13,7 +13,7 @@ import mascotas.project.exceptions.NoContentException;
 import mascotas.project.exceptions.NotFoundException;
 import mascotas.project.mapper.UsuarioMapper;
 import mascotas.project.repositories.UsuarioRepository;
-import org.springframework.data.crossstore.ChangeSetPersister;
+import mascotas.project.services.interfaces.UsuarioService;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -22,12 +22,13 @@ import java.util.Map;
 @Slf4j
 @Service
 @AllArgsConstructor
-public class UsuarioService {
+public class UsuarioServiceImpl implements UsuarioService {
 
-    UsuarioRepository usuarioRepository;
-    UsuarioMapper usuarioMapper;
+    private final UsuarioRepository usuarioRepository;
+    private final UsuarioMapper usuarioMapper;
 
     @Transactional
+    @Override
     public UsuarioDTO getUsuarioById(Long idUsuario){
 
         Usuario usuario = usuarioRepository.findById(idUsuario)
@@ -37,6 +38,7 @@ public class UsuarioService {
     }
 
     @Transactional
+    @Override
     public UsuarioDTO createUsuario(UsuarioDTO usuarioDTO) {
         Usuario usuario = usuarioMapper.toEntity(usuarioDTO);
         Usuario savedUsuario = usuarioRepository.save(usuario);
@@ -47,6 +49,7 @@ public class UsuarioService {
      * Busca un usuario por su Firebase UID
      */
     @Transactional
+    @Override
     public Usuario findByFirebaseUid(String firebaseUid) {
         return usuarioRepository.findByFirebaseUid(firebaseUid).orElse(null);
     }
@@ -55,6 +58,7 @@ public class UsuarioService {
      * Busca un usuario por su email
      */
     @Transactional
+    @Override
     public Usuario findByEmail(String email) {
         return usuarioRepository.findByEmail(email).orElse(null);
     }
@@ -63,6 +67,7 @@ public class UsuarioService {
      * Guarda o actualiza un usuario
      */
     @Transactional
+    @Override
     public Usuario save(Usuario usuario) {
         return usuarioRepository.save(usuario);
     }
@@ -71,6 +76,7 @@ public class UsuarioService {
      * Verifica si existe un usuario con el Firebase UID dado
      */
     @Transactional
+    @Override
     public boolean existsByFirebaseUid(String firebaseUid) {
         return usuarioRepository.existsByFirebaseUid(firebaseUid);
     }
@@ -79,6 +85,7 @@ public class UsuarioService {
      * Actualiza el token de notificaciones push del usuario
      */
     @Transactional
+    @Override
     public void updatePushToken(String firebaseUid, String pushToken) {
         Usuario usuario = usuarioRepository.findByFirebaseUid(firebaseUid)
                 .orElseThrow(() -> new NotFoundException("Usuario no encontrado con firebaseUid: " + firebaseUid));
@@ -95,6 +102,7 @@ public class UsuarioService {
      * Si el usuario no existe, lo crea con datos básicos
      */
     @Transactional
+    @Override
     public void createOrUpdatePushToken(String firebaseUid, String pushToken) {
         Usuario usuario = usuarioRepository.findByFirebaseUid(firebaseUid).orElse(null);
         
@@ -125,6 +133,7 @@ public class UsuarioService {
      * El nombre del perfil en el backend es la fuente de verdad y no se sobrescribe.
      */
     @Transactional
+    @Override
     public Usuario syncUsuarioFromFirebase(String firebaseUid, String email, String displayName) {
         // Primero buscar por Firebase UID
         Usuario usuario = usuarioRepository.findByFirebaseUid(firebaseUid).orElse(null);
@@ -171,32 +180,10 @@ public class UsuarioService {
     }
 
     /**
-     * Establece custom claims en el token de Firebase
-     * Incluye: ID de usuario, rol (admin/user) y timestamp de sincronización
-     * 
-     * @throws RuntimeException si no puede establecer los claims (crítico para el funcionamiento)
-     */
-    private void setCustomClaims(String firebaseUid, Usuario usuario) {
-        try {
-            Map<String, Object> claims = new HashMap<>();
-            claims.put("usuarioId", usuario.getId());
-            claims.put("rol", usuario.getAdministrador() ? "admin" : "user");
-            claims.put("lastSync", System.currentTimeMillis());
-            
-            FirebaseAuth.getInstance().setCustomUserClaims(firebaseUid, claims);
-            log.info("🔐 Custom claims establecidos para usuario: {} (ID: {}, Rol: {})", 
-                firebaseUid, usuario.getId(), claims.get("rol"));
-        } catch (FirebaseAuthException e) {
-            log.error("❌ ERROR CRÍTICO: No se pudieron establecer custom claims para firebaseUid {} - usuarioId {} - {}", 
-                firebaseUid, usuario.getId(), e.getMessage());
-            throw new RuntimeException("No se pudieron establecer los custom claims de Firebase. El usuario no puede continuar.", e);
-        }
-    }
-
-    /**
      * Actualiza el perfil del usuario (nombre, celular, dirección)
      */
     @Transactional
+    @Override
     public void updatePerfil(String firebaseUid, String nombre, String celular, String direccion) {
         Usuario usuario = usuarioRepository.findByFirebaseUid(firebaseUid)
                 .orElseThrow(() -> new NotFoundException("Usuario no encontrado con firebaseUid: " + firebaseUid));
@@ -227,6 +214,7 @@ public class UsuarioService {
      * Elimina el token de notificaciones push del usuario (al cerrar sesión)
      */
     @Transactional
+    @Override
     public void removePushToken(String firebaseUid) {
         Usuario usuario = usuarioRepository.findByFirebaseUid(firebaseUid)
                 .orElseThrow(() -> new NotFoundException("Usuario no encontrado con firebaseUid: " + firebaseUid));
@@ -242,6 +230,7 @@ public class UsuarioService {
      * Verifica si un usuario es administrador
      */
     @Transactional
+    @Override
     public boolean isAdmin(String firebaseUid) {
         Usuario usuario = usuarioRepository.findByFirebaseUid(firebaseUid)
                 .orElseThrow(() -> new NotFoundException("Usuario no encontrado con firebaseUid: " + firebaseUid));
@@ -254,6 +243,7 @@ public class UsuarioService {
      * También actualiza los custom claims en Firebase
      */
     @Transactional
+    @Override
     public void setAdminRole(String firebaseUid, boolean isAdmin) {
         Usuario usuario = usuarioRepository.findByFirebaseUid(firebaseUid)
                 .orElseThrow(() -> new NotFoundException("Usuario no encontrado con firebaseUid: " + firebaseUid));
@@ -266,6 +256,31 @@ public class UsuarioService {
         setCustomClaims(firebaseUid, usuario);
         
         log.info("✅ Rol actualizado exitosamente para: {}", usuario.getEmail());
+    }
+
+    ///  METODOS HELPERS ///
+
+    /**
+     * Establece custom claims en el token de Firebase
+     * Incluye: ID de usuario, rol (admin/user) y timestamp de sincronización
+     *
+     * @throws RuntimeException si no puede establecer los claims (crítico para el funcionamiento)
+     */
+    private void setCustomClaims(String firebaseUid, Usuario usuario) {
+        try {
+            Map<String, Object> claims = new HashMap<>();
+            claims.put("usuarioId", usuario.getId());
+            claims.put("rol", usuario.getAdministrador() ? "admin" : "user");
+            claims.put("lastSync", System.currentTimeMillis());
+
+            FirebaseAuth.getInstance().setCustomUserClaims(firebaseUid, claims);
+            log.info("🔐 Custom claims establecidos para usuario: {} (ID: {}, Rol: {})",
+                    firebaseUid, usuario.getId(), claims.get("rol"));
+        } catch (FirebaseAuthException e) {
+            log.error("❌ ERROR CRÍTICO: No se pudieron establecer custom claims para firebaseUid {} - usuarioId {} - {}",
+                    firebaseUid, usuario.getId(), e.getMessage());
+            throw new RuntimeException("No se pudieron establecer los custom claims de Firebase. El usuario no puede continuar.", e);
+        }
     }
 
 }

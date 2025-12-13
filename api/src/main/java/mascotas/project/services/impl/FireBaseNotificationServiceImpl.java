@@ -1,18 +1,19 @@
-package mascotas.project.services;
+package mascotas.project.services.impl;
 
 import com.google.firebase.messaging.*;
+import mascotas.project.services.interfaces.FireBaseNotificationService;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @Service
-public class FirebaseNotificationService {
+public class FireBaseNotificationServiceImpl implements FireBaseNotificationService {
 
     /**
      * Envía una notificación push a un dispositivo específico
      */
+    @Override
     public String sendNotification(String token, String title, String body, Map<String, String> data) {
         try {
             Message.Builder messageBuilder = Message.builder()
@@ -54,6 +55,7 @@ public class FirebaseNotificationService {
     /**
      * Envía notificaciones a múltiples dispositivos
      */
+    @Override
     public BatchResponse sendMulticastNotification(
             List<String> tokens, 
             String title, 
@@ -88,6 +90,7 @@ public class FirebaseNotificationService {
     /**
      * Envía una notificación a un topic específico
      */
+    @Override
     public String sendToTopic(String topic, String title, String body, Map<String, String> data) {
         try {
             Message.Builder messageBuilder = Message.builder()
@@ -113,6 +116,7 @@ public class FirebaseNotificationService {
     /**
      * Suscribe dispositivos a un topic
      */
+    @Override
     public TopicManagementResponse subscribeToTopic(List<String> tokens, String topic) {
         try {
             TopicManagementResponse response = FirebaseMessaging.getInstance()
@@ -128,6 +132,7 @@ public class FirebaseNotificationService {
     /**
      * Desuscribe dispositivos de un topic
      */
+    @Override
     public TopicManagementResponse unsubscribeFromTopic(List<String> tokens, String topic) {
         try {
             TopicManagementResponse response = FirebaseMessaging.getInstance()

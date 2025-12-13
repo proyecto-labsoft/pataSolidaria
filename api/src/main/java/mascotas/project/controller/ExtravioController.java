@@ -11,9 +11,9 @@ import mascotas.project.dto.ExtravioRequestDTO;
 import mascotas.project.dto.PerdidoDTO;
 import mascotas.project.dto.PerdidoSinFamiliarDTO;
 import mascotas.project.entities.Extravio;
-import mascotas.project.services.ExtravioFavService;
-import mascotas.project.services.ExtravioService;
-import mascotas.project.services.PerdidosAnonimosService;
+import mascotas.project.services.impl.PerdidosAnonimosServiceImpl;
+import mascotas.project.services.interfaces.ExtravioFavService;
+import mascotas.project.services.interfaces.ExtravioService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,9 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/extravios")
@@ -37,9 +35,9 @@ import java.util.Map;
 @Tag(name= "Extravios", description = "Servicios relacionados a Extravios para animales con Familiares")
 public class ExtravioController {
 
-    private ExtravioService extravioService;
-    private ExtravioFavService extraviosFavoritosService;
-    private PerdidosAnonimosService perdidosAnonimosService;
+    private final ExtravioService extravioService;
+    private final ExtravioFavService extravioFavService;
+    private final PerdidosAnonimosServiceImpl perdidosAnonimosService;
 
     @PostMapping(value = "")
     @Operation(
@@ -146,7 +144,7 @@ public class ExtravioController {
     )
     public ResponseEntity<Object> extraviosFavoritosPorIdUsuario (@PathVariable(name = "id", required = true) Long usuarioId){
 
-        List<ExtravioDetailDTO> extravios = extraviosFavoritosService.getExtFavoritosByUser(usuarioId);
+        List<ExtravioDetailDTO> extravios = extravioFavService.getExtFavoritosByUser(usuarioId);
 
         return ResponseEntity.status(HttpStatus.OK).body(extravios);
     }
@@ -159,7 +157,7 @@ public class ExtravioController {
     )
     public ResponseEntity<Object> publicarExtravioFavorito(@RequestBody ExtravioFavRequestDTO request) {
 
-        extraviosFavoritosService.saveExtravioFav(request);
+        extravioFavService.saveExtravioFav(request);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(null);
     }
@@ -175,6 +173,6 @@ public class ExtravioController {
 
         ExtravioFavRequestDTO request = ExtravioFavRequestDTO.builder().extravioId(extravioId).usuarioId(usuarioId).build();
 
-        return ResponseEntity.ok( extraviosFavoritosService.isFavorito(request) );
+        return ResponseEntity.ok( extravioFavService.isFavorito(request) );
     }
 }

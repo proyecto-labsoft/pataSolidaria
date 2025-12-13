@@ -1,4 +1,4 @@
-package mascotas.project.services;
+package mascotas.project.services.impl;
 
 
 import jakarta.transaction.Transactional;
@@ -11,7 +11,10 @@ import mascotas.project.entities.ExtravioFavorito;
 import mascotas.project.exceptions.ForbiddenException;
 import mascotas.project.exceptions.NoContentException;
 import mascotas.project.repositories.ExtravioFavRepository;
+import mascotas.project.services.interfaces.ExtravioFavService;
+import mascotas.project.services.interfaces.ExtravioService;
 import org.springframework.stereotype.Service;
+import mascotas.project.services.interfaces.UsuarioService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,13 +23,14 @@ import java.util.Optional;
 @Slf4j
 @Service
 @AllArgsConstructor
-public class ExtravioFavService {
+public class ExtravioFavServiceImpl implements ExtravioFavService {
 
     private final UsuarioService usuarioService;
     private final ExtravioService extravioService;
     private final ExtravioFavRepository repository;
 
 
+    @Override
     @Transactional
     public void saveExtravioFav(ExtravioFavRequestDTO request){
 
@@ -49,6 +53,7 @@ public class ExtravioFavService {
 
     }
 
+    @Override
     public List<ExtravioDetailDTO> getExtFavoritosByUser(Long usuarioId){
 
         usuarioService.getUsuarioById(usuarioId);
@@ -69,7 +74,7 @@ public class ExtravioFavService {
         return extraviosFavoritos;
     }
 
-
+    @Override
     public Boolean isFavorito(ExtravioFavRequestDTO request){
         //validaciones del request
         usuarioService.getUsuarioById(request.getUsuarioId());

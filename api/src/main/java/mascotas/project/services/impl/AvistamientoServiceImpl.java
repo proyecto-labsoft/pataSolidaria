@@ -1,4 +1,4 @@
-package mascotas.project.services;
+package mascotas.project.services.impl;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +9,9 @@ import mascotas.project.entities.Avistamiento;
 import mascotas.project.exceptions.NoContentException;
 import mascotas.project.mapper.AvistamientoMapper;
 import mascotas.project.repositories.AvistamientoRepository;
+import mascotas.project.services.interfaces.AvistamientoService;
+import mascotas.project.services.interfaces.ExtravioService;
+import mascotas.project.services.interfaces.UsuarioService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,15 +21,15 @@ import java.util.Optional;
 @Slf4j
 @Service
 @AllArgsConstructor
-public class AvistamientoService {
+public class AvistamientoServiceImpl implements AvistamientoService {
 
-    private final UsuarioService  usuarioService;
-    private final ExtravioService  extravioService;
+    private final UsuarioService usuarioService;
+    private final ExtravioService extravioService;
     private final AvistamientoRepository avistamientoRepository;
-    private final AvistamientoMapper mapper;
     private final AvistamientoMapper avistamientoMapper;
 
 
+    @Override
     @Transactional
     public Avistamiento saveAvistamiento(AvistamientoRequestDTO requestDTO){
 
@@ -36,11 +39,12 @@ public class AvistamientoService {
 
         log.info("SAVE_AVISTAMIENTO {}", requestDTO.toString());
 
-        Avistamiento avistamiento = mapper.toEntity(requestDTO);
+        Avistamiento avistamiento = avistamientoMapper.toEntity(requestDTO);
 
         return avistamientoRepository.save(avistamiento);
     }
 
+    @Override
     public List<AvistamientoDetailDTO> getAvistamientosByExtravio(Long extravioId){
 
         extravioService.getExtravioEntityById(extravioId);

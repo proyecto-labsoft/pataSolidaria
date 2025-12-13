@@ -1,6 +1,6 @@
 import { View, ScrollView, useWindowDimensions, StyleSheet } from 'react-native'
 import React, { useEffect, useMemo, useState} from 'react'
-import {Button, IconButton, Modal, Portal, Surface, Text, useTheme, List, TextInput, Card} from 'react-native-paper'
+import {Button, IconButton, Modal, Portal, Surface, Text, useTheme, List, TextInput, Card, Icon} from 'react-native-paper'
 import ItemDato from '../componentes/itemDato';
 import { ImageSlider } from '../testData/sliderData';
 import CarruselImagenes from '../componentes/carrusel/carruselImagenes';
@@ -257,15 +257,24 @@ export default function VistaExtravio({route}: any) {
                 </View>
 
                 {/* Carrusel de imágenes - Segunda posición */}
-                <View style={{ margin: 0, padding: 0, backgroundColor: theme.colors.background }} >
+                <View style={{ margin: 0, marginBottom: 24, padding: 0, backgroundColor: theme.colors.background }} >
                     <CarruselImagenes data={imagenes} />
                 </View>
 
-                
+                    
+                {/* Mensaje indicador de creador */}
+                {esCreadorDelExtravio && (
+                    <Surface style={{ padding: 12, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', backgroundColor: theme.colors.secondary, marginBottom: 8 }}>
+                        <Icon size={24} source="information-outline" />
+                        <Text variant="bodyMedium" style={{ color: theme.colors.onPrimaryContainer, fontWeight: 'bold', textAlign: 'center' }}>
+                            Este extravío fue creado por tí
+                        </Text>
+                    </Surface>
+                )} 
                 
                 {/* Información adicional - Dropdown - Tercera posición */}  
                 
-                <Card style={{...styles.ultimoAvistamientoContainer,  marginHorizontal: 16, marginTop: 24,  backgroundColor: theme.colors.surface }}>
+                <Card style={{...styles.ultimoAvistamientoContainer,  marginHorizontal: 16,  backgroundColor: theme.colors.surface }}>
                 
                     
                     <List.Accordion

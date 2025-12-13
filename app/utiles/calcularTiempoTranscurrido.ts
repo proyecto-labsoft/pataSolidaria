@@ -78,16 +78,16 @@ export const calcularTiempoTranscurrido = (fechaHora: string | undefined): strin
 
     // Si es el mismo día (pero pasaron más de 16 horas)
     if (diferenciaEnDias === 0) {
-      return 'Hoy';
+      return `Hoy, ${horas}:${minutos}`;
     }
 
     // Si es el día anterior
     if (diferenciaEnDias === 1) {
-      return 'Ayer';
+      return `Ayer, ${horas}:${minutos}`;
     }
 
     // Si son más días
-    return `hace ${diferenciaEnDias} días`;
+    return `hace ${diferenciaEnDias} días, ${horas}:${minutos}`;
   } catch (error) {
     console.error('Error al calcular tiempo transcurrido:', error);
     return 'Hace poco';

@@ -67,37 +67,6 @@ export default function FormularioEditarExtravio({data, onCancel, onSubmit} : Pr
     
     return(
         <View style={{width:'100%',gap:20,justifyContent: 'center'}}> 
-            <Text style={{textAlign:'center',width:'100%'}} variant="headlineSmall">Datos del extravío</Text>
-            <Divider style={{marginBottom: 20 , width: "90%", alignSelf: 'center'}} />
-            
-            <CampoFecha
-                label="Fecha del extravío"
-                nombre="fecha"
-                control={control}
-            />
-            
-            <CampoHora
-                label="Hora del extravío"
-                nombre="hora"
-                control={control}
-            />
-            
-            <CampoTexto
-                control={control}
-                label="Zona"
-                nombre="zona"
-            />
-            
-            <CampoTexto
-                control={control}
-                label="Dirección"
-                nombre="direccion"
-            />
-            
-            <Divider style={{marginVertical: 20 , width: "90%", alignSelf: 'center'}} />
-            <Text style={{textAlign:'center',width:'100%'}} variant="headlineSmall">Aspecto del animal</Text>
-            <Divider style={{marginBottom: 20 , width: "90%", alignSelf: 'center'}} />
-            
             <CampoSelectorModal
                 control={control}
                 label="Especie de animal"
@@ -135,13 +104,7 @@ export default function FormularioEditarExtravio({data, onCancel, onSubmit} : Pr
                 control={control}
                 label="Observaciones"
                 nombre="observacion"
-            />
-            
-            <CampoTextoArea
-                control={control}
-                label="Descripción adicional del animal"
-                nombre="descripcion"
-            />
+            /> 
             
             <View style={{ flexDirection:'row', justifyContent:'space-evenly', width: '100%'}}>
                 

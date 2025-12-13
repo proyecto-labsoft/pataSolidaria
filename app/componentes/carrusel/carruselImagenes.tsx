@@ -17,7 +17,7 @@ export default function CarruselImagenes({data} : Props) {
     const theme = useTheme();
 
     return(
-        <View style={{height: 250,width:width-20,alignItems:'center',borderRadius:20}}>
+        <View style={{height: 250,width:width ,alignItems:'center',borderRadius:20}}>
             <Animated.FlatList
                 data={imagenes} 
                 keyExtractor={item => item.key}

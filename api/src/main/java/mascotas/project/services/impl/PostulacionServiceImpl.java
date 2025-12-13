@@ -1,5 +1,6 @@
-package mascotas.project.services;
+package mascotas.project.services.impl;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mascotas.project.Enums.ErrorsEnums;
@@ -8,6 +9,9 @@ import mascotas.project.entities.Postulacion;
 import mascotas.project.exceptions.NoContentException;
 import mascotas.project.mapper.PostulacionMapper;
 import mascotas.project.repositories.PostulacionRepository;
+import mascotas.project.services.interfaces.AdopcionService;
+import mascotas.project.services.interfaces.PostulacionService;
+import mascotas.project.services.interfaces.UsuarioService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,7 +20,7 @@ import java.util.Optional;
 @Slf4j
 @Service
 @AllArgsConstructor
-public class PostulacionService {
+public class PostulacionServiceImpl implements PostulacionService {
 
     private final PostulacionRepository postulacionRepository;
     private final PostulacionMapper postulacionMapper;
@@ -24,6 +28,8 @@ public class PostulacionService {
     private final AdopcionService adopcionService;
 
 
+    @Override
+    @Transactional
     public Postulacion savePostulacion(PostulacionRequestDTO postulacion){
 
         return Optional.of(postulacion)
@@ -45,7 +51,7 @@ public class PostulacionService {
                      ).orElseThrow( RuntimeException::new );
     }
 
-
+    @Override
     public List<PostulacionRequestDTO> getAllPostulacionesByUsuario(Long  usuarioId){
 
        return Optional.of(usuarioId)
@@ -62,6 +68,7 @@ public class PostulacionService {
                 .orElseThrow( () -> new NoContentException(ErrorsEnums.NO_CONTENT_ERROR.getDescription()));
     }
 
+    @Override
     public List<PostulacionRequestDTO> getAllPostulacionesByAdopcion(Long  adopcionId){
 
         return Optional.of(adopcionId)

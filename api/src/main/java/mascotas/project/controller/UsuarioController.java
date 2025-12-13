@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mascotas.project.dto.UsuarioDTO;
 import mascotas.project.entities.Usuario;
-import mascotas.project.services.UsuarioService;
+import mascotas.project.services.interfaces.UsuarioService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,7 +26,7 @@ import java.util.Map;
 @Tag(name= "Usuarios", description = "Servicios relacionados a Usuarios")
 public class UsuarioController {
 
-    private UsuarioService usuarioService;
+    private final UsuarioService usuarioService;
 
     @GetMapping(value = "/{id}")
     @Operation(

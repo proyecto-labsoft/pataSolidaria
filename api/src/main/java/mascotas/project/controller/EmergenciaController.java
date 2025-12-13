@@ -8,9 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mascotas.project.dto.EmergenciaRequestDTO;
 import mascotas.project.dto.EmergenciaDetailDTO;
-import mascotas.project.dto.EmergenciaRequestDTO;
 import mascotas.project.entities.Emergencia;
-import mascotas.project.services.EmergenciaService;
+import mascotas.project.services.interfaces.EmergenciaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,7 +31,7 @@ import java.util.List;
 @Tag(name= "Emergencias", description = "Servicios relacionados a Emergencias")
 public class EmergenciaController {
 
-    private EmergenciaService emergenciaService;
+    private final EmergenciaService emergenciaService;
 
 
     @PostMapping(value = "")

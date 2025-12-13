@@ -1,28 +1,24 @@
 package mascotas.project.controller;
 
+import lombok.AllArgsConstructor;
 import mascotas.project.entities.Usuario;
-import mascotas.project.services.FirebaseAuthService;
-import mascotas.project.services.FirebaseNotificationService;
-import mascotas.project.services.UsuarioService;
-import org.springframework.beans.factory.annotation.Autowired;
+import mascotas.project.services.interfaces.FireBaseAuthService;
+import mascotas.project.services.interfaces.FireBaseNotificationService;
+import mascotas.project.services.interfaces.UsuarioService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+@AllArgsConstructor
 @RestController
 @RequestMapping("/api/notifications")
 public class NotificationController {
 
-    @Autowired
-    private FirebaseNotificationService notificationService;
-
-    @Autowired
-    private FirebaseAuthService authService;
-
-    @Autowired
-    private UsuarioService usuarioService;
+    private final FireBaseNotificationService fireBaseNotificationService;
+    private final FireBaseAuthService fireBaseAuthService;
+    private final UsuarioService usuarioService;
 
     /**
      * Registra o actualiza el push token del usuario
@@ -59,7 +55,7 @@ public class NotificationController {
             Usuario usuario = usuarioService.findByFirebaseUid(firebaseUid);
 
             if (usuario != null && usuario.getPushToken() != null) {
-                String response = notificationService.sendNotification(
+                String response = fireBaseNotificationService.sendNotification(
                         usuario.getPushToken(),
                         "Notificación de prueba",
                         "Esta es una notificación de prueba de Pata Solidaria",

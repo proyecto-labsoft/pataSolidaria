@@ -1,6 +1,6 @@
 import { View } from 'react-native'
 import {useState} from 'react'
-import { Button, useTheme, Text, Portal, Divider } from 'react-native-paper'
+import { Button, useTheme, Text, Portal, Divider, Card } from 'react-native-paper'
 import CampoTexto from './campos/campoTexto'
 import { useForm } from 'react-hook-form'
 import CampoTextoArea from './campos/campoTextoArea'
@@ -11,19 +11,25 @@ import CampoSelectorModal from './campos/campoSelectorModal'
 import CampoCheckbox from './campos/campoCheckbox'
 import CampoFecha from './campos/campoFecha'
 import { useApiPostRegistrarMascota } from '@/app/api/hooks'
+import { ImageManager } from '../imagenes'
 
 export default function FormularioNuevoFamiliar() {
     
     const theme = useTheme()
     const [ubic, setUbic] = useState("");
     const [successMensaje, setSuccessMensaje] = useState(false);
+    const [familiarCreado, setFamiliarCreado] = useState<number | null>(null);
+    const [mostrarImagenes, setMostrarImagenes] = useState(false);
     const navigation = useNavigation()
 
     const { control, handleSubmit } = useForm(); 
 
     const {mutateAsync: crearFamiliar } = useApiPostRegistrarMascota({
         params: {id: 2},
-        onSuccess: () => {setSuccessMensaje(true)}
+        onSuccess: (data) => {
+            setFamiliarCreado(data?.id);
+            setMostrarImagenes(true);
+        }
     })
     
     const onSubmit = (data: any) => { 
@@ -71,14 +77,18 @@ export default function FormularioNuevoFamiliar() {
             <Portal>
                 {successMensaje && (
                 <BackdropSuccess
-                    texto="Nuevo integrante agregado a la familia"
+                    texto="Familiar guardado exitosamente"
                     onTap={() => {
                         navigation.goBack()
                     }}
                 />
                 )}
             </Portal>
-            <DescripcionVista texto="Información del nuevo integrante" tamanioTexto="titleLarge"/>
+
+            {/* Formulario inicial - mostrar solo si no se ha creado el familiar */}
+            {!mostrarImagenes && (
+                <>
+                    <DescripcionVista texto="Información del nuevo integrante" tamanioTexto="titleLarge"/>
         
             <CampoTexto
                 control={control}
@@ -156,6 +166,53 @@ export default function FormularioNuevoFamiliar() {
                     <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Guardar</Text>
                 </Button>
             </View>
+                </>
+            )}
+
+            {/* Sección de imágenes - mostrar después de crear el familiar */}
+            {mostrarImagenes && familiarCreado && (
+                <>
+                    <Card style={{ marginVertical: 16 }}>
+                        <Card.Content>
+                            <Text variant="headlineSmall" style={{ marginBottom: 8, textAlign: 'center' }}>
+                                ✅ Familiar creado
+                            </Text>
+                            <Text variant="bodyMedium" style={{ textAlign: 'center', marginBottom: 16 }}>
+                                Ahora puedes agregar fotos (opcional)
+                            </Text>
+                        </Card.Content>
+                    </Card>
+
+                    {/* Gestor de imágenes */}
+                    <ImageManager
+                        entityType="mascotas"
+                        entityId={familiarCreado}
+                        maxImages={5}
+                        editable={true}
+                        showUploader={true}
+                    />
+
+                    {/* Botones finales */}
+                    <View style={{ flexDirection:'row', justifyContent:'space-evenly', width: '100%', marginTop: 16}}>
+                        <Button 
+                            buttonColor={theme.colors.secondary} 
+                            style={{ marginHorizontal:'5%', marginVertical: 8, borderRadius:10, flex: 1 }} 
+                            mode="outlined" 
+                            onPress={() => navigation.goBack()}
+                        >
+                            <Text variant='labelLarge'>Saltar</Text>
+                        </Button>
+                        <Button 
+                            buttonColor={theme.colors.primary} 
+                            style={{ marginHorizontal:'5%', marginVertical: 8, borderRadius:10, flex: 1 }} 
+                            mode="contained"  
+                            onPress={() => setSuccessMensaje(true)}
+                        >
+                            <Text variant='labelLarge' style={{color: theme.colors.onPrimary}}>Finalizar</Text>
+                        </Button>
+                    </View>
+                </>
+            )}
             
         </View>
     )

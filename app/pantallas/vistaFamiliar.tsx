@@ -4,8 +4,6 @@ import {Divider, Portal, Text, Chip, Modal, Button, TextInput, useTheme } from '
 import FormularioEditarFamiliar from '../componentes/formularios/formularioEditarFamiliar';
 import BotonAccionesFamiliarFAB from '../componentes/botones/botonAccionesFamiliarFAB';
 import ItemDato from '../componentes/itemDato';
-import { ImageSlider } from '../testData/sliderData';
-import CarruselImagenes from '../componentes/carrusel/carruselImagenes';
 import AppbarNav from '../componentes/navegacion/appbarNav';
 import { TakePictureBtn } from '../componentes/TakePictureBtn';
 import { useRoute } from '@react-navigation/native';
@@ -13,12 +11,12 @@ import { useApiDeleteMascota, useApiGetExtravioPorMascota, useApiGetMascotaPorId
 import BackdropSuccess from '../componentes/backdropSuccess'; 
 import { useNavigation } from '@react-navigation/native'
 import { format } from 'date-fns';
+import { ImageGallery } from '../componentes/imagenes';
 
 // Basandose en colores de la pagina de ARAF
 // primario: 0f7599
 // secundario: e28325
 // terciario: efefef
-const imagenes = ImageSlider[0].imagenes
 
 export default function VistaFamiliar() {
   const route = useRoute();
@@ -182,7 +180,12 @@ export default function VistaFamiliar() {
 
         <ScrollView contentContainerStyle={{margin:12}} > 
           
-          <CarruselImagenes data={imagenes} />    
+          {/* Galería de imágenes reales desde Firebase */}
+          <ImageGallery
+            entityType="mascotas"
+            entityId={familiarId}
+            editable={modoEdicion}
+          />
           
           {perdido && (
             <Chip

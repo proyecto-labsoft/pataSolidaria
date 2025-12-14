@@ -51,6 +51,8 @@ CREATE TABLE IF NOT EXISTS extravio (
     observacion VARCHAR(255)
 );
 
+ALTER TABLE public.extravio ADD ultimo_avistamiento timestamp NOT null default NOW();
+
 -- Crear tabla postulacion
 CREATE TABLE IF NOT EXISTS postulacion (
     id BIGINT DEFAULT nextval('postulacion_id_seq') PRIMARY KEY,

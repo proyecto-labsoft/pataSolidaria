@@ -8,6 +8,7 @@ import mascotas.project.entities.Mascota;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper(componentModel = "spring", uses = {MascotaMapper.class}, imports = Mascota.class)
@@ -15,6 +16,7 @@ public interface ExtravioMapper {
 
     @Mapping(target = "creadoByFamiliar", expression = "java(!animalAnonimo)")
     @Mapping(target = "mascota", source = "dto.mascotaId")
+    @Mapping(target = "ultimoAvistamiento", source = "dto.hora")
     Extravio toEntity(ExtravioRequestDTO dto, Boolean animalAnonimo);
 
     @Mapping(target = "id", source = "extravioId")
@@ -37,4 +39,6 @@ public interface ExtravioMapper {
 
     @Mapping(target = "mascotaId", source = "mascota")
     ExtravioResponseDTO toDtoResponse(Extravio extravio);
+
+
 }

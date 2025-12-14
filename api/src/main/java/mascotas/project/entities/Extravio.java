@@ -35,7 +35,9 @@ public class Extravio {
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime hora;
 
-    //private LocalDateTime tiempo_gracia;
+    @Column(name = "ultimo_avistamiento")
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
+    private LocalDateTime ultimoAvistamiento;
 
     private String observacion;
 

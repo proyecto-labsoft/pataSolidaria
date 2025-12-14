@@ -20,6 +20,7 @@ public interface ExtravioRepository extends JpaRepository<Extravio, Long> {
         e.mascota,
         e.zona,
         e.hora,
+        e.ultimoAvistamiento,
         e.observacion,
         e.resuelto,
         e.creadoByFamiliar,
@@ -32,6 +33,7 @@ public interface ExtravioRepository extends JpaRepository<Extravio, Long> {
     JOIN Mascota m ON e.mascota = m.id
     WHERE e.creador = :usuario
     AND e.resuelto = :resueltos
+    ORDER BY e.ultimoAvistamiento DESC
 """)
     List<ExtravioDetailDTO> findAllByCreadorAndResuelto(@Param("usuario") Long usuario, @Param("resueltos") Boolean resueltos);
 
@@ -43,6 +45,7 @@ public interface ExtravioRepository extends JpaRepository<Extravio, Long> {
         e.mascota,
         e.zona,
         e.hora,
+        e.ultimoAvistamiento,
         e.observacion,
         e.resuelto,
         e.creadoByFamiliar,
@@ -53,6 +56,7 @@ public interface ExtravioRepository extends JpaRepository<Extravio, Long> {
     )
     FROM Extravio e
     WHERE e.creador = :usuario
+    ORDER BY e.ultimoAvistamiento DESC
 """)
     List<ExtravioDetailDTO> findAllByCreador(@Param("usuario") Long usuario);
 
@@ -63,6 +67,7 @@ public interface ExtravioRepository extends JpaRepository<Extravio, Long> {
         e.mascota,
         e.zona,
         e.hora,
+        e.ultimoAvistamiento,
         e.observacion,
         e.resuelto,
         e.creadoByFamiliar,
@@ -74,6 +79,7 @@ public interface ExtravioRepository extends JpaRepository<Extravio, Long> {
     FROM Extravio e
     JOIN Mascota m ON e.mascota = m.id
     WHERE e.resuelto = :resueltos
+    ORDER BY e.ultimoAvistamiento DESC
     """)
     List<ExtravioDetailDTO> findAllByResuelto(@Param("resueltos") Boolean resueltos);
 
@@ -81,5 +87,5 @@ public interface ExtravioRepository extends JpaRepository<Extravio, Long> {
     Optional<Extravio> findByMascotaAndResueltoIsFalse(Long mascota);
 
 
-    List<Extravio> findAllByIdInOrderByHoraDesc(Collection<Long> ids);
+    List<Extravio> findAllByIdInOrderByUltimoAvistamientoDesc(Collection<Long> ids);
 }

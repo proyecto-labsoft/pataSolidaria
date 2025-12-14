@@ -20,6 +20,8 @@ public class ExtravioDetailDTO {
     private String zona;
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime hora;
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
+    private LocalDateTime ultimoAvistamiento;
     private String observacion;
     private Boolean resuelto;
     private Boolean creadoByFamiliar;

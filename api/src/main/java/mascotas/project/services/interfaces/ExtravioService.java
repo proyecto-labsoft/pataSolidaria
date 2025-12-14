@@ -6,6 +6,7 @@ import mascotas.project.dto.PerdidoDTO;
 import mascotas.project.entities.Extravio;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -22,4 +23,5 @@ public interface ExtravioService {
     PerdidoDTO getExtravioByMascotaId(Long mascotaId);
     List<ExtravioDetailDTO> getAllExtraviosByIds(List<Long> extraviosIds);
 
+    Extravio setUltimoAvistamiento(Extravio extravio, LocalDateTime ultimoAvistamiento);
 }

@@ -6,6 +6,7 @@ import mascotas.project.Enums.ErrorsEnums;
 import mascotas.project.dto.AvistamientoDetailDTO;
 import mascotas.project.dto.AvistamientoRequestDTO;
 import mascotas.project.entities.Avistamiento;
+import mascotas.project.entities.Extravio;
 import mascotas.project.exceptions.NoContentException;
 import mascotas.project.mapper.AvistamientoMapper;
 import mascotas.project.repositories.AvistamientoRepository;
@@ -31,17 +32,20 @@ public class AvistamientoServiceImpl implements AvistamientoService {
 
     @Override
     @Transactional
-    public Avistamiento saveAvistamiento(AvistamientoRequestDTO requestDTO){
+    public Avistamiento saveAvistamiento(AvistamientoRequestDTO request){
 
         //validaciones del request
-        usuarioService.getUsuarioById(requestDTO.getUsuarioId());
-        extravioService.getExtravioEntityById(requestDTO.getExtravioId());
+        usuarioService.getUsuarioById(request.getUsuarioId());
+        Extravio extravioEntity = extravioService.getExtravioEntityById(request.getExtravioId());
 
-        log.info("SAVE_AVISTAMIENTO {}", requestDTO.toString());
+        Avistamiento avist = avistamientoRepository.save( avistamientoMapper.toEntity(request) );
 
-        Avistamiento avistamiento = avistamientoMapper.toEntity(requestDTO);
+        log.info("SAVE_AVISTAMIENTO {}", avist.toString());
 
-        return avistamientoRepository.save(avistamiento);
+        //modifico el ultimo avistamiento de Extravio
+        extravioService.setUltimoAvistamiento( extravioEntity, avist.getHora() );
+
+        return avist;
     }
 
     @Override

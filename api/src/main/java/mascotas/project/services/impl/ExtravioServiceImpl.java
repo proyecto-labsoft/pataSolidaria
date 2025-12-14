@@ -18,6 +18,8 @@ import mascotas.project.services.interfaces.ExtravioService;
 import mascotas.project.services.interfaces.MascotaService;
 import mascotas.project.services.interfaces.UsuarioService;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -138,7 +140,7 @@ public class ExtravioServiceImpl implements ExtravioService {
     @Override
     public List<ExtravioDetailDTO> getAllExtraviosByIds(List<Long> extraviosIds){
 
-        List<Extravio> extravios = Optional.of( extravioRepository.findAllByIdInOrderByHoraDesc(extraviosIds) )
+        List<Extravio> extravios = Optional.of( extravioRepository.findAllByIdInOrderByUltimoAvistamientoDesc(extraviosIds) )
                                                                 .filter( exts -> !exts.isEmpty() )
                                                                 .orElseThrow(
                                                                         () -> new NoContentException(ErrorsEnums.NO_CONTENT_ERROR.getDescription())
@@ -148,6 +150,19 @@ public class ExtravioServiceImpl implements ExtravioService {
 
         return this.setMascotaDetailToExtravioDtoList(extraviosDetail);
 
+    }
+
+
+    @Override
+    public Extravio setUltimoAvistamiento(Extravio extravio, LocalDateTime ultimoAvistamiento) {
+
+        extravio.setUltimoAvistamiento(ultimoAvistamiento);
+
+        Extravio ext = extravioRepository.save(extravio);
+
+        log.info("SAVE_EXTRAVIO : publicador ID:{} ; mascota ID:{} ; idExtravio:{} ; ultimo_avistamiento:{}", ext.getCreador(), ext.getMascota(), extravio.getId(), ext.getUltimoAvistamiento());
+
+        return ext;
     }
 
     ///  METODOS HELPERS ///

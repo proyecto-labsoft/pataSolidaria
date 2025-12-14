@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import mascotas.project.Enums.ErrorsEnums;
 import mascotas.project.dto.ExtravioDetailDTO;
 import mascotas.project.dto.ExtravioFavRequestDTO;
+import mascotas.project.entities.Emergencia;
+import mascotas.project.entities.Extravio;
 import mascotas.project.entities.ExtravioFavorito;
 import mascotas.project.exceptions.ForbiddenException;
 import mascotas.project.exceptions.NoContentException;
@@ -84,5 +86,34 @@ public class ExtravioFavServiceImpl implements ExtravioFavService {
         Optional<ExtravioFavorito> extFav = Optional.ofNullable(repository.findByUsuarioIdAndExtravioId(request.getUsuarioId(), request.getExtravioId()));
 
         return extFav.isPresent();
+    }
+
+
+    @Override
+    @Transactional
+    public void deleteExtravioFav( Long extravioId, Long usuarioId){
+
+        ExtravioFavorito extravio = this.getExtravioFavEntityById(extravioId);
+        usuarioService.getUsuarioById(usuarioId);
+
+        if (!isCreador(extravio, usuarioId)) {
+            throw new ForbiddenException(ErrorsEnums.EXTRAVIO_FORBIDDEN_ERROR.getDescription() + extravio.getId());
+        }
+
+        repository.delete(extravio);
+    }
+
+
+
+    ///  METODOS HELPERS ///
+
+    @Override
+    public ExtravioFavorito getExtravioFavEntityById(Long id){
+        return repository.findById(id)
+                .orElseThrow(() -> new NoContentException(ErrorsEnums.EXTRAVIO_NOT_FOUND_ERROR.getDescription() + id));
+    }
+
+    private Boolean isCreador(ExtravioFavorito extravio, Long usuarioId){
+        return extravio.getUsuarioId().equals(usuarioId);
     }
 }

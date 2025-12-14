@@ -3,7 +3,6 @@ package mascotas.project.mapper;
 import mascotas.project.dto.AvistamientoDetailDTO;
 import mascotas.project.dto.AvistamientoRequestDTO;
 import mascotas.project.entities.Avistamiento;
-import org.hibernate.annotations.Comment;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

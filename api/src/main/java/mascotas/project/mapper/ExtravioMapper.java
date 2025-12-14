@@ -41,7 +41,4 @@ public interface ExtravioMapper {
     ExtravioResponseDTO toDtoResponse(Extravio extravio);
 
 
-    @Mapping(target = "ultimoAvistamiento", source = "ultimoAvistamiento")
-    Extravio setUltimoAvistamiento(Extravio extravio, LocalDateTime ultimoAvistamiento);
-
 }

@@ -14,6 +14,7 @@ import mascotas.project.entities.Extravio;
 import mascotas.project.services.impl.PerdidosAnonimosServiceImpl;
 import mascotas.project.services.interfaces.ExtravioFavService;
 import mascotas.project.services.interfaces.ExtravioService;
+import mascotas.project.services.interfaces.PerdidosAnonimosService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,7 +38,7 @@ public class ExtravioController {
 
     private final ExtravioService extravioService;
     private final ExtravioFavService extravioFavService;
-    private final PerdidosAnonimosServiceImpl perdidosAnonimosService;
+    private final PerdidosAnonimosService perdidosAnonimosService;
 
     @PostMapping(value = "")
     @Operation(
@@ -136,7 +137,7 @@ public class ExtravioController {
     /// EXTRAVIOS FAVORITOS ///
 
 
-    @GetMapping(value = "favoritos/user/{id}")
+    @GetMapping(value = "/favoritos/user/{id}")
     @Operation(
             operationId = "extraviosFavoritosByUsuario",
             summary = "Extravios favoritos de un usuario especifico",
@@ -174,5 +175,19 @@ public class ExtravioController {
         ExtravioFavRequestDTO request = ExtravioFavRequestDTO.builder().extravioId(extravioId).usuarioId(usuarioId).build();
 
         return ResponseEntity.ok( extravioFavService.isFavorito(request) );
+    }
+
+    @DeleteMapping(value = "/favoritos/{id}")
+    @Operation(
+            operationId = "deleteExtravioFavorito",
+            summary = "Elimina un extravio favorito existente",
+            parameters = {@Parameter(name="id", description = "Id del extravio favorito a eliminar", example = "1", required = true),
+                        @Parameter(name="usuarioId", description = "Id del usuario que realiza la acción", example = "2")
+            }
+    )
+    public ResponseEntity<Void> deleteExtravioFav (@PathVariable(name="id", required = true) Long id ,
+                                                @RequestParam(name="usuarioId", required = true) Long usuarioId){
+        extravioFavService.deleteExtravioFav(id, usuarioId);
+        return  ResponseEntity.ok().build();
     }
 }

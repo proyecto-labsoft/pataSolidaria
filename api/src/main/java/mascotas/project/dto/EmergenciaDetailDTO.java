@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import mascotas.project.entities.Mascota;
 
 import java.time.LocalDateTime;
 
@@ -20,6 +21,6 @@ public class EmergenciaDetailDTO {
     private Double latitud;
     private Double longitud;
     private Boolean atendido;
-
+    private MascotaDTODetail mascotaDetalle;
 
 }

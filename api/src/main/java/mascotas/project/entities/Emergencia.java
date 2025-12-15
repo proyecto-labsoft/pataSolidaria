@@ -34,6 +34,10 @@ public class Emergencia {
     @JoinColumn(name = "creador")
     private Usuario creador;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mascota")
+    private Mascota mascota;
+
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime hora;
 

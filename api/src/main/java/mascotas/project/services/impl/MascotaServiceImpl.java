@@ -54,6 +54,8 @@ public class MascotaServiceImpl implements MascotaService {
         Mascota mascota = mascotaMapper.toAnonimousEntity(mascotaDTORequest);
         mascota = mascotaRepository.save(mascota);
 
+        log.info("SAVE_MASCOTA_SIN_FAMILIAR: mascota ID: {}", mascota.getId());
+
         return MascotaDTOSaveSucces.builder()
                 .id(mascota.getId())
                 .nombre(mascota.getNombre())

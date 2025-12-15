@@ -12,7 +12,7 @@ import { calcularTiempoTranscurrido } from '../utiles/calcularTiempoTranscurrido
 import { useUsuario } from '../hooks/useUsuario';
 import FormularioEditarExtravio from '../componentes/formularios/formularioEditarExtravio';
 import BackdropSuccess from '../componentes/backdropSuccess';
-import { useApiGetAvistamientosPorExtravio, useApiPutActualizarExtravio } from '../api/hooks';
+import { useApiDeleteFavorito, useApiGetAvistamientosPorExtravio, useApiGetEsFavorito, useApiPostFavorito, useApiPutActualizarExtravio } from '../api/hooks';
 import { obtenerValorSexo, obtenerValorTamanio } from '../utiles/obtenerValorEnum';
 import ModalAvistamientos from '../componentes/modalAvistamientos';
 import BotonAccionesExtravioFAB from '../componentes/botones/BotonAccionesExtravioFAB';
@@ -88,7 +88,6 @@ export default function VistaExtravio({route}: any) {
     // }; 
 
     const ultimoAvistamiento = useMemo(() => {
-        console.log("avistamientos",avistamientos)
         if (avistamientos && avistamientos?.length > 0) {
             // Ordenar avistamientos por fecha (más reciente primero)
             return avistamientos[0]
@@ -160,13 +159,36 @@ export default function VistaExtravio({route}: any) {
     }
     
 
-    // TOD
-    // const { data: casoFavorito } = useApiGetCasoFavorito({})
-    // const { mutateAsync: guardarCaso } = useApiPostFavorito({})
+    const { data: esFavorito } = useApiGetEsFavorito({
+        params: {
+            queryParams: {
+                usuarioId: usuarioId,
+                extravioId: datosExtravio?.extravioId
+            }
+        },
+        enabled: !!usuarioId && !!datosExtravio?.extravioId
+    })
+    const { mutateAsync: guardarCaso } = useApiPostFavorito({})
+    const { mutateAsync: borrarFavorito } = useApiDeleteFavorito({
+        params: { 
+            id: datosExtravio?.extravioId, 
+            queryParams: {
+                usuarioId: usuarioId
+            } 
+        },
+    })
 
-    const handleGuardarCaso = (extravioId: number) => {
+    const handleGuardarCaso = () => { 
         // Aquí podrías implementar la lógica para guardar el caso, como agregarlo a una lista de favoritos
-        // guardarCaso({data: {extravioId}})
+        if (esFavorito) {
+            borrarFavorito( )
+        } else {
+            guardarCaso({data: {
+                usuarioId: usuarioId,
+                extravioId: datosExtravio?.extravioId
+            }})
+        }
+        
     }
 
     return (
@@ -211,6 +233,7 @@ export default function VistaExtravio({route}: any) {
                         onPress={handleResolverCaso}
                         style={{ marginTop: 16 }}
                         disabled={isPendingResolver}
+                        loading={isPendingResolver}
                     >
                         Confirmar
                     </Button>
@@ -257,8 +280,11 @@ export default function VistaExtravio({route}: any) {
                 </View>
 
                 {/* Carrusel de imágenes - Segunda posición */}
-                <View style={{ margin: 0, marginBottom: 24, padding: 0, backgroundColor: theme.colors.background }} >
+                <View style={{ position: 'relative', margin: 0, marginBottom: 24, padding: 0, backgroundColor: theme.colors.background }} >
                     <CarruselImagenes data={imagenes} />
+                    <View style={{ position: 'absolute' , top: 200, right: 10 }}>
+                        <IconButton icon={esFavorito ? "heart" : "heart-outline"} iconColor={theme.colors.secondary} size={48} onPress={handleGuardarCaso} />
+                    </View>
                 </View>
 
                     
@@ -363,10 +389,9 @@ export default function VistaExtravio({route}: any) {
             {/* FAB de acciones */}
             <BotonAccionesExtravioFAB
                 esCreadorDelExtravio={esCreadorDelExtravio}
-                esFamiliar={esBuscado}
+                esFamiliar={esBuscado} 
                 onResolverCaso={() => setResolverCaso(true)} 
-                onViEsteAnimal={() => navigation.navigate('NuevoAvistamiento', {data: {extravioId: datosExtravio?.extravioId}})}
-                onGuardarCaso={() => handleGuardarCaso(datosExtravio?.extravioId)}
+                onViEsteAnimal={() => navigation.navigate('NuevoAvistamiento', {data: {extravioId: datosExtravio?.extravioId}})} 
                 showButton={!modoEdicion && isFocused}
             />
         </View>

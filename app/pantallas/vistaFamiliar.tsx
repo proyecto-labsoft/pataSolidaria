@@ -45,7 +45,7 @@ export default function VistaFamiliar() {
     if (!data) return null;
     return data
   }, [data]);
-  const { mutateAsync: actualizarFamiliar } = useApiPutActualizarMascota({ 
+  const { mutateAsync: actualizarFamiliar, isPending: actualizandoFamiliar } = useApiPutActualizarMascota({ 
     params: {id: familiarId},
     onSuccess: () => {setSuccessMensaje(true) ; refetch()}
   }); 
@@ -196,7 +196,7 @@ export default function VistaFamiliar() {
                     <ItemDato label='Fecha de nacimiento' data={datosFamiliar?.fechaNacimiento}  />
                     <ItemDato label='Especie' data={datosFamiliar?.especie}  />
                     <ItemDato label='Raza' data={datosFamiliar?.raza}  />
-                    <ItemDato label='Genero' data={datosFamiliar?.sexo} />
+                    <ItemDato label='Sexo' data={datosFamiliar?.sexo === 'H' ? 'Hembra' : datosFamiliar?.sexo === 'M' ? 'Macho' : 'No lo sé'} />
                 </View>
                 <View style={{width:'90%',justifyContent:'center',alignContent:'center',gap:10,marginTop: 20}}>
                   <Text style={{textAlign:'center',width:'100%'}} variant="headlineSmall">Aspecto físico</Text>
@@ -220,7 +220,7 @@ export default function VistaFamiliar() {
                 
             </>
           ) :(
-            <FormularioEditarFamiliar data={datosFamiliar} onCancel={() => setModoEdicion(false)} onSubmit={onSubmit} />
+            <FormularioEditarFamiliar data={datosFamiliar} submitting={actualizandoFamiliar} onCancel={() => setModoEdicion(false)} onSubmit={onSubmit} />
           )}     
           </View>
         

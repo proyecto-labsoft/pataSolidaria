@@ -137,15 +137,4 @@ public class EmergenciaServiceImpl implements EmergenciaService {
                 .orElseThrow(() -> new NoContentException(ErrorsEnums.NO_CONTENT_ERROR.getDescription() + id));
     }
 
-
-    /*private List<ExtravioDetailDTO> setMascotaDetailToExtravioDtoList(List<EmergenciaDetailDTO> emergenciasDtos){
-
-        return emergenciasDtos.stream()
-                .map(emergenciaDTO -> {
-                    Mascota mascotaEntity = mascotaService.getMascotaEntityById(emergenciaTO.getMascotaId());
-                    return emergenciaMapper.toDtoDetail(emergenciaTO, mascotaEntity);
-                })
-                .collect(Collectors.toList());
-
-    }*/
 }

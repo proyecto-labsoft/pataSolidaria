@@ -181,7 +181,7 @@ public class ExtravioController {
     @Operation(
             operationId = "deleteExtravioFavorito",
             summary = "Elimina un extravio favorito existente",
-            parameters = {@Parameter(name="id", description = "Id del extravio favorito a eliminar", example = "1", required = true),
+            parameters = {@Parameter(name="id", description = "Id del Extravio a eliminar de la relacion", example = "1", required = true),
                         @Parameter(name="usuarioId", description = "Id del usuario que realiza la acción", example = "2")
             }
     )

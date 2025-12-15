@@ -47,6 +47,12 @@ BEGIN
 
 
     ALTER TABLE extravio add column creado_By_Familiar bool NOT null default true;
+
+    ALTER TABLE emergencia add column mascota BIGINT NOT NULL default 1 references companiero(id);
+
+    ALTER TABLE emergencia
+        ADD CONSTRAINT fk_emergencia_mascota
+            FOREIGN KEY (mascota) REFERENCES companiero(id);
 END $$;
 
 -- Comentarios sobre los campos agregados

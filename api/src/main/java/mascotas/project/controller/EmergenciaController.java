@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mascotas.project.dto.EmergenciaAnimalAnonimoDTO;
 import mascotas.project.dto.EmergenciaRequestDTO;
 import mascotas.project.dto.EmergenciaDetailDTO;
 import mascotas.project.entities.Emergencia;
@@ -33,16 +34,15 @@ public class EmergenciaController {
 
     private final EmergenciaService emergenciaService;
 
-
     @PostMapping(value = "")
     @Operation(
             operationId = "postEmergencia",
             summary = "Persiste un nuevo emergencia",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Datos para el nuevo emergencia")
     )
-    public ResponseEntity<Object> publicarEmergencia (@RequestBody EmergenciaRequestDTO emergenciaDTO){
+    public ResponseEntity<Object> publicarEmergencia (@RequestBody EmergenciaAnimalAnonimoDTO request){
 
-        emergenciaService.saveEmergencia(emergenciaDTO);
+        emergenciaService.saveEmergenciaAnimalAnonimo(request);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(null);
     }

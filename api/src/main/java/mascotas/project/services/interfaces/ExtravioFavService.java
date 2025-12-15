@@ -18,5 +18,4 @@ public interface ExtravioFavService {
 
     void deleteExtravioFav( Long extravioId, Long usuarioId);
 
-    ExtravioFavorito getExtravioFavEntityById(Long id);
 }

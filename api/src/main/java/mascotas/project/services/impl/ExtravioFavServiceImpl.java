@@ -93,27 +93,31 @@ public class ExtravioFavServiceImpl implements ExtravioFavService {
     @Transactional
     public void deleteExtravioFav( Long extravioId, Long usuarioId){
 
-        ExtravioFavorito extravio = this.getExtravioFavEntityById(extravioId);
+        //validaciones
         usuarioService.getUsuarioById(usuarioId);
+        extravioService.getExtravioEntityById(extravioId);
 
-        if (!isCreador(extravio, usuarioId)) {
-            throw new ForbiddenException(ErrorsEnums.EXTRAVIO_FORBIDDEN_ERROR.getDescription() + extravio.getId());
+        ExtravioFavorito extFav = this.getExtravioFavEntity(usuarioId, extravioId);
+
+        if (!isCreador(extFav, usuarioId)) {
+            throw new ForbiddenException(ErrorsEnums.EXTRAVIO_FORBIDDEN_ERROR.getDescription() + extFav.getId());
         }
 
-        repository.delete(extravio);
+        repository.delete(extFav);
     }
 
 
 
     ///  METODOS HELPERS ///
 
-    @Override
-    public ExtravioFavorito getExtravioFavEntityById(Long id){
-        return repository.findById(id)
-                .orElseThrow(() -> new NoContentException(ErrorsEnums.EXTRAVIO_NOT_FOUND_ERROR.getDescription() + id));
-    }
-
     private Boolean isCreador(ExtravioFavorito extravio, Long usuarioId){
         return extravio.getUsuarioId().equals(usuarioId);
+    }
+
+    private ExtravioFavorito getExtravioFavEntity( Long usuarioId , Long id){
+
+        return Optional.of ( repository.findByUsuarioIdAndExtravioId(usuarioId, id) )
+                .orElseThrow( () -> new NoContentException(ErrorsEnums.NO_CONTENT_ERROR.getDescription()) );
+
     }
 }

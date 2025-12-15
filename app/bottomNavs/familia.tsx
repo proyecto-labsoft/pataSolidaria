@@ -1,23 +1,26 @@
 import React from "react";
-import { FlatList, View } from "react-native";
-import { useTheme, Text } from 'react-native-paper'
-import CardFamiliar from "../componentes/cards/cardFamiliar";
-import { useNavigation } from "@react-navigation/native";
+import { FlatList, StyleSheet, View } from "react-native";
+import { useTheme, Text, Surface } from 'react-native-paper'
+import CardFamiliar from "../componentes/cards/cardFamiliar"; 
 import { useApiGetExtraviosPorUsuario, useApiGetMascotasPorUsuario } from "../api/hooks";
 import { useUsuario } from "../hooks/useUsuario";
 import DogHouseIcon from "../componentes/iconos/DogHouseIcon";
 import VisitVetIcon from "../componentes/iconos/VisitVetIcon";
 
 export default function VistaFamilia() {
-  const theme = useTheme(); 
-  const navigation = useNavigation();
+  const theme = useTheme();  
 
   const { usuarioId } = useUsuario()
   
-  const {data:familiares, isFetching, refetch } = useApiGetMascotasPorUsuario({ parametros: {idUsuario: usuarioId}}) 
+  const {data:familiares, isFetching, refetch: refetchFamiliares } = useApiGetMascotasPorUsuario({ parametros: {idUsuario: usuarioId}}) 
 
-  const {data: extravios } = useApiGetExtraviosPorUsuario({params: {queryParams: {resueltos: false},id: usuarioId}})
+  const {data: extravios, refetch: refetchExtravios } = useApiGetExtraviosPorUsuario({params: {queryParams: {resueltos: false},id: usuarioId}})
 
+  const refetchQueries = () => {
+    refetchFamiliares();
+    refetchExtravios();
+  }
+  const cargandoVista = isFetching;
   // Crear un mapa de mascotas extraviadas para búsqueda rápida
   const extraviadosMap = React.useMemo(() => {
     if (!extravios || !Array.isArray(extravios)) return new Set();
@@ -30,6 +33,8 @@ export default function VistaFamilia() {
         data={Array.isArray(familiares) ? familiares : []}
         keyExtractor={(item, idx) => item.id?.toString() || idx.toString()}
         contentContainerStyle={{ alignItems: "center", gap: 40, padding: 20, width: '100%' }}
+        refreshing={cargandoVista}
+        onRefresh={refetchQueries}
         renderItem={({ item }) => (
           <CardFamiliar 
             navigateTo="Familiar" 
@@ -38,17 +43,41 @@ export default function VistaFamilia() {
           />
         )}
         ListEmptyComponent={
-          isFetching
-          ? (<View style={{alignItems: 'center',marginVertical: 50}}> 
-                <VisitVetIcon width={250} height={250} color={theme.colors.primary} />
-                <Text variant="headlineMedium" style={{textAlign: 'center',color: theme.colors.primary }}>Obteniendo familiares...</Text>
-            </View>)
-          : (<View style={{alignItems: 'center',marginVertical: 50}}>
-                <DogHouseIcon width={250} height={250} color={theme.colors.primary} />
-                <Text variant="headlineMedium" style={{textAlign: 'center',color: theme.colors.primary }}>No hay familiares registrados</Text>
-            </View>)
+          <View style={{alignItems: 'center',marginVertical: 50}}>
+              <DogHouseIcon width={250} height={250} color={theme.colors.primary} />
+              <Text variant="headlineMedium" style={{textAlign: 'center',color: theme.colors.primary }}>No hay familiares registrados</Text>
+          </View>
         }
       />
+
+       {/* Overlay de carga */}
+      {cargandoVista && (
+        <View style={styles.loadingOverlay}>
+          <Surface style={styles.loadingCard} elevation={4}>
+            <VisitVetIcon width={250} height={250} color={theme.colors.primary} />
+                  <Text variant="headlineMedium" style={{textAlign: 'center', color: theme.colors.primary}}>Actualizando familia...</Text>
+          </Surface>
+        </View>
+      )}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 999,
+  },
+  loadingCard: {
+    padding: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+  }
+})

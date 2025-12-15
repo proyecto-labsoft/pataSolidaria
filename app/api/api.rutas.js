@@ -20,6 +20,11 @@ export const rutas = {
   extraviosPorMascota: `${URL_API}/extravios/mascota/{id}`, // GET
   extravioPorId: `${URL_API}/extravios/{id}`, // GET, PUT, DELETE
   
+  extravioFavoritoPorUsuario: `${URL_API}/extravios/favoritos`, 
+  extraviosFavoritosPorUsuario: `${URL_API}/extravios/favoritos/user/{id}`, 
+  extravioEsFavorito: `${URL_API}/extravios/es-favorito`, 
+  eliminarExtravioFavorito: `${URL_API}/extravios/favoritos/{id}`, 
+
   mascotaPorId: `${URL_API}/mascotas/{id}`, // GET, PUT, DELETE
   registrarMascota: `${URL_API}/mascotas`, // POST
   mascotasPorUsuario: `${URL_API}/mascotas/user/{idUsuario}`, // GET

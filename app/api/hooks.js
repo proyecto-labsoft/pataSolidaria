@@ -72,15 +72,13 @@ export function useApiGetAdopciones({ ...opciones }) {
     });
 }
 
-export function useApiPostCrearAdopcion({ body, ...opciones }) {
+export function useApiPostCrearAdopcion({ ...opciones }) {
     return usePost({
         nombreHook: "useApiPostCrearAdopcion",
         url: rutas.crearAdopcion,
-        body,
-        configuracion: { ...opciones }
+        configuracion: { ...opciones, queriesToInvalidate: ['useApiGetAdopciones'] }
     });
-}
-
+} 
 // Esto lo modifica solo la asociacion TODO
 export function useApiPutActualizarAdopcion({ parametros, ...opciones }) {
     return usePut({
@@ -178,6 +176,41 @@ export function useApiPostAvistamiento({ ...opciones }) {
         nombreHook: "useApiPostAvistamiento",
         url: rutas.avistamientos,
         configuracion: { queriesToInvalidate:['useApiGetAvistamientosPorExtravio'], ...opciones }
+    });
+}
+
+// Favoritos
+export function useApiPostFavorito({ ...opciones }) {
+    return usePost({
+        nombreHook: "useApiPostFavorito",
+        url: rutas.extravioFavoritoPorUsuario,
+        configuracion: { queriesToInvalidate:['useApiGetFavoritos','useApiGetEsFavorito'], ...opciones }
+    });
+}
+
+export function useApiDeleteFavorito({ params, ...opciones }) {
+    return useDelete({
+        nombreHook: "useApiDeleteFavorito",
+        url: rutas.eliminarExtravioFavorito,
+        params,
+        configuracion: { queriesToInvalidate:['useApiGetFavoritos','useApiGetEsFavorito'], ...opciones }
+    });
+}
+export function useApiGetFavoritos({ params, ...opciones }) {
+    return useGet({
+        nombreHook: "useApiGetFavoritos",
+        params,
+        url: rutas.extraviosFavoritosPorUsuario,
+        configuracion: { ...opciones }
+    });
+}
+
+export function useApiGetEsFavorito({ params,...opciones }) { 
+    return useGet({
+        nombreHook: "useApiGetEsFavorito",
+        url: rutas.extravioEsFavorito,
+        params,
+        configuracion: { ...opciones }
     });
 }
 

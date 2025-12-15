@@ -15,7 +15,8 @@ import { useNavigation, useNavigationState } from "@react-navigation/native";
 import BotonCrearFamiliar from "../componentes/botones/BotonCrearFamiliar";
 import PetFriendlyHotelIcon from "../componentes/iconos/PetFriendlyHotelIcon";
 import FluentMegaphoneIcon from "../componentes/iconos/FluentMegaphoneIcon";
-import HomeHeartIcon from "../componentes/iconos/HomeHeartIcon";
+import HomeHeartIcon from "../componentes/iconos/HomeHeartIcon"; 
+import BotonAdopciones from "../componentes/botones/BotonAdopciones";
 
 export default function Home() {
   const theme = useTheme();
@@ -57,6 +58,8 @@ export default function Home() {
 
   const shouldShowBotonAlerta = useMemo(() => routes[index].key === 'casos' && isTabRoot, [index, routes, isTabRoot]);
 
+  const mostrarBotonAdopcion = useMemo(() => routes[index].key === 'adopciones' && isTabRoot, [index, routes, isTabRoot]);
+
   return (
     <FondoGradiente>
       <AppbarNav titulo={routes[index].title} />
@@ -81,6 +84,10 @@ export default function Home() {
       />
       <BotonCrearFamiliar
         showButton={shouldShowBotonCrearFamiliar} 
+        onPress={(ruta: string) => navigation.navigate(ruta as never)}
+      />
+      <BotonAdopciones
+        showButton={mostrarBotonAdopcion} 
         onPress={(ruta: string) => navigation.navigate(ruta as never)}
       />
     </FondoGradiente>

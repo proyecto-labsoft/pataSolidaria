@@ -5,20 +5,16 @@ import { FAB, Portal, useTheme } from 'react-native-paper';
 interface Props {
     esCreadorDelExtravio: boolean;
     onResolverCaso: () => void; 
-    onViEsteAnimal: () => void;
-    onGuardarCaso: () => void;
+    onViEsteAnimal: () => void; 
     showButton?: boolean;
-    esFamiliar?: boolean;
-    esFavorito?: boolean;
+    esFamiliar?: boolean; 
 }
 
 export default function BotonAccionesExtravioFAB({ 
     esCreadorDelExtravio,
-    esFamiliar,
-    esFavorito,
+    esFamiliar, 
     onResolverCaso,  
-    onViEsteAnimal,
-    onGuardarCaso,
+    onViEsteAnimal, 
     showButton = true 
 }: Props) {
 
@@ -27,17 +23,7 @@ export default function BotonAccionesExtravioFAB({
 
     const handleChange = ({ open }: any) => setState({ open });
 
-    const { open } = state;
-
-    // Botón común para todas las variantes
-    const botonGuardarCaso = {
-        icon: esFavorito ? 'heart' : 'heart-outline',
-        style: { ...styles.fabItem, backgroundColor: theme.colors.errorContainer },
-        label: esFavorito ? 'Desarchivar caso' : 'Archivar caso',
-        labelStyle: { ...styles.labelFab },
-        color: theme.colors.error,
-        onPress: onGuardarCaso,
-    };
+    const { open } = state; 
 
     const botonResolverCaso = {
         icon: 'check-circle',
@@ -62,13 +48,13 @@ export default function BotonAccionesExtravioFAB({
 
     if (esFamiliar && esCreadorDelExtravio) {
         // Si es familiar Y creador del extravío
-        acciones = [botonGuardarCaso, botonResolverCaso ];
+        acciones = [botonResolverCaso ];
     } else if (!esFamiliar && esCreadorDelExtravio) {
         // Si NO es familiar Y es creador del caso
-        acciones = [botonGuardarCaso, botonResolverCaso, botonViEsteAnimal];
+        acciones = [botonResolverCaso, botonViEsteAnimal];
     } else {
         // Si NO es familiar Y NO es creador del caso
-        acciones = [botonGuardarCaso, botonViEsteAnimal];
+        acciones = [botonViEsteAnimal];
     }
 
     return (

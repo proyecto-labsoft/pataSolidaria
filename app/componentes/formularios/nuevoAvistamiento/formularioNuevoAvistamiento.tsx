@@ -1,13 +1,9 @@
 import { View, Animated, StyleSheet } from 'react-native'
-import { Text as TextPaper, Button, useTheme, Portal, Modal, Text } from 'react-native-paper'
-import CampoTexto from '../campos/campoTexto'
-import CampoTextoArea from '../campos/campoTextoArea'
+import { Button, useTheme, Portal, Modal, Text } from 'react-native-paper' 
 import { useNavigation } from '@react-navigation/native'
 import { useEffect, useCallback, useRef, useState } from 'react'
 import { useForm } from "react-hook-form";
-import BackdropSuccess from '../../backdropSuccess'
-import { Mapa } from '../../mapa'
-import CampoHora from '../campos/campoHora'
+import BackdropSuccess from '../../backdropSuccess' 
 import { useApiPostAvistamiento } from '@/app/api/hooks'
 import { useUsuario } from '@/app/hooks/useUsuario'
 import { formatearFechaBuenosAires, formatearHoraBuenosAires } from '@/app/utiles/fechaHoraBuenosAires'
@@ -262,45 +258,11 @@ export default function FormularioNuevoAvistamiento({extravioId}: {extravioId: n
                 {success && (<BackdropSuccess texto="Nuevo avistamiento confirmado" onTap={() => navigation.goBack()}/>)}
                 <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={{...styles.containerStyle,backgroundColor:theme.colors.surface}}>
                     <Text style={{textAlign: 'center'}}>Al reportar el nuevo avistamiento compartirá sus datos de contacto con los familiares del animal.</Text>
-                    <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={handleSubmit(onSumbit)} disabled={isPendingCrearAvistamiento}>
+                    <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={handleSubmit(onSumbit)} loading={isPendingCrearAvistamiento} disabled={isPendingCrearAvistamiento}>
                         <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Confirmar avistamiento</Text>
                     </Button>
                 </Modal>
-            </Portal>
-
-            
-            {/* <Mapa localizar latitude={null} longitude={null} modificarDomicilio={setUbicacion} />
-            <CampoTexto
-                valor={ubicacion}
-                label="Ubicación del avistamiento"
-                nombre="ubicacion"
-                control={control}
-            />
-            <CampoHora 
-                control={control}
-                label="Hora (HH:mm)"
-                nombre="hora"
-            />
-            <CampoTexto
-                control={control}
-                label="Hora"
-                nombre="hora"
-            />
-            <CampoTexto
-                control={control}
-                label="Celular"
-                nombre="celular"
-            />
-            <CampoTexto
-                control={control}
-                label="Correo electronico"
-                nombre="email"
-            />
-            <CampoTextoArea
-                control={control}
-                label="Descripción adicional"
-                nombre="descripcion"
-            />   */}
+            </Portal> 
             <View style={{flex: 1}}>
                 {renderProgressIndicator()}
                 {renderStep()}
@@ -308,16 +270,7 @@ export default function FormularioNuevoAvistamiento({extravioId}: {extravioId: n
             
             <View style={styles.fixedButtonContainer}>
                 {renderNavigationButtons()}
-            </View>
-            
-            {/* <View style={{ flexDirection:'row', justifyContent:'space-evenly', width: '100%'}}>
-                <Button  buttonColor={theme.colors.secondary} style={{  marginHorizontal:'5%',marginVertical: 8 ,borderRadius:10}} uppercase mode="contained" onPress={() => navigation.goBack()}>
-                    <TextPaper variant='labelLarge' style={{color: theme.colors.onSecondary, marginLeft: "5%"}}>Cancelar</TextPaper>
-                </Button>
-                <Button buttonColor={theme.colors.primary} style={{  marginHorizontal:'5%',marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={() => setVisible(true)}>
-                    <TextPaper variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Confirmar avistamiento</TextPaper>
-                </Button>
-            </View> */}
+            </View> 
         </View>
     )
 }

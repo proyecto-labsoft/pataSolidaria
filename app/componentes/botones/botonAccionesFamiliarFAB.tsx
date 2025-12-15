@@ -18,9 +18,7 @@ export default function BotonAccionesFamiliarFAB({
     casoResuelto,
     onResolverCaso,
     showButton = true 
-}: Props) {
-
-    console.log("caso Resuelto",casoResuelto)
+}: Props) { 
     const theme = useTheme();
     const [state, setState] = useState({ open: false });
 

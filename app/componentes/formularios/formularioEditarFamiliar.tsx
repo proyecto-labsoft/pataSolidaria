@@ -7,6 +7,8 @@ import CampoFecha from './campos/campoFecha'
 import CampoSelectorModal from './campos/campoSelectorModal'
 interface Props {
     onSubmit: (data: any) => void,
+    onCancel: () => void,
+    submitting: boolean,
     data?: {
         nombre?: string,
         especie?: string,
@@ -21,11 +23,11 @@ interface Props {
         // domicilio?: string
     }
 }
-export default function FormularioEditarFamiliar({data, onCancel, onSubmit} : Props) {
+export default function FormularioEditarFamiliar({data, submitting, onCancel, onSubmit} : Props) {
     const theme = useTheme()
     
     const { control, setValue, watch, handleSubmit } = useForm({
-        defaultValues: data || {}
+        defaultValues: {...data, sexo: data?.sexo === "M" ? "Macho" : data?.sexo === "H" ? "Hembra" : "No lo sé"} || {}
     });
     const esterilizado = watch('esterilizado');
     const chipeado = watch('chipeado');
@@ -120,7 +122,7 @@ export default function FormularioEditarFamiliar({data, onCancel, onSubmit} : Pr
                 <Button  buttonColor={theme.colors.error} style={{  marginVertical: 8 ,borderRadius:10}} uppercase mode="contained" onPress={onCancel}>
                     <Text variant='labelLarge' style={{color: theme.colors.onError, marginLeft: "5%"}}>Cancelar</Text>
                 </Button>
-                <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={handleSubmit(onSubmit)}>
+                <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase loading={submitting} disabled={submitting} mode="contained" onPress={handleSubmit(onSubmit)}>
                     <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Guardar</Text>
                 </Button>
             </View>

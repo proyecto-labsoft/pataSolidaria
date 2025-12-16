@@ -3,7 +3,7 @@ import { Appbar, Text, useTheme } from 'react-native-paper';
 import AccesoNotificaciones from "./accesoNotificaciones";
 
 type Props = {
-  titulo: string,
+  titulo?: string,
   tamanioTitulo?: string
 }
 export default function AppbarNav({titulo,tamanioTitulo} : Props) {
@@ -13,7 +13,7 @@ export default function AppbarNav({titulo,tamanioTitulo} : Props) {
         <Appbar.Header style={{backgroundColor: theme.colors.primary, width: '100%'}} >
           {navigation.canGoBack() 
             ? <Appbar.BackAction iconColor={theme.colors.onPrimary} containerColor={theme.colors.primary} onPress={() => navigation.goBack()} />
-            : <Appbar.Action icon="help-circle-outline" iconColor={theme.colors.onPrimary}  onPress={() => navigation.navigate("Faq")}/>
+            : <Appbar.Action icon="account-circle" iconColor={theme.colors.onPrimary}  onPress={() => navigation.navigate("Perfil")}/>
           }
           <Appbar.Content title={<Text variant={!!tamanioTitulo ? tamanioTitulo : 'headlineLarge'} style={{width:"100%",textAlign:"center",color: theme.colors.onPrimary }} >{titulo}</Text>} titleStyle={{ color: theme.colors.primary}} />
           <AccesoNotificaciones />

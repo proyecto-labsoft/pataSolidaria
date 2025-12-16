@@ -19,35 +19,32 @@ export default function BotonAlerta ({onPress,showButton} : Props) {
 
     const { open } = state;
 
-    return (
-    
-        <Portal>
-            <FAB.Group
-                open={open}
-                visible={showButton}
-                icon={open ? 'close' : () => <FluentMegaphoneIcon width={32} height={32} color={theme.colors.onTertiaryContainer} />}
-                color="white"
-                actions={[
-                    {
-                        icon: () => <SearchMapIcon width={32} height={32} color={theme?.colors.onSecondaryContainer} />,
-                        style: { ...styles.fabItem, backgroundColor: theme?.colors.secondary},
-                        label: 'Encontré un animal perdido',
-                        labelStyle: { ...styles.labelFab },
-                        onPress: () => onPress("NuevoExtraviado"),
-                    },
-                    {
-                        style: { ...styles.fabItem, backgroundColor: theme?.colors.tertiary},
-                        icon: () => <PawPrintIcon width={28} height={28} color={theme?.colors.o} />,
-                        label: 'Mi familiar se perdió',
-                        labelStyle: { ...styles.labelFab },
-                        onPress: () => onPress("NuevoBuscado"),
-                    }
-                    ]}
-                onStateChange={handleChange}
-                fabStyle={{...styles.fab, paddingRight: open ? 0 : 8 ,paddingBottom: open ? 0 : 8 , backgroundColor: theme?.colors.secondary}}
-                style={{...styles.fabGroup}}
-            />
-        </Portal>
+    return ( 
+        <FAB.Group
+            open={open}
+            visible={showButton}
+            icon={open ? 'close' : () => <FluentMegaphoneIcon styles={{ right: 5, bottom: 5 }} width={32} height={32} color={theme.colors.onTertiary} />}
+            color="white"
+            actions={[
+                {
+                    icon: () => <SearchMapIcon width={32} height={32} color={theme?.colors.onSecondaryContainer} />,
+                    style: { ...styles.fabItem, backgroundColor: theme?.colors.secondary},
+                    label: 'Encontré un animal perdido',
+                    labelStyle: { ...styles.labelFab },
+                    onPress: () => onPress("NuevoExtraviado"),
+                },
+                {
+                    style: { ...styles.fabItem, backgroundColor: theme?.colors.tertiary},
+                    icon: () => <PawPrintIcon width={28} height={28} color={theme?.colors.onSecondaryContainer} />,
+                    label: 'Mi familiar se perdió',
+                    labelStyle: { ...styles.labelFab },
+                    onPress: () => onPress("NuevoBuscado"),
+                }
+                ]}
+            onStateChange={handleChange}
+            fabStyle={{...styles.fab, paddingRight:  0  ,paddingBottom:  0  , backgroundColor: open ? theme.colors.inverseSurface : theme.colors.error }}
+            style={{...styles.fabGroup}}
+        /> 
     );
 }
 
@@ -56,11 +53,12 @@ const styles = StyleSheet.create({
     fab: {
         borderRadius:50,
         justifyContent:'center',
-        width: 65,
-        height: 65,
         alignItems:'center',
-        right: 20,
-        bottom: 85,
+        width: 85,
+        height: 85,
+        right: 10,
+        zIndex: 95, 
+        bottom: 60,
     },
     labelFab:{
         bottom: 80,

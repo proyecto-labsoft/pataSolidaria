@@ -1,4 +1,4 @@
-package mascotas.project.services;
+package mascotas.project.services.impl;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -10,9 +10,10 @@ import mascotas.project.entities.Adopcion;
 import mascotas.project.entities.Mascota;
 import mascotas.project.exceptions.BadRequestException;
 import mascotas.project.exceptions.NoContentException;
-import mascotas.project.exceptions.NotFoundException;
 import mascotas.project.mapper.AdopcionMapper;
 import mascotas.project.repositories.AdopocionRepository;
+import mascotas.project.services.interfaces.AdopcionService;
+import mascotas.project.services.interfaces.MascotaService;
 import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
@@ -23,13 +24,14 @@ import java.util.Optional;
 @Slf4j
 @Service
 @AllArgsConstructor
-public class AdopcionService {
+public class AdopcionServiceImpl implements AdopcionService {
 
     private AdopocionRepository adopcionRepository;
     private AdopcionMapper adopcionMapper;
     private MascotaService mascotaService;
     private FirebaseNotificationService notificationService;
 
+    @Override
     @Transactional
     public AdopcionDetailDTO saveAdopcion(AdopcionRequestDTO adopcionRequestDtoRequest) {
         return Optional.ofNullable(adopcionRequestDtoRequest)
@@ -78,6 +80,7 @@ public class AdopcionService {
     }
 
 
+    @Override
     public List<AdopcionDetailDTO> getAdopciones() {
 
         List<Adopcion> adopciones = adopcionRepository.findAll();
@@ -88,10 +91,11 @@ public class AdopcionService {
                        .orElseThrow( () -> new NoContentException(ErrorsEnums.NO_CONTENT_ERROR.getDescription()) );
     }
 
+    @Override
     public AdopcionDetailDTO getAdopcionById(Long adopcionId) {
 
         return adopcionRepository.findById(adopcionId)
                 .map(adopcionMapper::toDetailDto)
-                .orElseThrow( () -> new NotFoundException(ErrorsEnums.ADOPCION_NOT_FOUND_ERROR.getDescription()  + adopcionId));
+                .orElseThrow( () -> new NoContentException(ErrorsEnums.ADOPCION_NOT_FOUND_ERROR.getDescription()  + adopcionId));
     }
 }

@@ -1,10 +1,12 @@
 import { StyleSheet, Pressable, View } from "react-native";
-import { Card, useTheme,Text } from 'react-native-paper';
+import { Card, useTheme,Text, Icon, IconButton } from 'react-native-paper';
 import { useNavigation } from "@react-navigation/native";
 import { ImageSlider } from '../../testData/sliderData';
 import { calcularTiempoTranscurrido } from "@/app/utiles/calcularTiempoTranscurrido";
 import { obtenerValorSexo } from "@/app/utiles/obtenerValorEnum";
 import BannerCoverOverlay from './bannerCoverOverlay';
+import { useUsuario } from "@/app/hooks/useUsuario";
+import { useApiDeleteFavorito, useApiGetEsFavorito, useApiPostFavorito } from "@/app/api/hooks";
 
 interface Props {
     data: {
@@ -21,14 +23,43 @@ interface Props {
 // (1*) Tener todo los avistamientos de este animal y mostrar el más reciente
 export default function CardAnimal({ data, navigateTo }: Props) {
     
-    console.log("Card extravio",data)
-    
-    const theme = useTheme();
-    console.log("first",theme.colors.primary)
+    const { usuarioId } = useUsuario()
+    const theme = useTheme(); 
     const esBuscado = data?.creadoByFamiliar;
-    const miUsuario = esBuscado
+    const creadorPorMi = data?.creadorId === usuarioId;
     const navigation = useNavigation();
     const randomImage = ImageSlider[0].imagenes[Math.floor(Math.random() * ImageSlider[0].imagenes.length)];
+
+    const { data: esFavorito } = useApiGetEsFavorito({
+        params: {
+            queryParams: {
+                usuarioId: usuarioId,
+                extravioId: data?.extravioId
+            }
+        },
+        enabled: !!usuarioId && !!data?.extravioId
+    })
+    const { mutateAsync: guardarCaso } = useApiPostFavorito({})
+    const { mutateAsync: borrarFavorito } = useApiDeleteFavorito({
+            params: { 
+                id: data?.extravioId, 
+                queryParams: {
+                    usuarioId: usuarioId
+                } 
+            },
+        })
+    const handleGuardarCaso = () => { 
+        // Aquí podrías implementar la lógica para guardar el caso, como agregarlo a una lista de favoritos
+        if (esFavorito) {
+            borrarFavorito()
+        } else {
+            guardarCaso({data: {
+                usuarioId: usuarioId,
+                extravioId: data?.extravioId
+            }})
+        }
+    }
+
     return (
 
         <Card style={{ margin: 12, flex: 1, backgroundColor: theme.colors.primary, position: 'relative' }}>
@@ -42,6 +73,9 @@ export default function CardAnimal({ data, navigateTo }: Props) {
                 </Text>
             </View>
             
+            <View style={{ position: 'absolute' , top: 150, right: -5, zIndex: 10 }}>
+                <IconButton icon={esFavorito ? "heart" : "heart-outline"} iconColor={theme.colors.secondary} style={{ width: 32, height: 32 }} onPress={handleGuardarCaso} />
+            </View>
             <Pressable
                 onPress={() => {
                     navigation.navigate(navigateTo, { data: data })
@@ -56,10 +90,10 @@ export default function CardAnimal({ data, navigateTo }: Props) {
                 ]}
             >
                 <View style={{ position: 'relative' }}>
-                  <Card.Cover style={styles.fotoAnimal} source={randomImage} />
-                  {(esBuscado) && (
+                    <Card.Cover style={styles.fotoAnimal} source={randomImage} />
+                    {((esBuscado && creadorPorMi) || creadorPorMi) && (
                     <BannerCoverOverlay texto="Creado por ti" />
-                  )}
+                    )}
                 </View>
                 {(() => {
                     return (

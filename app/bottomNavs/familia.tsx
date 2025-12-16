@@ -1,89 +1,83 @@
 import React from "react";
-import { FlatList, View } from "react-native";
-import { Divider,useTheme, Button, Text } from 'react-native-paper'
-import CardFamiliar from "../componentes/cards/cardFamiliar";
-import CardUsuario from "../componentes/cards/cardUsuarios";
-import { useNavigation } from "@react-navigation/native";
+import { FlatList, StyleSheet, View } from "react-native";
+import { useTheme, Text, Surface } from 'react-native-paper'
+import CardFamiliar from "../componentes/cards/cardFamiliar"; 
 import { useApiGetExtraviosPorUsuario, useApiGetMascotasPorUsuario } from "../api/hooks";
+import { useUsuario } from "../hooks/useUsuario";
+import DogHouseIcon from "../componentes/iconos/DogHouseIcon";
+import VisitVetIcon from "../componentes/iconos/VisitVetIcon";
 
 export default function VistaFamilia() {
-  const theme = useTheme(); 
-  const navigation = useNavigation();
+  const theme = useTheme();  
 
-  const {data:familiares, isFetching, refetch } = useApiGetMascotasPorUsuario({ parametros: {idUsuario: 2}}) 
+  const { usuarioId } = useUsuario()
+  
+  const {data:familiares, isFetching, refetch: refetchFamiliares } = useApiGetMascotasPorUsuario({ parametros: {idUsuario: usuarioId}, enabled: !!usuarioId }) 
 
-  const {data: extravios } = useApiGetExtraviosPorUsuario({params: {id: 2}, enabled: false })
+  const {data: extravios, refetch: refetchExtravios } = useApiGetExtraviosPorUsuario({params: {queryParams: {resueltos: false},id: usuarioId}})
+
+  const refetchQueries = () => {
+    refetchFamiliares();
+    refetchExtravios();
+  }
+  const cargandoVista = isFetching;
+  // Crear un mapa de mascotas extraviadas para búsqueda rápida
+  const extraviadosMap = React.useMemo(() => {
+    if (!extravios || !Array.isArray(extravios)) return new Set();
+    return new Set(extravios.map((e: any) => e.mascotaId));
+  }, [extravios]);
 
   return (
-      
-        <View style={{ flex: 1, marginTop: 20 }}>
-          {/* <DescripcionVista texto="Aquí podrás ver la información de tus familiares" /> */}
-          <View style={{width: '100%', alignItems: 'center', gap: 10, paddingVertical: 10}}>
-            <CardUsuario />
-            <Divider style={{ width: '70%', height: 2, backgroundColor: theme.colors.outlineVariant, borderRadius: 20, alignSelf: 'center', marginVertical: 10 }} />
+    <View style={{ flex: 1, marginTop: 20 }}>
+      <FlatList
+        data={Array.isArray(familiares) ? familiares : []}
+        keyExtractor={(item, idx) => item.id?.toString() || idx.toString()}
+        contentContainerStyle={{ alignItems: "center", gap: 40, padding: 20, width: '100%' }}
+        refreshing={cargandoVista}
+        onRefresh={refetchQueries}
+        renderItem={({ item }) => (
+          <CardFamiliar 
+            navigateTo="Familiar" 
+            data={item} 
+            estaExtraviado={extraviadosMap.has(item.id)}
+          />
+        )}
+        ListEmptyComponent={
+          <View style={{alignItems: 'center',marginVertical: 50}}>
+              <DogHouseIcon width={250} height={250} color={theme.colors.primary} />
+              <Text variant="headlineMedium" style={{textAlign: 'center',color: theme.colors.primary }}>No hay familiares registrados</Text>
           </View>
-          {isFetching ? (
-            <Text style={{ alignSelf: 'center', marginTop: 20 }}>Cargando...</Text>
-          ) : (
-            <FlatList
-              data={Array.isArray(familiares) ? familiares : []}
-              keyExtractor={(item, idx) => item.id?.toString() || idx.toString()}
-              contentContainerStyle={{ alignItems: "center", gap: 40, padding: 20, width: '100%' }}
-              renderItem={({ item }) => (
-                <CardFamiliar navigateTo="Familiar" data={item} />
-              )}
-              ListEmptyComponent={
-                <Text style={{ alignSelf: 'center', marginTop: 20 }}>No hay familiares cargados.</Text>
-              }
-            />
-          )}
+        }
+      />
+
+       {/* Overlay de carga */}
+      {cargandoVista && (
+        <View style={styles.loadingOverlay}>
+          <Surface style={styles.loadingCard} elevation={4}>
+            <VisitVetIcon width={250} height={250} color={theme.colors.primary} />
+                  <Text variant="headlineMedium" style={{textAlign: 'center', color: theme.colors.primary}}>Actualizando familia...</Text>
+          </Surface>
         </View>
+      )}
+    </View>
   );
 }
 
-// <View style={{flex:1}}>
-      //     <DescripcionVista texto="Aquí podrás ver la información de tus familiares" />
-        
-      //     <ScrollView contentContainerStyle={{ alignItems: "center",gap:40,padding:20,width: '100%'}}>
-      //     <CardUsuario />
-      //     <Divider style={{ width: '70%', height: 2, backgroundColor: theme.colors.outlineVariant, borderRadius: 20 }} />
-      //     <Button icon="plus" mode="contained" onPress={() => navigation.navigate('NuevoFamiliar')} style={{width: '90%'}}>
-      //       Cargar nuevo familiar
-      //     </Button>
-          
-            {/* <FlatList
-              data={}
-              keyExtractor={(item) => item.id.toString()}
-              showsVerticalScrollIndicator={false}
-              renderItem={({item}) => (
-                Manera de renderizar mas de u familiar en una lista
-              )}
-            > 
-              <Pressable
-                onPress={() => navigation.navigate("Familiar")}
-                style={({pressed}) => [
-                  {
-                    backgroundColor: pressed ? 'rgb(210, 230, 255)' : 'white',
-                  },
-                ]
-              >
-              <View
-                  style={ styles.cardAnimal }
-                >
-                  <Image
-                    source={{ uri: "https://static.fundacion-affinity.org/cdn/farfuture/PVbbIC-0M9y4fPbbCsdvAD8bcjjtbFc0NSP3lRwlWcE/mtime:1643275542/sites/default/files/los-10-sonidos-principales-del-perro.jpg" }}
-                    style={ styles.fotoAnimal }
-                  />
-                  <Text>Chili</Text>
-                </View>
-              </Pressable>             
-              <CardFamiliar navigateTo="Familiar" data={{nombre: 'Chili', especie: 'Canino'}} />
-              <CardFamiliar navigateTo="Familiar" data={{nombre: 'Duque', especie: 'Canino'}} />
-              <CardFamiliar navigateTo="Familiar" data={{nombre: 'Draco', especie: 'Canino'}} />
-              <CardFamiliar navigateTo="Familiar" data={{nombre: 'Sur', especie: 'Felino'}} />
-              <CardFamiliar navigateTo="Familiar" data={{nombre: 'Duque', especie: 'Canino'}} />
-              <CardFamiliar navigateTo="Familiar" data={{nombre: 'Draco', especie: 'Canino'}} />
-              <CardFamiliar navigateTo="Familiar" data={{nombre: 'Sur', especie: 'Felino'}} />
-              
-          </ScrollView>          
-        </View> */}
+const styles = StyleSheet.create({
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 999,
+  },
+  loadingCard: {
+    padding: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+  }
+})

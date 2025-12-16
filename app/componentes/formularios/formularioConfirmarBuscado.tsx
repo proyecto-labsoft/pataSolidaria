@@ -1,18 +1,15 @@
-import { View,StyleSheet } from 'react-native'
-import {useState} from 'react'
-import { Text as TextPaper, Checkbox, Button, useTheme, Text, Portal, Modal, Divider, Switch } from 'react-native-paper'
-import { Mapa } from '../mapa'
-import CampoTexto from './campos/campoTexto'
+import { View, StyleSheet, Animated, KeyboardAvoidingView, Platform, ScrollView } from 'react-native'
+import {useState, useEffect, useRef, useCallback} from 'react'
+import { Button, useTheme, Text, Portal, Modal } from 'react-native-paper'
 import { useForm } from 'react-hook-form'
-import CampoTextoArea from './campos/campoTextoArea'
 import { useNavigation } from '@react-navigation/native'
-import CampoSelector from './campos/campoSelector'
-import DescripcionVista from '../descripcionVista'
 import BackdropSuccess from '../backdropSuccess'
-import CampoSelectorModal from './campos/campoSelectorModal'
-import CampoFecha from './campos/campoFecha'
 import { useApiPostExtravioFamiliar } from '@/app/api/hooks'
-import { format } from 'date-fns'
+import { useUsuario } from '@/app/hooks/useUsuario'
+import { formatearFechaHoraCompletaBuenosAires } from '@/app/utiles/fechaHoraBuenosAires'
+import UbicacionStep from './confirmarBuscado/ubicacionStep'
+import DatosAnimalStep from './confirmarBuscado/datosAnimalStep'
+import ConfirmacionStep from './confirmarBuscado/confirmacionStep'
 interface Props {
     data: {
         nombre: string,
@@ -31,28 +28,62 @@ interface Props {
 }
 export default function FormularioConfirmarBuscado({ data } : Props) {
     const theme = useTheme()
-    const [ubic, setUbic] = useState("");
-    const [cambiarDomicilio, setCambiarDomicilio] = useState(false);
-    const [domic, setDomicilio] = useState("");
-    const [visible,setVisible] = useState(false) 
     const navigation = useNavigation()
+    const {usuarioId} = useUsuario()
+    
+    const [visible, setVisible] = useState(false)
+    const [successMensaje, setSuccessMensaje] = useState(false)
+    const [currentStep, setCurrentStep] = useState(1)
 
-    const { control,setValue, watch, handleSubmit, formState: {errors} } = useForm({
+    // Valores animados para cada paso y línea
+    const stepAnimations = useRef([
+        new Animated.Value(0), // Paso 1
+        new Animated.Value(0), // Paso 2
+        new Animated.Value(0), // Paso 3
+    ]).current
+
+    const lineAnimations = useRef([
+        new Animated.Value(0), // Línea 1-2
+        new Animated.Value(0), // Línea 2-3
+    ]).current
+
+    const { control, setValue, watch, handleSubmit, formState: {errors} } = useForm({
         defaultValues: data || {}
     });
     
-    const esterilizado = watch('esterilizado');
-    
-    const chipeado = watch('chipeado');
-
-    const [successMensaje, setSuccessMensaje] = useState(false);
+    const watchedValues = watch(); // Para mostrar valores en confirmación
      
-    const { mutateAsync: declararExtraviado } = useApiPostExtravioFamiliar({
+    const { mutateAsync: declararExtraviado, isPending: isPendingDeclararExtraviado } = useApiPostExtravioFamiliar({
         params: {id: data?.id},
+        queriesToInvalidate: ['useApiGetExtraviosPorUsuario','useApiGetExtravios'],
         onSuccess: () => {setSuccessMensaje(true);setVisible(false)},
     });
 
+    // Efecto para animar los cambios de paso
+    useEffect(() => {
+        // Animar círculos de pasos
+        stepAnimations.forEach((animation, index) => {
+            const targetValue = (index + 1) <= currentStep ? 1 : 0
+            Animated.timing(animation, {
+                toValue: targetValue,
+                duration: 250,
+                useNativeDriver: false,
+            }).start()
+        })
+
+        // Animar líneas conectoras
+        lineAnimations.forEach((animation, index) => {
+            const targetValue = (index + 1) < currentStep ? 1 : 0
+            Animated.timing(animation, {
+                toValue: targetValue,
+                duration: 250, 
+                useNativeDriver: false,
+            }).start()
+        })
+    }, [currentStep, stepAnimations, lineAnimations])
+
     const onSubmit = (formData: any) => {
+        setVisible(false)
         if (formData?.sexo === 'Macho') {
             formData.sexo = 'M';
         } else if (formData?.sexo === 'Hembra') {
@@ -72,163 +103,232 @@ export default function FormularioConfirmarBuscado({ data } : Props) {
 
         declararExtraviado({
             data: {
-            creador: 2, // TODO - ID del usuario, reemplazar con el ID real del usuario autenticado
-            mascotaId: data?.id,
-            zona: "", // TODO - zona, reemplazar con la zona real, datos de geoloocalizacion
-            hora: format(new Date(), 'dd-MM-yyyy HH:mm:ss'),
-            observacion: formData?.observacionExtravio || null,
+                creador: usuarioId,
+                mascotaId: data?.id,
+                resuelto: false, 
+                latitud: formData?.latitud || null,
+                longitud: formData?.longitud || null,
+                direccion: formData?.ubicacion || null,
+                zona: "",
+                hora: formatearFechaHoraCompletaBuenosAires(),
+                observacion: formData?.observacionExtravio || null,
             }
         })
-        // declararExtraviado({})
     }
 
+    const nextStep = () => {
+        if (currentStep < 3) {
+            setCurrentStep(currentStep + 1)
+        }
+    }
 
+    const prevStep = () => {
+        if (currentStep > 1) {
+            setCurrentStep(currentStep - 1)
+        }
+    }
+
+    const renderStep = useCallback(() => {
+        switch (currentStep) {
+            case 1: 
+                return <UbicacionStep control={control} />
+            case 2:
+                return <DatosAnimalStep control={control} setValue={setValue} watch={watch} />
+            case 3:
+                return <ConfirmacionStep valores={watchedValues} />
+            default:
+                return <UbicacionStep control={control} />
+        }
+    }, [currentStep, control, setValue, watch, watchedValues])
+
+    const renderNavigationButtons = () => (
+        <View style={{ 
+            flexDirection:'row', 
+            justifyContent:'space-between', 
+            width: '100%', 
+            paddingHorizontal: 16
+        }}>
+            {currentStep > 1 ? (
+                <Button 
+                    icon="arrow-left"
+                    buttonColor={theme.colors.surfaceVariant} 
+                    textColor={theme.colors.onSurfaceVariant}
+                    style={{
+                        borderRadius: 28,
+                        elevation: 4,
+                        shadowColor: '#000',
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.25,
+                        shadowRadius: 3.84,
+                    }} 
+                    contentStyle={{ height: 56, paddingHorizontal: 16 }}
+                    mode="contained" 
+                    onPress={prevStep}
+                >
+                    Anterior
+                </Button>
+            ) : (
+                <Button  
+                    icon="close"
+                    buttonColor={theme.colors.error} 
+                    style={{
+                        borderRadius: 28,
+                        elevation: 4,
+                        shadowColor: '#000',
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.25,
+                        shadowRadius: 3.84,
+                    }} 
+                    contentStyle={{  paddingHorizontal: 16 }}
+                    mode="contained" 
+                    onPress={() => navigation.goBack()}
+                >
+                    Cancelar
+                </Button>
+            )}
+            
+            {currentStep < 3 ? (
+                <Button 
+                    icon="arrow-right"
+                    buttonColor={theme.colors.primary} 
+                    style={{
+                        borderRadius: 28,
+                        elevation: 4,
+                        shadowColor: '#000',
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.25,
+                        shadowRadius: 3.84,
+                    }} 
+                    contentStyle={{ paddingHorizontal: 16, flexDirection: 'row-reverse' }}
+                    mode="contained" 
+                    onPress={nextStep}
+                >
+                    Siguiente
+                </Button>
+            ) : (
+                <Button 
+                    icon="check"
+                    buttonColor={theme.colors.primary} 
+                    style={{
+                        borderRadius: 28,
+                        elevation: 4,
+                        shadowColor: '#000',
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.25,
+                        shadowRadius: 3.84,
+                    }} 
+                    contentStyle={{ height: 56, paddingHorizontal: 16 }}
+                    mode="contained" 
+                    onPress={() => setVisible(true)}
+                >
+                    Publicar
+                </Button>
+            )}
+        </View>
+    )
+
+    // Indicador de progreso
+    const renderProgressIndicator = () => (
+        <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginBottom: 20}}>
+            {[1, 2, 3].map((step, index) => (
+                <View key={step} style={{flexDirection: 'row', alignItems: 'center'}}>
+                    {/* Círculo del paso animado */}
+                    <Animated.View 
+                        style={{
+                            width: 30,
+                            height: 30,
+                            borderRadius: 15,
+                            backgroundColor: stepAnimations[index].interpolate({
+                                inputRange: [0,1],
+                                outputRange: [theme.colors.surfaceVariant, theme.colors.primary]
+                            }),
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                        }}
+                    >
+                        <Animated.Text 
+                            style={{
+                                color: stepAnimations[index].interpolate({
+                                    inputRange: [0, 1],
+                                    outputRange: [theme.colors.onSurfaceVariant, theme.colors.onPrimary]
+                                }),
+                                fontWeight: 'bold'
+                            }}
+                        >
+                            {step}
+                        </Animated.Text>
+                    </Animated.View>
+                    
+                    {/* Línea conectora animada (no mostrar después del último paso) */}
+                    {index < 2 && (
+                        <Animated.View 
+                            style={{
+                                width: 40,
+                                height: 3,
+                                backgroundColor: lineAnimations[index].interpolate({
+                                    inputRange: [0, 1],
+                                    outputRange: [theme.colors.surfaceVariant, theme.colors.primary]
+                                }),
+                                marginHorizontal: 4
+                            }}
+                        />
+                    )}
+                </View>
+            ))}
+        </View>
+    )
 
     return(
-        <View style={{gap:20}}>
-            <Portal>
-                {successMensaje && (
-                <BackdropSuccess
-                    texto="Nuevo extravío reportado con éxito"
-                    onTap={() => {
-                        navigation.navigate("Home")
-                    }}
-                />
-                )}
-            </Portal>
-            <Portal>
-                <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={{...styles.containerStyle,backgroundColor:theme.colors.surface}}>
-                    <Text style={{textAlign: 'center'}}>Al reportar la nueva busqueda compartirá sus datos de contacto con los demás usuarios.</Text>
-                    <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={handleSubmit(onSubmit)}>
-                        <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Confirmar búsqueda</Text>
-                    </Button>
-                </Modal>
-            </Portal>
-            <DescripcionVista texto="¿Por dónde se extravió?" tamanioTexto="titleLarge"/>
-            <Mapa localizar latitude={null} longitude={null} modificarDomicilio={setUbic} />
-            <CampoTexto
-                style={ styles.input } 
-                label='Observaciones'
-                nombre='observacionExtravio'
-                control={control}
-            />
-            <CampoTexto
-                style={ styles.input }
-                valor={ubic}
-                label='Ubicación'
-                nombre='ubicacion'
-                control={control}
-            />
-            <CampoTexto
-                style={ styles.input }
-                label="Nombre"
-                nombre="nombre"
-                control={control}
-            /> 
-            <CampoSelectorModal
-                control={control} 
-                label="Sexo"
-                nombre="sexo"
-                opciones={['No lo sé','Macho','Hembra']}
-            />
-            <CampoTexto
-                style={ styles.input }
-                label="Especie"
-                nombre="especie"
-                control={control}
-            />
-            <CampoTexto
-                style={ styles.input }
-                label="Raza"
-                nombre="raza"
-                control={control}
-            />
-            <CampoTexto
-                style={ styles.input }
-                label="Tamaño"
-                nombre="tamanio"
-                control={control}
-            />
-            <CampoTexto
-                style={ styles.input }
-                label="Colores"
-                nombre="color"
-                control={control}
-            />
-            {cambiarDomicilio && (
-                <>
-                    <Mapa localizar latitude={null} longitude={null} modificarDomicilio={setDomicilio} />
-                    <Button  buttonColor={theme.colors.secondary} style={{  marginHorizontal:'5%',marginVertical: 8 ,borderRadius:10}} uppercase mode="contained" onPress={() => {setDomicilio("");setCambiarDomicilio(false)}}>
-                        <Text variant='labelLarge' style={{color: theme.colors.onSecondary, marginLeft: "5%"}}>Cancelar</Text>
-                    </Button>
-                </>
-            )}
-            {!cambiarDomicilio && (
-                <Button icon="map-marker" buttonColor={theme.colors.primary} style={{  marginHorizontal:'5%',marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={() => setCambiarDomicilio(true)}>
-                    <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Cambiar el domicilio</Text>
-                </Button>
-            )} 
-            <CampoFecha
-                label="Fecha de nacimiento"
-                nombre="fechaNacimiento"
-                control={control}
-            />
-            <CampoTextoArea
-                style={ styles.input }
-                label="Descripción adicional"
-                nombre="descripcion"
-                control={control}
-            />
-            <View style={{justifyContent:'center',alignContent:'center',gap:10,marginTop: 20}}>
-                <Text style={{textAlign:'center',width:'100%'}} variant="headlineSmall">Identificación y esterilización</Text>
-                <Divider style={{marginBottom: 20 , width: "90%", alignSelf: 'center'}}/>    
-                
-                    <View style={{flexDirection:'row', marginHorizontal: 30,marginVertical: 8, alignItems:'center', justifyContent: 'space-between'}}>
-                        <Text variant="titleLarge" onPress={() => {
-                            setValue('esterilizado', !esterilizado);
-                        }}>Esterilizado</Text>
-                        <Switch
-                            value={esterilizado}
-                            style={{ transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }] }}
-                            onValueChange={() => {
-                                setValue('esterilizado', !esterilizado);
-                            }}
-                        />
-                        
+        <KeyboardAvoidingView 
+            style={{flex: 1}} 
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={100}
+        >
+            <ScrollView 
+                style={{flex: 1}} 
+                contentContainerStyle={{flexGrow: 1}}
+                keyboardShouldPersistTaps="handled"
+            >
+                <View style={{flex: 1, gap:20}}>
+                    <Portal>
+                        {successMensaje && (
+                            <BackdropSuccess
+                                texto="Nuevo extravío reportado con éxito"
+                                onTap={() => {
+                                    navigation.navigate("Home")
+                                }}
+                            />
+                        )}
+                    </Portal>
+                    <Portal>
+                        <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={{...styles.containerStyle,backgroundColor:theme.colors.surface}}>
+                            <Text variant="titleMedium" style={{textAlign: 'center'}}>Al reportar la nueva búsqueda compartirá sus datos de contacto con los demás usuarios.</Text>
+                            <View style={{ flexDirection: 'row', display: 'flex', width: '100%', justifyContent: 'space-between' }}>
+                                <Button buttonColor={theme.colors.error} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={() => setVisible(false)}>
+                                    <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Cancelar</Text>
+                                </Button>
+                                <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" loading={isPendingDeclararExtraviado} disabled={isPendingDeclararExtraviado} onPress={handleSubmit(onSubmit)}>
+                                    <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Confirmar</Text>
+                                </Button>
+                            </View>
+                        </Modal>
+                    </Portal>
+                    
+                    <View style={{flex: 1}}>
+                        {renderProgressIndicator()}
+                        {renderStep()}
                     </View>
-                    <View style={{flexDirection:'row', marginHorizontal: 30, marginVertical: 8, alignItems:'center', justifyContent: 'space-between'}}>
-                        <Text variant="titleLarge" onPress={() => {
-                            setValue('chipeado', !chipeado);
-                        }}>Chipeado</Text>
-                        <Switch
-                            value={chipeado}
-                            style={{ transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }] }}
-                            onValueChange={() => {
-                                setValue('chipeado', !chipeado);
-                            }}
-                        />
+                    
+                    <View style={styles.fixedButtonContainer}>
+                        {renderNavigationButtons()}
                     </View>
-                
-            </View>
-            
-            <View style={{ flexDirection:'row', justifyContent:'space-evenly', width: '100%'}}>
-                
-                <Button  buttonColor={theme.colors.secondary} style={{  marginHorizontal:'5%',marginVertical: 8 ,borderRadius:10}} uppercase mode="contained" onPress={() => navigation.goBack()}>
-                    <Text variant='labelLarge' style={{color: theme.colors.onSecondary, marginLeft: "5%"}}>Cancelar</Text>
-                </Button>
-                <Button buttonColor={theme.colors.primary} style={{  marginHorizontal:'5%',marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={() => setVisible(true)}>
-                    <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Publicar buscado</Text>
-                </Button>
-            </View>
-            
-        </View>
+                </View>
+            </ScrollView>
+        </KeyboardAvoidingView>
     )
 }
 
 const styles = StyleSheet.create({
-    input:{
-        marginBottom: 16,
-    },
     containerStyle: {
         justifyContent: "space-around",
         alignItems: "center",
@@ -237,5 +337,11 @@ const styles = StyleSheet.create({
         alignSelf:"center",
         padding: 30,
         borderRadius: 20,
+    },
+    fixedButtonContainer: {
+        paddingBottom: 20,
+        paddingTop: 10,
+        backgroundColor: 'transparent', 
+        paddingHorizontal: 10,
     },
 });

@@ -1,14 +1,12 @@
 package mascotas.project.controller;
 
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mascotas.project.dto.AdopcionRequestDTO;
 import mascotas.project.dto.AdopcionDetailDTO;
-import mascotas.project.entities.Adopcion;
-import mascotas.project.services.AdopcionService;
+import mascotas.project.services.interfaces.AdopcionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -20,7 +18,7 @@ import java.util.List;
 @Tag(name= "Adopciones", description = "Servicios relacionados a Adopciones")
 public class AdopcionController {
 
-    private AdopcionService adopcionService;
+    private final AdopcionService adopcionService;
 
     @PostMapping
     @Operation(

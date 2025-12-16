@@ -1,3 +1,4 @@
+import { useUsuario } from "../hooks/useUsuario";
 import { rutas } from "./api.rutas";
 import { useDelete, useGet, usePost, usePut } from "./reactQueryHooks";
 
@@ -39,11 +40,11 @@ export function useApiGetMascotasPorUsuario({ parametros, ...opciones }) {
     });
 }
 
-export function useApiPostRegistrarMascota({ ...opciones }) {
+export function useApiPostRegistrarMascota({ params ,...opciones }) {
     return usePost({
         nombreHook: "useApiPostRegistrarMascota",
         url: rutas.registrarMascota,
-        configuracion: { ...opciones, queriesToInvalidate: ['useApiGetMascotasPorUsuario', { idUsuario: 2 }] }
+        configuracion: { ...opciones, queriesToInvalidate: ['useApiGetMascotasPorUsuario', { idUsuario: params?.id }] }
     });
 }
 
@@ -55,11 +56,11 @@ export function useApiPutActualizarMascota({ ...opciones }) {
     });
 }
 
-export function useApiDeleteMascota({ ...opciones }) { 
+export function useApiDeleteMascota({ params, ...opciones}) { 
     return useDelete({
         nombreHook: "useApiDeleteMascota",
         url: rutas.mascotaPorId, 
-        configuracion: { ...opciones, queriesToInvalidate:['useApiGetMascotasPorUsuario', { idUsuario: 2 }] }
+        configuracion: { ...opciones, queriesToInvalidate:['useApiGetMascotasPorUsuario', { idUsuario: params?.id }] }
     });
 }
 // Adopciones
@@ -71,15 +72,13 @@ export function useApiGetAdopciones({ ...opciones }) {
     });
 }
 
-export function useApiPostCrearAdopcion({ body, ...opciones }) {
+export function useApiPostCrearAdopcion({ ...opciones }) {
     return usePost({
         nombreHook: "useApiPostCrearAdopcion",
         url: rutas.crearAdopcion,
-        body,
-        configuracion: { ...opciones }
+        configuracion: { ...opciones, queriesToInvalidate: ['useApiGetAdopciones'] }
     });
-}
-
+} 
 // Esto lo modifica solo la asociacion TODO
 export function useApiPutActualizarAdopcion({ parametros, ...opciones }) {
     return usePut({
@@ -91,15 +90,16 @@ export function useApiPutActualizarAdopcion({ parametros, ...opciones }) {
 }
 
 // Extravíos
-export function useApiGetExtravios({ ...opciones }) {
+export function useApiGetExtravios({ params,...opciones }) {
     return useGet({
         nombreHook: "useApiGetExtravios",
         url: rutas.extravios,
+        params,
         configuracion: { ...opciones }
     });
 }
 
-export function useApiGetExtraviosPorUsuario({ params, ...opciones }) {
+export function useApiGetExtraviosPorUsuario({ params, ...opciones }) { 
     return useGet({
         nombreHook: "useApiGetExtraviosPorUsuario",
         url: rutas.extraviosPorUsuario,
@@ -120,20 +120,30 @@ export function useApiPostExtravioFamiliar({ ...opciones }) {
     return usePost({
         nombreHook: "useApiPostExtravioFamiliar",
         url: rutas.extravioFamiliar,
-        configuracion: { ...opciones, queriesToInvalidate:['useApiGetExtravios'] }
+        configuracion: { queriesToInvalidate:['useApiGetExtravios'], ...opciones }
     });
 }
 
 export function useApiPostExtravioSinFamiliar({ ...opciones }) {
+    const { token } = useUsuario() 
     return usePost({
         nombreHook: "useApiPostExtravioSinFamiliar",
         url: rutas.extravioSinFamiliar,
-        configuracion: { ...opciones, queriesToInvalidate:['useApiGetExtravios'] }
+        configuracion: { ...opciones, token: token, queriesToInvalidate:['useApiGetExtravios'] }
+    });
+}
+
+export function useApiPutActualizarExtravio({ params, ...opciones }) {
+    return usePut({
+        nombreHook: "useApiPutActualizarExtravio",
+        url: rutas.extravioPorId,
+        params,
+        configuracion: { ...opciones, queriesToInvalidate:['useApiGetExtravios', 'useApiGetExtraviosPorUsuario'] }
     });
 }
 
 // Postulaciones
-export function useApiGetPostulacionPorId({ id, ...opciones }) {
+export function useApiGetPostulacionPorId({ ...opciones }) {
     return useGet({
         nombreHook: "useApiGetPostulacionPorId",
         url: rutas.listarPostulaciones,
@@ -150,6 +160,59 @@ export function useApiPostCrearPostulacion({ body, ...opciones }) {
     });
 }
 
+// AVISTAMIENTOS
+
+export function useApiGetAvistamientosPorExtravio({ params, ...opciones }) {
+    return useGet({
+        nombreHook: "useApiGetAvistamientosPorExtravio",
+        url: rutas.avistamientosPorExtravio,
+        params,
+        configuracion: { ...opciones }
+    });
+}
+
+export function useApiPostAvistamiento({ ...opciones }) {
+    return usePost({
+        nombreHook: "useApiPostAvistamiento",
+        url: rutas.avistamientos,
+        configuracion: { queriesToInvalidate:['useApiGetAvistamientosPorExtravio'], ...opciones }
+    });
+}
+
+// Favoritos
+export function useApiPostFavorito({ ...opciones }) {
+    return usePost({
+        nombreHook: "useApiPostFavorito",
+        url: rutas.extravioFavoritoPorUsuario,
+        configuracion: { queriesToInvalidate:['useApiGetFavoritos','useApiGetEsFavorito'], ...opciones }
+    });
+}
+
+export function useApiDeleteFavorito({ params, ...opciones }) {
+    return useDelete({
+        nombreHook: "useApiDeleteFavorito",
+        url: rutas.eliminarExtravioFavorito,
+        params,
+        configuracion: { queriesToInvalidate:['useApiGetFavoritos','useApiGetEsFavorito'], ...opciones }
+    });
+}
+export function useApiGetFavoritos({ params, ...opciones }) {
+    return useGet({
+        nombreHook: "useApiGetFavoritos",
+        params,
+        url: rutas.extraviosFavoritosPorUsuario,
+        configuracion: { ...opciones }
+    });
+}
+
+export function useApiGetEsFavorito({ params,...opciones }) { 
+    return useGet({
+        nombreHook: "useApiGetEsFavorito",
+        url: rutas.extravioEsFavorito,
+        params,
+        configuracion: { ...opciones }
+    });
+}
 
 // export function useApiGetTransporteLicenciaPorDominio({ parametros, ...opciones }) {
 //   return (useGet(

@@ -8,7 +8,7 @@ import CampoFecha from '../campos/campoFecha'
 
 export default function FechaStep({control}) {
     const theme = useTheme()
-    
+
     return (
         <View style={{gap:20}}>
             <View style={{alignItems: 'center', marginVertical: -50}}>
@@ -18,15 +18,18 @@ export default function FechaStep({control}) {
             <Text variant="titleLarge" style={{textAlign: 'center',color: theme.colors.primary }}>¿Cuándo ocurrió?</Text>
             <View style={{width:'100%',justifyContent:'center',alignContent:'center',gap:10}}>
                 <CampoFecha
-                    label="Fecha y hora del avistamiento"
+                    label="Fecha"
                     nombre="fecha"
                     control={control}
                     placeholder="Seleccione fecha y hora"
+                    disableFutureDates={true}
                 />
                 <CampoHora
                     control={control}
-                    label="Hora (HH:mm)"
+                    label="Hora"
                     nombre="hora"
+                    disableFutureTimes={true}
+                    dateFieldName="fecha"
                 />
             </View> 
         </View>

@@ -4,7 +4,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import mascotas.project.services.FirebaseAuthService;
+import lombok.AllArgsConstructor;
+import mascotas.project.services.interfaces.FireBaseAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,11 +19,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+@AllArgsConstructor
 @Component
 public class FirebaseAuthenticationFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private FirebaseAuthService firebaseAuthService;
+    private final FireBaseAuthService fireBaseAuthService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -35,7 +36,7 @@ public class FirebaseAuthenticationFilter extends OncePerRequestFilter {
             
             try {
                 // Obtener el token completo con los custom claims
-                FirebaseToken decodedToken = firebaseAuthService.getTokenInfo(token);
+                FirebaseToken decodedToken = fireBaseAuthService.getTokenInfo(token);
                 
                 if (decodedToken != null) {
                     String firebaseUid = decodedToken.getUid();

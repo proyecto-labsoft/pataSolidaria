@@ -11,7 +11,7 @@ export default function DescripcionVista({texto,tamanioTexto,containerStyle,text
     const theme = useTheme()
     return(
         <View style={{marginVertical:10,alignItems:'center',...containerStyle}}>
-            <Text variant={tamanioTexto ? tamanioTexto : "titleMedium"} style={{textAlign: 'center',color: theme.colors.secondary,...textStyle}}>{texto}</Text>
+            <Text variant={tamanioTexto ? tamanioTexto : "titleMedium"} style={{textAlign: 'center',color: theme.colors.primary,...textStyle}}>{texto}</Text>
         </View>
     )
 }

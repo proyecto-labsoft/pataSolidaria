@@ -22,6 +22,9 @@ import NuevoAvistamiento from "../pantallas/nuevoAvistamiento";
 import NuevoExtraviado from "../pantallas/nuevoExtraviado";
 import NuevoBuscado from "../pantallas/nuevoBuscado";
 import NuevoFamiliar from "../pantallas/nuevoFamiliar";
+import NuevaAdopcion from '../pantallas/nuevaAdopcion';
+import ConfirmarAdopcion from '../pantallas/confirmarAdopcion';
+import VistaAdopcion from '../pantallas/vistaAdopcion';
 
 const Stack = createNativeStackNavigator();
 
@@ -91,6 +94,9 @@ export default function AuthNavigator() {
             <Stack.Screen name="VistaExtravio" component={VistaExtravio} />
             <Stack.Screen name="NuevoAvistamiento" component={NuevoAvistamiento} />
             <Stack.Screen name="NuevoFamiliar" component={NuevoFamiliar} />
+            <Stack.Screen name="NuevaAdopcion" component={NuevaAdopcion} />
+            <Stack.Screen name="ConfirmarAdopcion" component={ConfirmarAdopcion} />
+            <Stack.Screen name="VistaAdopcion" component={VistaAdopcion} />
           </>
         ) : (
           // Usuario NO autenticado - Solo Login y Registro

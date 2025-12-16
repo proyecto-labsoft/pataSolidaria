@@ -1,4 +1,4 @@
-package mascotas.project.services;
+package mascotas.project.services.impl;
 
 
 import jakarta.transaction.Transactional;
@@ -10,45 +10,25 @@ import mascotas.project.dto.MascotaDTORequest;
 import mascotas.project.dto.MascotaDTOSaveSucces;
 import mascotas.project.entities.Mascota;
 import mascotas.project.exceptions.BadRequestException;
-import mascotas.project.exceptions.NotFoundException;
+import mascotas.project.exceptions.NoContentException;
 import mascotas.project.mapper.MascotaMapper;
 import mascotas.project.repositories.MascotaRepository;
+import mascotas.project.services.interfaces.MascotaService;
+import mascotas.project.services.interfaces.UsuarioService;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Slf4j
 @Service
 @AllArgsConstructor
-public class MascotaService {
+public class MascotaServiceImpl implements MascotaService {
 
-    private MascotaRepository mascotaRepository;
-    private UsuarioService usuarioService;
-    private MascotaMapper mascotaMapper;
+    private final MascotaRepository mascotaRepository;
+    private final UsuarioService usuarioService;
+    private final MascotaMapper mascotaMapper;
 
-    /**
-     * Valida que los campos obligatorios de la mascota no sean nulos
-     */
-    private void validateMascotaRequiredFields(MascotaDTORequest mascotaDTORequest) {
-        if (mascotaDTORequest.getNombre() == null || mascotaDTORequest.getNombre().trim().isEmpty()) {
-            throw new BadRequestException(ErrorsEnums.MASCOTA_NOMBRE_REQUIRED.getDescription());
-        }
-        if (mascotaDTORequest.getEspecie() == null || mascotaDTORequest.getEspecie().trim().isEmpty()) {
-            throw new BadRequestException(ErrorsEnums.MASCOTA_ESPECIE_REQUIRED.getDescription());
-        }
-        if (mascotaDTORequest.getRaza() == null || mascotaDTORequest.getRaza().trim().isEmpty()) {
-            throw new BadRequestException(ErrorsEnums.MASCOTA_RAZA_REQUIRED.getDescription());
-        }
-        if (mascotaDTORequest.getSexo() == null) {
-            throw new BadRequestException(ErrorsEnums.MASCOTA_SEXO_REQUIRED.getDescription());
-        }
-        if (mascotaDTORequest.getTamanio() == null) {
-            throw new BadRequestException(ErrorsEnums.MASCOTA_TAMANIO_REQUIRED.getDescription());
-        }
-        if (mascotaDTORequest.getFamiliarId() == null) {
-            throw new BadRequestException(ErrorsEnums.MASCOTA_FAMILIAR_REQUIRED.getDescription());
-        }
-    }
 
+    @Override
     @Transactional
     public MascotaDTOSaveSucces saveMascota(MascotaDTORequest mascotaDTORequest){
 
@@ -67,11 +47,14 @@ public class MascotaService {
                                    .build();
     }
 
+    @Override
     @Transactional
     public MascotaDTOSaveSucces saveMascotaSinFamiliar(MascotaDTORequest mascotaDTORequest){
 
         Mascota mascota = mascotaMapper.toAnonimousEntity(mascotaDTORequest);
         mascota = mascotaRepository.save(mascota);
+
+        log.info("SAVE_MASCOTA_SIN_FAMILIAR: mascota ID: {}", mascota.getId());
 
         return MascotaDTOSaveSucces.builder()
                 .id(mascota.getId())
@@ -79,6 +62,7 @@ public class MascotaService {
                 .build();
     }
 
+    @Override
     @Transactional
     public MascotaDTOSaveSucces putMascota(Long idMascota, MascotaDTORequest mascotaDTORequest){
 
@@ -100,6 +84,7 @@ public class MascotaService {
 
     }
 
+    @Override
     public MascotaDTODetail getMascotaById(Long id){
 
         Mascota mascota = this.getMascotaEntityById(id);
@@ -107,14 +92,15 @@ public class MascotaService {
         return mascotaMapper.toDTO(mascota);
     }
 
-
+    @Override
     public Mascota getMascotaEntityById(Long id){
 
         return mascotaRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorsEnums.MASCOTA_NOT_FOUND.getDescription() + id));
+                .orElseThrow(() -> new NoContentException(ErrorsEnums.MASCOTA_NOT_FOUND.getDescription() + id));
     }
 
 
+    @Override
     public List<MascotaDTODetail> getMascotasByFamiliarId(Long usuarioId){
 
         usuarioService.getUsuarioById(usuarioId);
@@ -125,6 +111,7 @@ public class MascotaService {
                                 .toList();
     }
 
+    @Override
     @Transactional
     public void deleteCompaniero(Long id) {
         this.getMascotaEntityById(id);
@@ -132,7 +119,29 @@ public class MascotaService {
     }
 
 
-    //implementar servicio para declarar a la mascota perdida
+
+    ///  METODOS HELPERS ///
+
+    private void validateMascotaRequiredFields(MascotaDTORequest mascotaDTORequest) {
+        if (mascotaDTORequest.getNombre() == null || mascotaDTORequest.getNombre().trim().isEmpty()) {
+            throw new BadRequestException(ErrorsEnums.MASCOTA_NOMBRE_REQUIRED.getDescription());
+        }
+        if (mascotaDTORequest.getEspecie() == null || mascotaDTORequest.getEspecie().trim().isEmpty()) {
+            throw new BadRequestException(ErrorsEnums.MASCOTA_ESPECIE_REQUIRED.getDescription());
+        }
+        if (mascotaDTORequest.getRaza() == null || mascotaDTORequest.getRaza().trim().isEmpty()) {
+            throw new BadRequestException(ErrorsEnums.MASCOTA_RAZA_REQUIRED.getDescription());
+        }
+        if (mascotaDTORequest.getSexo() == null) {
+            throw new BadRequestException(ErrorsEnums.MASCOTA_SEXO_REQUIRED.getDescription());
+        }
+        if (mascotaDTORequest.getTamanio() == null) {
+            throw new BadRequestException(ErrorsEnums.MASCOTA_TAMANIO_REQUIRED.getDescription());
+        }
+        if (mascotaDTORequest.getFamiliarId() == null) {
+            throw new BadRequestException(ErrorsEnums.MASCOTA_FAMILIAR_REQUIRED.getDescription());
+        }
+    }
 
 
 

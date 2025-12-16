@@ -1,4 +1,4 @@
-package mascotas.project.services;
+package mascotas.project.services.impl;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -11,11 +11,15 @@ import mascotas.project.dto.UsuarioDTO;
 import mascotas.project.entities.Extravio;
 import mascotas.project.entities.Mascota;
 import mascotas.project.exceptions.ForbiddenException;
-import mascotas.project.exceptions.NotFoundException;
+import mascotas.project.exceptions.NoContentException;
 import mascotas.project.mapper.ExtravioMapper;
 import mascotas.project.repositories.ExtravioRepository;
+import mascotas.project.services.interfaces.ExtravioService;
+import mascotas.project.services.interfaces.MascotaService;
+import mascotas.project.services.interfaces.UsuarioService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,14 +30,15 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @AllArgsConstructor
-public class ExtravioService {
+public class ExtravioServiceImpl implements ExtravioService {
 
-    private UsuarioService usuarioService;
-    private MascotaService mascotaService;
-    private ExtravioMapper extravioMapper;
-    private ExtravioRepository extravioRepository;
+    private final UsuarioService usuarioService;
+    private final MascotaService mascotaService;
+    private final ExtravioMapper extravioMapper;
+    private final ExtravioRepository extravioRepository;
     private FirebaseNotificationService notificationService;
 
+    @Override
     @Transactional
     public void saveExtravio(ExtravioRequestDTO extravioDto, Boolean animalAnonimo) {
 
@@ -57,6 +62,7 @@ public class ExtravioService {
                 );
     }
 
+    @Override
     public List<ExtravioDetailDTO> getAllExtraviosByUsuario(Long  usuarioId, Boolean resueltos){
 
         usuarioService.getUsuarioById(usuarioId);
@@ -68,15 +74,20 @@ public class ExtravioService {
         return setMascotaDetailToExtravioDtoList(extraviosDtos);
     }
 
+    @Override
     public List<ExtravioDetailDTO> getAllExtravios(Boolean resueltos) {
 
-        List<ExtravioDetailDTO> extraviosDtos = Optional.ofNullable(resueltos)
+        List<ExtravioDetailDTO> extraviosDtos = Optional.of(resueltos)
                                                .map(extravioRepository::findAllByResuelto)
-                                               .orElseGet(extravioRepository::findAllWithMascota);
+                                                .orElseThrow(
+                                                        ()-> new NoContentException(ErrorsEnums.NO_CONTENT_ERROR.getDescription())
+                                                );
+
 
         return setMascotaDetailToExtravioDtoList(extraviosDtos);
     }
 
+    @Override
     @Transactional
     public Extravio putExtravio( Long extravioId , ExtravioRequestDTO extravioRequest){
 
@@ -126,7 +137,7 @@ public class ExtravioService {
         return savedExtravio;
     }
 
-
+    @Override
     @Transactional
     public void deleteExtravio( Long extravioId, Long usuarioId){
 
@@ -139,16 +150,14 @@ public class ExtravioService {
         extravioRepository.delete(extravio);
     }
 
-    private Boolean isCreador(Extravio extravio, Long usuarioId){
-        return extravio.getCreador().equals(usuarioId);
-    }
 
+    @Override
     public Extravio getExtravioEntityById(Long id){
         return extravioRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorsEnums.EXTRAVIO_NOT_FOUND_ERROR.getDescription() + id));
+                .orElseThrow(() -> new NoContentException(ErrorsEnums.EXTRAVIO_NOT_FOUND_ERROR.getDescription() + id));
     }
 
-
+    @Override
     public PerdidoDTO getExtravioByMascotaId(Long mascotaId){
 
         mascotaService.getMascotaEntityById(mascotaId);
@@ -156,15 +165,44 @@ public class ExtravioService {
 
         if (extravio.isPresent()){
             return PerdidoDTO.builder()
-                    .extravioId(extravio.get().getId())
+                    .extravio(extravioMapper.toDtoResponse(extravio.get()))
                     .estaExtraviado(Boolean.TRUE).build();
         }
 
         return  PerdidoDTO.builder()
-                .extravioId(null)
+                .extravio(null)
                 .estaExtraviado(Boolean.FALSE).build();
     }
 
+    @Override
+    public List<ExtravioDetailDTO> getAllExtraviosByIds(List<Long> extraviosIds){
+
+        List<Extravio> extravios = Optional.of( extravioRepository.findAllByIdInOrderByUltimoAvistamientoDesc(extraviosIds) )
+                                                                .filter( exts -> !exts.isEmpty() )
+                                                                .orElseThrow(
+                                                                        () -> new NoContentException(ErrorsEnums.NO_CONTENT_ERROR.getDescription())
+                                                                );
+
+        List<ExtravioDetailDTO> extraviosDetail = extravioMapper.toExtravioDetailDTOList(extravios);
+
+        return this.setMascotaDetailToExtravioDtoList(extraviosDetail);
+
+    }
+
+
+    @Override
+    public Extravio setUltimoAvistamiento(Extravio extravio, LocalDateTime ultimoAvistamiento) {
+
+        extravio.setUltimoAvistamiento(ultimoAvistamiento);
+
+        Extravio ext = extravioRepository.save(extravio);
+
+        log.info("SAVE_EXTRAVIO : publicador ID:{} ; mascota ID:{} ; idExtravio:{} ; ultimo_avistamiento:{}", ext.getCreador(), ext.getMascota(), extravio.getId(), ext.getUltimoAvistamiento());
+
+        return ext;
+    }
+
+    ///  METODOS HELPERS ///
 
     private List<ExtravioDetailDTO> setMascotaDetailToExtravioDtoList(List<ExtravioDetailDTO> extravioDtos){
 
@@ -175,6 +213,10 @@ public class ExtravioService {
                             })
                             .collect(Collectors.toList());
 
+    }
+
+    private Boolean isCreador(Extravio extravio, Long usuarioId){
+        return extravio.getCreador().equals(usuarioId);
     }
 
 }

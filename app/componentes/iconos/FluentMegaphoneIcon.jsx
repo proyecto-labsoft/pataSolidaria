@@ -2,11 +2,12 @@ import React from 'react';
 import { Svg, Path } from 'react-native-svg';
 import PropTypes from 'prop-types';
 
-const FluentMegaphoneIcon = ({ width = 24, height = 24, color = '#000000' }) => {
+const FluentMegaphoneIcon = ({ width = 24, height = 24, color = '#000000', styles}) => {
   return (
     <Svg
       width={width}
       height={height}
+      style={{ ...styles }}
       viewBox="0 0 16 16"
       preserveAspectRatio="xMidYMid meet"
     >

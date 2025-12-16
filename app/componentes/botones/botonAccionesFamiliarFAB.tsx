@@ -6,6 +6,8 @@ interface Props {
     onEditarDatos: () => void;
     onEliminarFamiliar: () => void;
     onDeclaraPerdido: () => void;
+    casoResuelto: boolean;
+    onResolverCaso: () => void;
     showButton?: boolean;
 }
 
@@ -13,8 +15,10 @@ export default function BotonAccionesFamiliarFAB({
     onEditarDatos, 
     onEliminarFamiliar, 
     onDeclaraPerdido,
+    casoResuelto,
+    onResolverCaso,
     showButton = true 
-}: Props) {
+}: Props) { 
     const theme = useTheme();
     const [state, setState] = useState({ open: false });
 
@@ -31,12 +35,12 @@ export default function BotonAccionesFamiliarFAB({
                 color="white"
                 actions={[
                     {
-                        icon: 'alert-octagon',
-                        style: { ...styles.fabItem, backgroundColor: theme.colors.secondaryContainer },
-                        label: 'Declarar perdido',
+                        icon: casoResuelto ? 'check-circle' : 'alert-octagon',
+                        style: { ...styles.fabItem, backgroundColor: casoResuelto ? theme.colors.primary : theme.colors.secondaryContainer },
+                        label: casoResuelto ? 'Resolver caso' : 'Declarar perdido',
                         labelStyle: { ...styles.labelFab },
-                        color: theme.colors.onSecondaryContainer,
-                        onPress: onDeclaraPerdido,
+                        color: casoResuelto ? theme.colors.onPrimary : theme.colors.onSecondaryContainer,
+                        onPress: () => !!casoResuelto ? onResolverCaso() : onDeclaraPerdido(),
                     },
                     {
                         icon: 'delete',

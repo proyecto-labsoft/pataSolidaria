@@ -10,12 +10,17 @@ import ConfirmacionStep from './confirmacionStep'
 import AspectoStep from './aspectoStep'
 import { useApiPostExtravioSinFamiliar } from '@/app/api/hooks' 
 import { obtenerValorSexo, obtenerValorTamanio } from '@/app/utiles/obtenerValorEnum'
+import { useUsuario } from '@/app/hooks/useUsuario'
+import { CameraModal } from '../../CameraModal'
+import { formatearFechaBuenosAires, formatearHoraBuenosAires } from '@/app/utiles/fechaHoraBuenosAires'
 
 export default function FormularioNuevoExtravio() {
     const theme = useTheme() 
     const [visible,setVisible] = useState(false)
     const [successMensaje,setSuccessMensaje] = useState(false)
     const [currentStep, setCurrentStep] = useState(1)
+    const [showCamera, setShowCamera] = useState(true)
+    const [capturedPhoto, setCapturedPhoto] = useState<string | null>(null)
     const navigation = useNavigation()
 
     // Valores animados para cada paso y línea
@@ -32,13 +37,25 @@ export default function FormularioNuevoExtravio() {
         new Animated.Value(0), // Línea 3-4
     ]).current
 
-    const { mutateAsync: declararExtraviado } = useApiPostExtravioSinFamiliar({ 
+    const { mutateAsync: declararExtraviado, isPending: isPendingDeclararExtraviado } = useApiPostExtravioSinFamiliar({ 
         onSuccess: () => {setSuccessMensaje(true);setVisible(false)},
     });
-    const { control, handleSubmit, formState: {errors}, watch } = useForm();
+    
+    // Obtener fecha y hora actual de Buenos Aires para valores por defecto
+    const defaultFecha = formatearFechaBuenosAires();
+    const defaultHora = formatearHoraBuenosAires();
+    
+    const { control, handleSubmit, formState: {errors}, watch } = useForm({
+        defaultValues: {
+            fecha: defaultFecha,
+            hora: defaultHora
+        }
+    });
 
     const watchedValues = watch(); // Para mostrar valores en confirmación
 
+    const { usuarioId } = useUsuario()
+    
     // Efecto para animar los cambios de paso
     useEffect(() => {
         // Animar círculos de pasos
@@ -63,22 +80,31 @@ export default function FormularioNuevoExtravio() {
     }, [currentStep, stepAnimations, lineAnimations])
     
     const onSubmit = (formData: any) => { 
-        const fechaHora = `${formData?.fecha} ${formData?.hora}:00`;
+        const fechaHora = `${formData?.fecha} ${formData?.hora}:00`; 
+
         declararExtraviado({ data: {
             datosExtravio: { 
-                "creador": 2,
+                "creador": usuarioId,
+                "zona": 'Zona',
+                "mascotaId": null,
+                "observacion": 'sin observacion',
                 "hora": fechaHora,
-                "resuelto": false,
                 "latitud": formData?.latitud,
                 "longitud": formData?.longitud,
                 "direccion": formData?.ubicacion
             },
             datosMascota: {
-                "especie": formData?.especie,
-                "raza": formData?.raza,
-                "color": formData?.color,
-                "sexo": obtenerValorSexo(formData?.sexo),
-                "tamanio": obtenerValorTamanio(formData?.tamanio),
+                "familiar": null,
+                "nombre": null,
+                "esterilizado": null,
+                "chipeado": null,
+                "fechaNacimiento": null,
+                "descripcion": formData?.descripcion || null,
+                "especie": formData?.especie || null,
+                "raza": formData?.raza || null,
+                "color": formData?.color || null,
+                "sexo": obtenerValorSexo(formData?.sexo) || null,
+                "tamanio": obtenerValorTamanio(formData?.tamanio) || null,
             } 
         }
         })
@@ -95,10 +121,23 @@ export default function FormularioNuevoExtravio() {
             setCurrentStep(currentStep - 1)
         }
     }
+    
+    const handleTakePicture = (photoBase64: string) => {
+        setCapturedPhoto(photoBase64);
+        // Cerrar la cámara para mostrar los pasos del formulario
+        setShowCamera(false);
+    }
+
+    const handleCloseCamera = useCallback(() => {
+        setShowCamera(false);
+        if (!capturedPhoto) {
+            navigation.goBack();
+        }
+    }, [capturedPhoto])
 
     const renderStep = useCallback(() => {
         switch (currentStep) {
-            case 1:
+            case 1: 
                 return <UbicacionStep control={control} />
             case 2:
                 return <FechaStep control={control} />
@@ -140,7 +179,7 @@ export default function FormularioNuevoExtravio() {
             ) : (
                 <Button  
                     icon="close"
-                    buttonColor={theme.colors.secondary} 
+                    buttonColor={theme.colors.error} 
                     style={{
                         borderRadius: 28,
                         elevation: 4,
@@ -149,7 +188,7 @@ export default function FormularioNuevoExtravio() {
                         shadowOpacity: 0.25,
                         shadowRadius: 3.84,
                     }} 
-                    contentStyle={{ height: 56, paddingHorizontal: 16 }}
+                    contentStyle={{  paddingHorizontal: 16 }}
                     mode="contained" 
                     onPress={() => navigation.goBack()}
                 >
@@ -169,7 +208,7 @@ export default function FormularioNuevoExtravio() {
                         shadowOpacity: 0.25,
                         shadowRadius: 3.84,
                     }} 
-                    contentStyle={{ height: 56, paddingHorizontal: 16, flexDirection: 'row-reverse' }}
+                    contentStyle={{ paddingHorizontal: 16, flexDirection: 'row-reverse' }}
                     mode="contained" 
                     onPress={nextStep}
                 >
@@ -250,38 +289,58 @@ export default function FormularioNuevoExtravio() {
 
     // TODO: Post del nuevo caso de busqueda
     return(
-        <KeyboardAvoidingView 
-            style={{flex: 1}} 
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={100}
-        >
-            <ScrollView 
-                style={{flex: 1}} 
-                contentContainerStyle={{flexGrow: 1}}
-                keyboardShouldPersistTaps="handled"
-            >
-                <View style={{flex: 1, gap:20}}>
-                    <Portal>
-                        {successMensaje && (<BackdropSuccess texto="Nueva extravío confirmado" onTap={() => navigation.navigate('Home')}/>)}
-                        <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={{...styles.containerStyle,backgroundColor:theme.colors.surface}}>
-                            <Text style={{textAlign: 'center'}}>Al reportar el extravío compartirá sus datos de contacto con los demás usuarios para que se comuniquen con usted.</Text>
-                            <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={handleSubmit(onSubmit)}>
-                                <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Confirmar extravío</Text>
-                            </Button>
-                        </Modal>
-                    </Portal>
-                    
-                    <View style={{flex: 1}}>
-                        {renderProgressIndicator()}
-                        {renderStep()}
-                    </View>
-                    
-                    <View style={styles.fixedButtonContainer}>
-                        {renderNavigationButtons()}
-                    </View>
-                </View>
-            </ScrollView>
-        </KeyboardAvoidingView>
+        <>
+            {/* Modal de cámara - Se muestra antes del formulario */}
+            <CameraModal
+                visible={showCamera}
+                onClose={() => handleCloseCamera()}
+                onTakePicture={handleTakePicture}
+                showPreview={true}
+            />
+            
+            {/* Formulario de pasos - Solo se muestra después de tomar la foto */}
+            {!showCamera && (
+                <KeyboardAvoidingView 
+                    style={{flex: 1}} 
+                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                    keyboardVerticalOffset={100}
+                >
+                    <ScrollView 
+                        style={{flex: 1}} 
+                        contentContainerStyle={{flexGrow: 1}}
+                        keyboardShouldPersistTaps="handled"
+                    >
+                        <View style={{flex: 1, gap:20}}>
+                            <Portal>
+                                {successMensaje && (<BackdropSuccess texto="Nueva extravío confirmado" onTap={() => navigation.navigate('Home')}/>)}
+                                <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={{...styles.containerStyle,backgroundColor:theme.colors.surface}}>
+                                    <Text variant="titleMedium" style={{textAlign: 'center'}}>Al reportar el extravío compartirá sus datos de contacto con los demás usuarios para que se comuniquen con usted.</Text>
+                                    <View style={{ flexDirection: 'row', display: 'flex', width: '100%', justifyContent: 'space-between' }}>
+                                
+                                    <Button buttonColor={theme.colors.error} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={() => setVisible(false)}>
+                                        <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Cancelar</Text>
+                                    </Button>
+
+                                    <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={handleSubmit(onSubmit)} loading={isPendingDeclararExtraviado} disabled={isPendingDeclararExtraviado}>
+                                        <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Confirmar</Text>
+                                    </Button>
+                                    </View>
+                                </Modal>
+                            </Portal>
+                            
+                            <View style={{flex: 1}}>
+                                {renderProgressIndicator()}
+                                {renderStep()}
+                            </View>
+                            
+                            <View style={styles.fixedButtonContainer}>
+                                {renderNavigationButtons()}
+                            </View>
+                        </View>
+                    </ScrollView>
+                </KeyboardAvoidingView>
+            )}
+        </>
     )
 }
 

@@ -46,7 +46,13 @@ export const rutas = {
   extravioSinFamiliar: `${URL_API}/extravios/sin-familiar`,
   extraviosPorUsuario: `${URL_API}/extravios/user/{id}`, // GET
   extraviosPorMascota: `${URL_API}/extravios/mascota/{id}`, // GET
+  extravioPorId: `${URL_API}/extravios/{id}`, // GET, PUT, DELETE
   
+  extravioFavoritoPorUsuario: `${URL_API}/extravios/favoritos`, 
+  extraviosFavoritosPorUsuario: `${URL_API}/extravios/favoritos/user/{id}`, 
+  extravioEsFavorito: `${URL_API}/extravios/es-favorito`, 
+  eliminarExtravioFavorito: `${URL_API}/extravios/favoritos/{id}`, 
+
   mascotaPorId: `${URL_API}/mascotas/{id}`, // GET, PUT, DELETE
   registrarMascota: `${URL_API}/mascotas`, // POST
   mascotasPorUsuario: `${URL_API}/mascotas/user/{idUsuario}`, // GET
@@ -59,6 +65,9 @@ export const rutas = {
 
   listarPostulaciones: `${URL_API}/postulaciones`,
   crearPostulacion: `${URL_API}/postulaciones`,
+
+  avistamientos: `${URL_API}/avistamientos`, 
+  avistamientosPorExtravio: `${URL_API}/avistamientos/extravio/{id}`, 
   
   // novedadesPorLicenciaCumplidas: `${URL_API}/novedades/{tipo}/{agencia}/{nroLicencia}?cumplidas=true`,
   // novedadesPorLicenciaNoCumplidas: `${URL_API}/novedades/{tipo}/{agencia}/{nroLicencia}?cumplidas=false`,

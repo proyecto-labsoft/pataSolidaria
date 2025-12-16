@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import mascotas.project.dto.AvistamientoDetailDTO;
 import mascotas.project.dto.AvistamientoRequestDTO;
 import mascotas.project.entities.Avistamiento;
-import mascotas.project.services.AvistamientoService;
+import mascotas.project.services.interfaces.AvistamientoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

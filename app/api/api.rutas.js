@@ -14,7 +14,7 @@
 // const URL_API = "http://192.168.1.127:8083"
 // const URL_API = "http://192.168.1.14:8083"  // eze
 // const URL_API = "http://192.168.49.54"; // muni eze
-const URL_API = "https://patasolidaria-production.up.railway.app/"; // Producción
+const URL_API = "https://patasolidaria-production.up.railway.app"; // Producción
 
 /**
  * URL base de la API - Exportada para uso en otros módulos

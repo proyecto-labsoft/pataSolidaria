@@ -18,17 +18,17 @@ CREATE TABLE IF NOT EXISTS usuario (
 -- Crear tabla companiero (mascota)
 CREATE TABLE IF NOT EXISTS companiero (
     id BIGINT DEFAULT nextval('companiero_id_seq') PRIMARY KEY,
-    nombre VARCHAR(255) NOT NULL,
-    especie VARCHAR(255) NOT NULL,
-    raza VARCHAR(255) NOT NULL,
-    sexo CHAR(1) NOT NULL,
+    nombre VARCHAR(255),
+    especie VARCHAR(255),
+    raza VARCHAR(255),
+    sexo CHAR(1),
     color VARCHAR(255),
     descripicon VARCHAR(255),
     f_naciemiento DATE,
     esterilizado BOOLEAN,
     chipeado BOOLEAN,
-    tamanio VARCHAR(255) NOT NULL,
-    familiar BIGINT NOT NULL REFERENCES usuario(id)
+    tamanio VARCHAR(255),
+    familiar BIGINT REFERENCES usuario(id)
 );
 
 -- Crear tabla adopcion

@@ -206,6 +206,7 @@ export default function Notificaciones() {
       {/* {isAdmin && ( */}
         <FAB
           icon="send"
+          color="white"
           style={[styles.fab, { backgroundColor: theme.colors.primary }]}
           onPress={() => navigation.navigate('AdminNotificaciones' as never)}
         />

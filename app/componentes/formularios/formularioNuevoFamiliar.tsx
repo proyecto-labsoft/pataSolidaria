@@ -12,7 +12,7 @@ import CampoCheckbox from './campos/campoCheckbox'
 import CampoFecha from './campos/campoFecha'
 import { useApiPostRegistrarMascota } from '@/app/api/hooks'
 import { useUsuario } from '@/app/hooks/useUsuario'
-import { ImageManager } from '../imagenes'
+import { ImageGallery } from '../imagenes'
 
 export default function FormularioNuevoFamiliar() {
     
@@ -200,19 +200,22 @@ export default function FormularioNuevoFamiliar() {
                                 ✅ Familiar creado
                             </Text>
                             <Text variant="bodyMedium" style={{ textAlign: 'center', marginBottom: 16 }}>
-                                Ahora puedes agregar fotos (opcional)
+                                Ahora puedes gestionar las fotos con el botón flotante
                             </Text>
                         </Card.Content>
                     </Card>
 
-                    {/* Gestor de imágenes */}
-                    <ImageManager
-                        entityType="mascotas"
-                        entityId={familiarCreado}
-                        maxImages={5}
-                        editable={true}
-                        showUploader={true}
-                    />
+                    {/* Galería de imágenes con FAB integrado */}
+                    <Card style={{ marginVertical: 16 }}>
+                        <Card.Content>
+                            <ImageGallery
+                                entityType="mascotas"
+                                entityId={familiarCreado}
+                                maxImages={5}
+                                editable={true}
+                            />
+                        </Card.Content>
+                    </Card>
 
                     {/* Botones finales */}
                     <View style={{ flexDirection:'row', justifyContent:'space-evenly', width: '100%', marginTop: 16}}>

@@ -1,12 +1,11 @@
 import { View, ScrollView, Dimensions } from 'react-native'
 import React, { useMemo, useEffect, useState} from 'react'
-import {Divider, Portal, Text, Modal, Button, TextInput, useTheme } from 'react-native-paper'
+import {Divider, Portal, Text, Modal, Button, TextInput, useTheme, Chip } from 'react-native-paper'
 import FormularioEditarFamiliar from '../componentes/formularios/formularioEditarFamiliar';
 import BotonAccionesFamiliarFAB from '../componentes/botones/botonAccionesFamiliarFAB';
 import ItemDato from '../componentes/itemDato';
 import AppbarNav from '../componentes/navegacion/appbarNav';
 import BannerEstadoExtravio from '../componentes/bannerEstadoExtravio';
-import { TakePictureBtn } from '../componentes/TakePictureBtn';
 import { useRoute, useIsFocused } from '@react-navigation/native';
 import { useApiDeleteMascota, useApiGetExtravioPorMascota, useApiGetMascotaPorId, useApiPostExtravioFamiliar, useApiPutActualizarExtravio, useApiPutActualizarMascota } from '../api/hooks';
 import BackdropSuccess from '../componentes/backdropSuccess'; 
@@ -113,7 +112,6 @@ export default function VistaFamiliar() {
   }
   
   const {width} = Dimensions.get('screen')
-  const [foto, setFoto] = useState<string | null>('https://static.fundacion-affinity.org/cdn/farfuture/PVbbIC-0M9y4fPbbCsdvAD8bcjjtbFc0NSP3lRwlWcE/mtime:1643275542/sites/default/files/los-10-sonidos-principales-del-perro.jpg');
   
   return (
       <View style={{height: '100%',width:width,alignItems:'center'}}>      
@@ -186,7 +184,7 @@ export default function VistaFamiliar() {
           <ImageGallery
             entityType="mascotas"
             entityId={familiarId}
-            editable={modoEdicion}
+            editable={!modoEdicion}
           />
           
           {perdido && (
@@ -209,7 +207,6 @@ export default function VistaFamiliar() {
             </Chip>
           )}
           
-          {modoEdicion && <TakePictureBtn setImagen={setFoto} />}
           <View style={{gap: 20,paddingVertical:40,alignItems: "center"}} >
           {!modoEdicion ? 
           (  

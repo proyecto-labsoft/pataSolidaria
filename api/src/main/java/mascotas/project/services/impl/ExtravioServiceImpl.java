@@ -14,13 +14,14 @@ import mascotas.project.exceptions.ForbiddenException;
 import mascotas.project.exceptions.NoContentException;
 import mascotas.project.mapper.ExtravioMapper;
 import mascotas.project.repositories.ExtravioRepository;
+import mascotas.project.repositories.UsuarioRepository;
 import mascotas.project.services.interfaces.ExtravioService;
+import mascotas.project.services.interfaces.FireBaseNotificationService;
 import mascotas.project.services.interfaces.MascotaService;
 import mascotas.project.services.interfaces.UsuarioService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +37,8 @@ public class ExtravioServiceImpl implements ExtravioService {
     private final MascotaService mascotaService;
     private final ExtravioMapper extravioMapper;
     private final ExtravioRepository extravioRepository;
-    private FirebaseNotificationService notificationService;
+    private final FireBaseNotificationService fireBaseNotificationService;
+    private final UsuarioRepository usuarioRepository;
 
     @Override
     @Transactional
@@ -102,32 +104,41 @@ public class ExtravioServiceImpl implements ExtravioService {
         // Verificar si se está marcando como resuelto
         boolean estaMarcandoComoResuelto = !extravio.getResuelto() && extravioRequest.getResuelto();
 
-        extravio = extravioMapper.putToEntity(extravioRequest, extravioId);
+        extravio = extravioMapper.putToEntity(extravioRequest, extravioId, extravio.getCreadoByFamiliar());
         Extravio savedExtravio = extravioRepository.save(extravio);
 
         // Enviar notificación si se marcó como encontrado
         if (estaMarcandoComoResuelto) {
             try {
-                var duenioEntity = usuarioService.findByFirebaseUid(usuario.getFirebaseUid());
+                // Obtener la entidad Usuario completa por ID usando el repositorio
+                var usuarioEntity = usuarioRepository.findById(usuario.getId()).orElse(null);
                 
-                if (duenioEntity != null && duenioEntity.getPushToken() != null && 
-                    duenioEntity.getNotificacionesHabilitadas()) {
+                if (usuarioEntity != null && usuarioEntity.getPushToken() != null && 
+                    usuarioEntity.getNotificacionesHabilitadas()) {
                     
-                    String nombreMascota = savedExtravio.getMascota() != null ? 
-                        savedExtravio.getMascota().getNombre() : "tu mascota";
+                    // Obtener la mascota completa (getMascota() retorna Long, no Mascota)
+                    Mascota mascotaEntity = mascotaService.getMascotaEntityById(savedExtravio.getMascota());
+                    String nombreMascota = mascotaEntity != null ? mascotaEntity.getNombre() : "tu mascota";
                     
                     Map<String, String> data = new HashMap<>();
                     data.put("type", "extravio_encontrado");
                     data.put("extravioId", savedExtravio.getId().toString());
                     
-                    notificationService.sendNotification(
-                        duenioEntity.getPushToken(),
-                        "🎉 ¡" + nombreMascota + " fue encontrad" + (savedExtravio.getMascota() != null && "Hembra".equalsIgnoreCase(savedExtravio.getMascota().getSexo()) ? "a" : "o") + "!",
+                    // Determinar el género para el mensaje
+                    String genero = "o"; // Por defecto masculino
+                    if (mascotaEntity != null && mascotaEntity.getSexo() != null && 
+                        "H".equalsIgnoreCase(mascotaEntity.getSexo().toString())) {
+                        genero = "a";
+                    }
+                    
+                    fireBaseNotificationService.sendNotification(
+                        usuarioEntity.getPushToken(),
+                        "🎉 ¡" + nombreMascota + " fue encontrad" + genero + "!",
                         "El caso de extravio ha sido marcado como resuelto. ¡Felicitaciones!",
                         data
                     );
                     
-                    log.info("🔔 Notificación de extravio resuelto enviada al usuario: {}", duenioEntity.getEmail());
+                    log.info("🔔 Notificación de extravio resuelto enviada al usuario: {}", usuarioEntity.getEmail());
                 }
             } catch (Exception e) {
                 log.error("❌ Error al enviar notificación de extravio resuelto: {}", e.getMessage());

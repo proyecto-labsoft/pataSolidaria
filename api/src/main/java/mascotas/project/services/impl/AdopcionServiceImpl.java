@@ -13,6 +13,7 @@ import mascotas.project.exceptions.NoContentException;
 import mascotas.project.mapper.AdopcionMapper;
 import mascotas.project.repositories.AdopocionRepository;
 import mascotas.project.services.interfaces.AdopcionService;
+import mascotas.project.services.interfaces.FireBaseNotificationService;
 import mascotas.project.services.interfaces.MascotaService;
 import org.springframework.stereotype.Service;
 import java.util.HashMap;
@@ -29,7 +30,7 @@ public class AdopcionServiceImpl implements AdopcionService {
     private AdopocionRepository adopcionRepository;
     private AdopcionMapper adopcionMapper;
     private MascotaService mascotaService;
-    private FirebaseNotificationService notificationService;
+    private FireBaseNotificationService notificationService;
 
     @Override
     @Transactional
@@ -54,7 +55,7 @@ public class AdopcionServiceImpl implements AdopcionService {
                     .map(adopcion -> {
                         // Enviar notificación al topic de adopciones
                         try {
-                            Mascota mascota = mascotaService.getMascotaEntityById(adopcion.getMascota());
+                            Mascota mascota = mascotaService.getMascotaEntityById(adopcion.getMascota().getId());
                             
                             Map<String, String> data = new HashMap<>();
                             data.put("type", "adopcion");

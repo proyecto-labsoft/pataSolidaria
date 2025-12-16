@@ -4,12 +4,16 @@ import mascotas.project.dto.UsuarioDTO;
 import mascotas.project.entities.Usuario;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public interface UsuarioService {
 
     UsuarioDTO getUsuarioById(Long idUsuario);
 
     UsuarioDTO createUsuario(UsuarioDTO usuarioDTO);
+
+    Usuario findById(Long idUsuario);
 
     Usuario findByFirebaseUid(String firebaseUid);
 
@@ -32,4 +36,6 @@ public interface UsuarioService {
     boolean isAdmin(String firebaseUid);
 
     void setAdminRole(String firebaseUid, boolean isAdmin);
+
+    List<Usuario> findAllWithNotificationsEnabled();
 }

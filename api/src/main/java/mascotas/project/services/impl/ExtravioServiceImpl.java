@@ -37,7 +37,7 @@ public class ExtravioServiceImpl implements ExtravioService {
     private final MascotaService mascotaService;
     private final ExtravioMapper extravioMapper;
     private final ExtravioRepository extravioRepository;
-    private final FireBaseNotificationService notificationService;
+    private final FireBaseNotificationService fireBaseNotificationService;
     private final UsuarioRepository usuarioRepository;
 
     @Override
@@ -131,7 +131,7 @@ public class ExtravioServiceImpl implements ExtravioService {
                         genero = "a";
                     }
                     
-                    notificationService.sendNotification(
+                    fireBaseNotificationService.sendNotification(
                         usuarioEntity.getPushToken(),
                         "🎉 ¡" + nombreMascota + " fue encontrad" + genero + "!",
                         "El caso de extravio ha sido marcado como resuelto. ¡Felicitaciones!",

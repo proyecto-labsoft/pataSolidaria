@@ -41,7 +41,7 @@ public class FirebaseConfig {
      * si no existe, usa el archivo firebase-service-account.json del classpath.
      */
     private InputStream getServiceAccountStream() throws IOException {
-        String firebaseCredentials = System.getenv("FIREBASE_SERVICE_ACCOUNT");
+        String firebaseCredentials = System.getenv("firebase.config.json");
         
         if (firebaseCredentials != null && !firebaseCredentials.isEmpty()) {
             System.out.println("✅ Usando credenciales de Firebase desde variable de entorno FIREBASE_SERVICE_ACCOUNT");

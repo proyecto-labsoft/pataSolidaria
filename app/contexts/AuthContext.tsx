@@ -29,6 +29,7 @@ interface AuthContextType {
   loading: boolean;
   pushToken: string | null;
   userProfile: UserProfile | null;
+  isAdmin: boolean;
   register: (email: string, password: string, displayName: string) => Promise<any>;
   login: (email: string, password: string) => Promise<any>;
   logout: () => Promise<any>;
@@ -44,6 +45,7 @@ const AuthContext = createContext<AuthContextType>({
   loading: true,
   pushToken: null,
   userProfile: null,
+  isAdmin: false,
   register: async () => ({ success: false }),
   login: async () => ({ success: false }),
   logout: async () => ({ success: false }),
@@ -65,6 +67,30 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [pushToken, setPushToken] = useState<string | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+
+  /**
+   * Verifica el rol del usuario desde los custom claims de Firebase
+   */
+  useEffect(() => {
+    const checkAdminRole = async () => {
+      if (user) {
+        try {
+          const tokenResult = await user.getIdTokenResult(true);
+          const rol = tokenResult.claims.rol;
+          setIsAdmin(rol === 'admin');
+          console.log('👑 Rol del usuario:', rol, '| isAdmin:', rol === 'admin');
+        } catch (error) {
+          console.error('❌ Error al verificar rol:', error);
+          setIsAdmin(false);
+        }
+      } else {
+        setIsAdmin(false);
+      }
+    };
+    
+    checkAdminRole();
+  }, [user]);
 
   /**
    * Registra el dispositivo para notificaciones y envía el token al backend
@@ -252,6 +278,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     loading,
     pushToken,
     userProfile,
+    isAdmin,
     register,
     login,
     logout,

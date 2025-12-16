@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Alert, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
-import { TextInput, Button, Text, Card, HelperText } from 'react-native-paper';
-import { useAuth } from '../contexts/AuthContext';
+import { TextInput, Button, Text, Card, HelperText, useTheme } from 'react-native-paper';
+import { useAuth } from '../contexts/AuthContext'; 
+import LogoPataIcon from '../componentes/iconos/LogoPataIcon';
 
 export default function LoginScreen({ navigation }: any) {
   const [email, setEmail] = useState('');
@@ -97,6 +98,8 @@ export default function LoginScreen({ navigation }: any) {
     navigation.navigate('Register');
   };
 
+  const theme = useTheme()
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -105,6 +108,10 @@ export default function LoginScreen({ navigation }: any) {
       <ScrollView contentContainerStyle={styles.scrollView}>
         <Card style={styles.card}>
           <Card.Content>
+            <View style={{ alignItems: 'center', marginBottom: 16 }}> 
+              <LogoPataIcon height={200} width={200} />
+            </View> 
+            
             <Text variant="headlineMedium" style={styles.title}>
               ¡Bienvenido!
             </Text>

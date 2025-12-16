@@ -61,18 +61,34 @@ export const useSubirImagen = (entityType) => {
 export const useObtenerImagenes = (entityType, entityId) => {
   const backendEntityType = entityTypeMap[entityType] || entityType;
   
+  console.log('useObtenerImagenes llamado con:', { 
+    entityType, 
+    entityId, 
+    backendEntityType,
+    enabled: !!entityId 
+  });
+  
   return useQuery({
     queryKey: [`imagenes-${entityType}`, entityId],
     queryFn: async () => {
+      const url = `${API_URL}/imagenes/${backendEntityType}/${entityId}`;
+      console.log('🔍 Intentando obtener imágenes desde:', url);
+      
       try {
-        const response = await api.get(`${API_URL}/imagenes/${backendEntityType}/${entityId}`);
+        const response = await api.get(url);
+        console.log('✅ Imágenes obtenidas exitosamente:', response.data);
         return response.data;
       } catch (error) {
-        console.error(`Error al obtener imágenes de ${backendEntityType}/${entityId}:`, error);
-        console.error('URL intentada:', `${API_URL}/imagenes/${backendEntityType}/${entityId}`);
+        console.error('❌ Error al obtener imágenes de', `${backendEntityType}/${entityId}:`);
+        console.error('URL intentada:', url);
         if (error.response) {
           console.error('Response status:', error.response.status);
           console.error('Response data:', error.response.data);
+        } else if (error.request) {
+          console.error('No se recibió respuesta del servidor');
+          console.error('Request:', error.request);
+        } else {
+          console.error('Error al configurar la petición:', error.message);
         }
         throw error;
       }

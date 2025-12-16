@@ -26,6 +26,11 @@ interface ImageData {
   orden: number;
 }
 
+interface ImageState {
+  loading: boolean;
+  error: boolean;
+}
+
 export const ImageGallery: React.FC<ImageGalleryProps> = ({
   entityType,
   entityId,
@@ -34,14 +39,60 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
 }) => {
   const scrollX = useRef(new Animated.Value(0)).current;
   const theme = useTheme();
-  const { data: imagenes, isLoading, error } = useObtenerImagenes(entityType, entityId);
+  const { data: imagenes, isLoading, error, isFetching } = useObtenerImagenes(entityType, entityId);
   const eliminarImagen = useEliminarImagen(entityType);
+  
+  // Estado de carga/error para cada imagen
+  const [imageStates, setImageStates] = useState<Record<number, ImageState>>({});
+
+  // Debug logging
+  React.useEffect(() => {
+    console.log('ImageGallery - entityType:', entityType);
+    console.log('ImageGallery - entityId:', entityId);
+    console.log('ImageGallery - isLoading:', isLoading);
+    console.log('ImageGallery - isFetching:', isFetching);
+    console.log('ImageGallery - error:', error);
+    console.log('ImageGallery - imagenes:', imagenes);
+  }, [entityType, entityId, isLoading, isFetching, error, imagenes]);
 
   React.useEffect(() => {
     if (imagenes && onImageCountChange) {
       onImageCountChange(imagenes.length);
     }
+    
+    // Inicializar estado de carga para todas las imágenes
+    if (imagenes) {
+      const initialStates: Record<number, ImageState> = {};
+      imagenes.forEach((img) => {
+        initialStates[img.id] = { loading: true, error: false };
+      });
+      setImageStates(initialStates);
+    }
   }, [imagenes, onImageCountChange]);
+
+  const handleImageLoadStart = (imageId: number) => {
+    setImageStates((prev) => ({
+      ...prev,
+      [imageId]: { loading: true, error: false },
+    }));
+  };
+
+  const handleImageLoad = (imageId: number, nombreArchivo: string) => {
+    console.log(`✅ Imagen ${imageId} cargada correctamente:`, nombreArchivo);
+    setImageStates((prev) => ({
+      ...prev,
+      [imageId]: { loading: false, error: false },
+    }));
+  };
+
+  const handleImageError = (imageId: number, nombreArchivo: string, urlPublica: string) => {
+    console.error(`❌ Error al cargar imagen ${imageId} (${nombreArchivo})`);
+    console.error('URL que falló:', urlPublica);
+    setImageStates((prev) => ({
+      ...prev,
+      [imageId]: { loading: false, error: true },
+    }));
+  };
 
   const handleDelete = (imagenId: number, nombreArchivo: string) => {
     Alert.alert(
@@ -67,26 +118,55 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
   };
 
   // Renderizado de cada imagen en el carrusel
-  const renderSliderItem = ({ item, index }: { item: ImageData; index: number }) => (
-    <View style={styles.slideContainer}>
-      <Image
-        source={{ uri: item.urlPublica }}
-        resizeMode="contain"
-        style={styles.slideImage}
-      />
-      {editable && (
-        <IconButton
-          icon="delete"
-          size={24}
-          mode="contained"
-          containerColor="rgba(0,0,0,0.7)"
-          iconColor="white"
-          style={styles.deleteButton}
-          onPress={() => handleDelete(item.id, item.nombreArchivo)}
+  const renderSliderItem = ({ item, index }: { item: ImageData; index: number }) => {
+    const imageState = imageStates[item.id] || { loading: true, error: false };
+    
+    return (
+      <View style={styles.slideContainer}>
+        <Image
+          source={{ uri: item.urlPublica }}
+          resizeMode="contain"
+          style={styles.slideImage}
+          onLoadStart={() => handleImageLoadStart(item.id)}
+          onLoad={() => handleImageLoad(item.id, item.nombreArchivo)}
+          onError={() => handleImageError(item.id, item.nombreArchivo, item.urlPublica)}
         />
-      )}
-    </View>
-  );
+        
+        {/* Indicador de carga sobre la imagen */}
+        {imageState.loading && (
+          <View style={styles.imageLoadingOverlay}>
+            <ActivityIndicator size="large" color={theme.colors.primary} />
+            <Text style={styles.imageLoadingText}>Cargando imagen...</Text>
+          </View>
+        )}
+        
+        {/* Mensaje de error sobre la imagen */}
+        {imageState.error && (
+          <View style={styles.imageErrorOverlay}>
+            <IconButton
+              icon="image-broken-variant"
+              size={48}
+              iconColor={theme.colors.error}
+            />
+            <Text style={styles.imageErrorText}>Error al cargar imagen</Text>
+            <Text style={styles.imageErrorSubtext}>{item.nombreArchivo}</Text>
+          </View>
+        )}
+        
+        {editable && !imageState.loading && (
+          <IconButton
+            icon="delete"
+            size={24}
+            mode="contained"
+            containerColor="rgba(0,0,0,0.7)"
+            iconColor="white"
+            style={styles.deleteButton}
+            onPress={() => handleDelete(item.id, item.nombreArchivo)}
+          />
+        )}
+      </View>
+    );
+  };
 
   // Indicadores del carrusel
   const renderIndicators = () => {
@@ -120,10 +200,11 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
     );
   };
 
-  if (isLoading) {
+  // Mostrar loading si está cargando O si está haciendo fetch
+  if (isLoading || isFetching) {
     return (
       <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="large" color={theme.colors.primary} />
         <Text style={styles.loadingText}>Cargando imágenes...</Text>
       </View>
     );
@@ -133,6 +214,9 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
     return (
       <View style={styles.centerContainer}>
         <Text style={styles.errorText}>Error al cargar las imágenes</Text>
+        <Text style={styles.errorDetails}>
+          {error?.message || 'Error desconocido'}
+        </Text>
       </View>
     );
   }
@@ -192,6 +276,37 @@ const styles = StyleSheet.create({
     right: 20,
     margin: 0,
   },
+  imageLoadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 12,
+  },
+  imageLoadingText: {
+    marginTop: 8,
+    fontSize: 14,
+  },
+  imageErrorOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 12,
+    padding: 20,
+  },
+  imageErrorText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#d32f2f',
+    textAlign: 'center',
+  },
+  imageErrorSubtext: {
+    fontSize: 12,
+    color: '#666',
+    textAlign: 'center',
+    marginTop: 4,
+  },
   indicatorContainer: {
     position: 'absolute',
     flexDirection: 'row',
@@ -211,11 +326,20 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: 12,
+    fontSize: 14,
   },
   errorText: {
     color: 'red',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  errorDetails: {
+    color: 'red',
+    fontSize: 12,
+    marginTop: 8,
   },
   emptyText: {
     color: 'gray',
+    fontSize: 14,
   },
 });

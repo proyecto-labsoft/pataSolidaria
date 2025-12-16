@@ -10,6 +10,27 @@ import QueryClientProviderBase from "./api/QueryClientProviderBase";
 import { AuthProvider } from "./contexts/AuthContext";
 import AuthNavigator from "./navegacion/AuthNavigator";
 
+// Manejador global para promesas rechazadas (como errores de red de Firebase)
+if (typeof global !== 'undefined') {
+  const originalHandler = global.Promise;
+  global.Promise = class extends originalHandler {
+    constructor(executor: any) {
+      super((resolve, reject) => {
+        return executor(
+          resolve,
+          (error: any) => {
+            // Log silencioso de errores de red de Firebase
+            if (error?.code === 'auth/network-request-failed') {
+              console.warn('Firebase network error (expected on unstable connections):', error.message);
+            }
+            reject(error);
+          }
+        );
+      });
+    }
+  } as any;
+}
+
 const generatedColors = {
    primary: '#0776A0',
     onPrimary: '#FFFFFF',

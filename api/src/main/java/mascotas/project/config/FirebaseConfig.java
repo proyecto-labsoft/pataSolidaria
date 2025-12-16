@@ -3,6 +3,7 @@ package mascotas.project.config;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
@@ -15,31 +16,42 @@ import java.nio.charset.StandardCharsets;
 @Configuration
 public class FirebaseConfig {
 
+    @Value("${firebase.config.json}")
+    private String firebaseConfigJson;
+
     @Bean
     public FirebaseApp initializeFirebase() throws IOException {
+
         if (FirebaseApp.getApps().isEmpty()) {
-            InputStream serviceAccount = getServiceAccountStream();
+            //InputStream serviceAccount = getServiceAccountStream();
+            // Validamos si el String tiene contenido
+            if (firebaseConfigJson == null || firebaseConfigJson.isEmpty() || firebaseConfigJson.startsWith("${")) {
+                throw new IllegalStateException("La configuración de Firebase no está definida en las variables de entorno.");
+            }
+
+            InputStream serviceAccount = new ByteArrayInputStream(
+                    firebaseConfigJson.getBytes(StandardCharsets.UTF_8)
+            );
             
             try {
                 FirebaseOptions options = FirebaseOptions.builder()
                         .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                         .build();
 
+                System.out.println("✅ Firebase inicializado correctamente desde variable de entorno.");
                 return FirebaseApp.initializeApp(options);
             } finally {
-                if (serviceAccount != null) {
                     serviceAccount.close();
-                }
             }
         }
         return FirebaseApp.getInstance();
     }
 
-    /**
+  /*  *//**
      * Obtiene el InputStream de las credenciales de Firebase.
      * Primero intenta desde la variable de entorno FIREBASE_SERVICE_ACCOUNT,
      * si no existe, usa el archivo firebase-service-account.json del classpath.
-     */
+     *//*
     private InputStream getServiceAccountStream() throws IOException {
         String firebaseCredentials = System.getenv("firebase.config.json");
         
@@ -50,5 +62,5 @@ public class FirebaseConfig {
             System.out.println("ℹ️ Usando credenciales de Firebase desde archivo firebase-service-account.json");
             return new ClassPathResource("firebase-service-account.json").getInputStream();
         }
-    }
+    }*/
 }

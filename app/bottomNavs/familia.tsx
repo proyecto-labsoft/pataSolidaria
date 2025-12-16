@@ -12,7 +12,7 @@ export default function VistaFamilia() {
 
   const { usuarioId } = useUsuario()
   
-  const {data:familiares, isFetching, refetch: refetchFamiliares } = useApiGetMascotasPorUsuario({ parametros: {idUsuario: usuarioId}}) 
+  const {data:familiares, isFetching, refetch: refetchFamiliares } = useApiGetMascotasPorUsuario({ parametros: {idUsuario: usuarioId}, enabled: !!usuarioId }) 
 
   const {data: extravios, refetch: refetchExtravios } = useApiGetExtraviosPorUsuario({params: {queryParams: {resueltos: false},id: usuarioId}})
 

@@ -31,7 +31,7 @@ export default function VistaCasos() {
   const [tipoCaso, setTipoCaso] = useState<TipoCaso>('todos');
   const [ordenCaso, setOrdenCaso] = useState<OrdenCaso>('recientes');
 
-  const cargandoVista = isFetching || isFetchingFavoritos;
+  const cargandoVista = isFetching 
 
   // Obtener IDs de favoritos
   const favoritosIds = useMemo(() => {

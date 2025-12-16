@@ -88,7 +88,7 @@ export default function Home() {
       />
       <BotonAdopciones
         showButton={mostrarBotonAdopcion} 
-        onPress={(ruta: string) => navigation.navigate(ruta as never)}
+        onPress={(ruta: string, params?: any) => navigation.navigate(ruta as never, params as never)}
       />
     </FondoGradiente>
   );

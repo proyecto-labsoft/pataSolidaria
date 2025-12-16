@@ -181,7 +181,7 @@ export default function VistaExtravio({route}: any) {
     const handleGuardarCaso = () => { 
         // Aquí podrías implementar la lógica para guardar el caso, como agregarlo a una lista de favoritos
         if (esFavorito) {
-            borrarFavorito( )
+            borrarFavorito()
         } else {
             guardarCaso({data: {
                 usuarioId: usuarioId,

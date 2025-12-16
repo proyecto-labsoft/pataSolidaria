@@ -238,6 +238,14 @@ public class UsuarioService {
     }
 
     /**
+     * Obtiene todos los usuarios con notificaciones habilitadas
+     */
+    @Transactional
+    public List<Usuario> findAllWithNotificationsEnabled() {
+        return usuarioRepository.findAllWithNotificationsEnabled();
+    }
+
+    /**
      * Verifica si un usuario es administrador
      */
     @Transactional

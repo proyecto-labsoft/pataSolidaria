@@ -3,6 +3,7 @@ import { NavigationContainer, useNavigationContainerRef } from '@react-navigatio
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ActivityIndicator, View } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
+import { useNotifications } from '../hooks/useNotifications';
 
 // Pantallas de autenticación
 import LoginScreen from '../pantallas/login';
@@ -13,6 +14,7 @@ import Home from "../pantallas/home";
 import VistaFamiliar from "../pantallas/vistaFamiliar";
 import ConfirmarBuscado from "../pantallas/confirmar-buscado";
 import Notificaciones from "../pantallas/notificaciones";
+import AdminNotificaciones from "../pantallas/adminNotificaciones";
 import Perfil from "../pantallas/perfil";
 import FAQ from "../pantallas/faq";
 import VistaExtravio from "../pantallas/vistaExtravio";
@@ -28,6 +30,21 @@ export default function AuthNavigator() {
   const navigationRef = useNavigationContainerRef();
   const [rol, setRol] = useState<string | null>(null);
   const [usuarioId, setUsuarioId] = useState<string | null>(null);
+
+  // Inicializar notificaciones cuando el usuario está autenticado
+  const { expoPushToken, notification } = useNotifications();
+
+  useEffect(() => {
+    if (expoPushToken) {
+      console.log('📱 Push Token registrado:', expoPushToken);
+    }
+  }, [expoPushToken]);
+
+  useEffect(() => {
+    if (notification) {
+      console.log('🔔 Nueva notificación recibida:', notification);
+    }
+  }, [notification]);
 
   useEffect(() => {
     const fetchUserClaims = async () => {
@@ -68,6 +85,7 @@ export default function AuthNavigator() {
             <Stack.Screen name="NuevoExtraviado" component={NuevoExtraviado} />
             <Stack.Screen name="Perfil" component={Perfil} />
             <Stack.Screen name="Notificaciones" component={Notificaciones} />
+            <Stack.Screen name="AdminNotificaciones" component={AdminNotificaciones} />
             <Stack.Screen name="ConfirmarBuscado" component={ConfirmarBuscado} />
             <Stack.Screen name="Faq" component={FAQ} />
             <Stack.Screen name="VistaExtravio" component={VistaExtravio} />

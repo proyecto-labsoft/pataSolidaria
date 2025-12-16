@@ -148,10 +148,10 @@ export const getCurrentUser = (): User | null => {
 /**
  * Sincroniza el usuario con el backend
  */
+import { API_URL } from '../api/api.rutas';
+
 const syncUserWithBackend = async (user: User, token: string): Promise<void> => {
   try {
-    // TODO: Mover esta URL a un archivo de configuración
-    const API_URL = 'http://192.168.49.54:8083';
     
     console.log('🔄 Sincronizando usuario con el backend:', user.email);
     

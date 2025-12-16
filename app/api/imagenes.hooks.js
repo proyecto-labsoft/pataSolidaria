@@ -1,6 +1,15 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useInvalidateAndRefetch } from './useInvalidateAndRefetch';
 import { api } from './api';
+import { API_URL } from './api.rutas';
+
+// Mapeo de plural a singular para endpoints del backend
+const entityTypeMap = {
+  'mascotas': 'mascota',
+  'extravios': 'extravio',
+  'avistamientos': 'avistamiento',
+  'adopciones': 'adopcion'
+};
 
 /**
  * Hook para subir una imagen
@@ -8,6 +17,7 @@ import { api } from './api';
  */
 export const useSubirImagen = (entityType) => {
   const invalidateAndRefetch = useInvalidateAndRefetch();
+  const backendEntityType = entityTypeMap[entityType] || entityType;
 
   return useMutation({
     mutationFn: async ({ entityId, file, orden = 0 }) => {
@@ -24,7 +34,7 @@ export const useSubirImagen = (entityType) => {
       formData.append('orden', orden.toString());
 
       const response = await api.post(
-        `/imagenes/${entityType}/${entityId}`,
+        `${API_URL}/imagenes/${backendEntityType}/${entityId}`,
         formData,
         {
           headers: {
@@ -42,19 +52,33 @@ export const useSubirImagen = (entityType) => {
   });
 };
 
+
 /**
  * Hook para obtener imágenes de una entidad
  * @param {string} entityType - Tipo de entidad (mascotas, extravios, avistamientos, adopciones)
  * @param {number} entityId - ID de la entidad
  */
 export const useObtenerImagenes = (entityType, entityId) => {
+  const backendEntityType = entityTypeMap[entityType] || entityType;
+  
   return useQuery({
     queryKey: [`imagenes-${entityType}`, entityId],
     queryFn: async () => {
-      const response = await api.get(`/imagenes/${entityType}/${entityId}`);
-      return response.data;
+      try {
+        const response = await api.get(`${API_URL}/imagenes/${backendEntityType}/${entityId}`);
+        return response.data;
+      } catch (error) {
+        console.error(`Error al obtener imágenes de ${backendEntityType}/${entityId}:`, error);
+        console.error('URL intentada:', `${API_URL}/imagenes/${backendEntityType}/${entityId}`);
+        if (error.response) {
+          console.error('Response status:', error.response.status);
+          console.error('Response data:', error.response.data);
+        }
+        throw error;
+      }
     },
     enabled: !!entityId, // Solo ejecutar si hay entityId
+    retry: 1, // Reducir reintentos para debug
   });
 };
 
@@ -66,7 +90,7 @@ export const useEliminarImagen = (entityType) => {
 
   return useMutation({
     mutationFn: async (imagenId) => {
-      const response = await api.delete(`/imagenes/${imagenId}`);
+      const response = await api.delete(`${API_URL}/imagenes/${imagenId}`);
       return response.data;
     },
     onSuccess: (data, imagenId, context) => {

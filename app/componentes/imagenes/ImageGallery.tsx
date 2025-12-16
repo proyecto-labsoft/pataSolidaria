@@ -1,19 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
-  Image,
+  Animated,
   StyleSheet,
-  FlatList,
   Dimensions,
   Alert,
-  TouchableOpacity,
-  Modal,
+  Image,
 } from 'react-native';
-import { IconButton, ActivityIndicator, Text } from 'react-native-paper';
+import { IconButton, ActivityIndicator, Text, useTheme } from 'react-native-paper';
 import { useObtenerImagenes, useEliminarImagen } from '../../api/imagenes.hooks';
 
-const { width } = Dimensions.get('window');
-const IMAGE_SIZE = (width - 48) / 3; // 3 columnas con padding
+const { width } = Dimensions.get('screen');
 
 interface ImageGalleryProps {
   entityType: 'mascotas' | 'extravios' | 'avistamientos' | 'adopciones';
@@ -35,7 +32,8 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
   editable = false,
   onImageCountChange,
 }) => {
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const scrollX = useRef(new Animated.Value(0)).current;
+  const theme = useTheme();
   const { data: imagenes, isLoading, error } = useObtenerImagenes(entityType, entityId);
   const eliminarImagen = useEliminarImagen(entityType);
 
@@ -68,29 +66,59 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
     );
   };
 
-  const renderImageItem = ({ item }: { item: ImageData }) => (
-    <TouchableOpacity
-      style={styles.imageContainer}
-      onPress={() => setSelectedImage(item.urlPublica)}
-    >
+  // Renderizado de cada imagen en el carrusel
+  const renderSliderItem = ({ item, index }: { item: ImageData; index: number }) => (
+    <View style={styles.slideContainer}>
       <Image
         source={{ uri: item.urlPublica }}
-        style={styles.image}
-        resizeMode="cover"
+        resizeMode="contain"
+        style={styles.slideImage}
       />
       {editable && (
         <IconButton
           icon="delete"
-          size={20}
+          size={24}
           mode="contained"
-          containerColor="rgba(0,0,0,0.6)"
+          containerColor="rgba(0,0,0,0.7)"
           iconColor="white"
           style={styles.deleteButton}
           onPress={() => handleDelete(item.id, item.nombreArchivo)}
         />
       )}
-    </TouchableOpacity>
+    </View>
   );
+
+  // Indicadores del carrusel
+  const renderIndicators = () => {
+    if (!imagenes || imagenes.length <= 1) return null;
+
+    return (
+      <View style={styles.indicatorContainer}>
+        {imagenes.map((_, i) => {
+          const inputRange = [(i - 1) * width, i * width, (i + 1) * width];
+          
+          const scale = scrollX.interpolate({
+            inputRange,
+            outputRange: [0.8, 1.4, 0.8],
+            extrapolate: 'clamp'
+          });
+
+          return (
+            <Animated.View 
+              key={`indicator-${i}`} 
+              style={[
+                styles.indicator,
+                {
+                  backgroundColor: theme.colors.primary,
+                  transform: [{ scale }],
+                }
+              ]} 
+            />
+          );
+        })}
+      </View>
+    );
+  };
 
   if (isLoading) {
     return (
@@ -119,77 +147,64 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
 
   return (
     <View style={styles.container}>
-      <FlatList
+      <Animated.FlatList
         data={imagenes}
-        renderItem={renderImageItem}
         keyExtractor={(item) => item.id.toString()}
-        numColumns={3}
-        contentContainerStyle={styles.listContainer}
-        showsVerticalScrollIndicator={false}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+          { useNativeDriver: false }
+        )}
+        pagingEnabled
+        renderItem={renderSliderItem}
+        style={styles.carouselList}
       />
-
-      {/* Modal para ver imagen en tamaño completo */}
-      <Modal
-        visible={!!selectedImage}
-        transparent
-        onRequestClose={() => setSelectedImage(null)}
-      >
-        <TouchableOpacity
-          style={styles.modalContainer}
-          activeOpacity={1}
-          onPress={() => setSelectedImage(null)}
-        >
-          <View style={styles.modalContent}>
-            {selectedImage && (
-              <Image
-                source={{ uri: selectedImage }}
-                style={styles.fullImage}
-                resizeMode="contain"
-              />
-            )}
-            <IconButton
-              icon="close"
-              size={30}
-              mode="contained"
-              containerColor="rgba(0,0,0,0.6)"
-              iconColor="white"
-              style={styles.closeButton}
-              onPress={() => setSelectedImage(null)}
-            />
-          </View>
-        </TouchableOpacity>
-      </Modal>
+      {renderIndicators()}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    height: 250,
+    width: width - 20,
+    alignItems: 'center',
+    borderRadius: 20,
   },
-  listContainer: {
-    padding: 8,
+  carouselList: {
+    width: width,
   },
-  imageContainer: {
-    width: IMAGE_SIZE,
-    height: IMAGE_SIZE,
-    margin: 4,
-    position: 'relative',
-    borderRadius: 8,
-    overflow: 'hidden',
+  slideContainer: {
+    width,
+    height: 250,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  image: {
-    width: '100%',
-    height: '100%',
+  slideImage: {
+    width: '90%',
+    height: '90%',
+    borderRadius: 12,
   },
   deleteButton: {
     position: 'absolute',
-    top: 4,
-    right: 4,
+    top: 8,
+    right: 20,
     margin: 0,
   },
+  indicatorContainer: {
+    position: 'absolute',
+    flexDirection: 'row',
+    top: 230,
+  },
+  indicator: {
+    height: 10,
+    margin: 10,
+    width: 10,
+    borderRadius: 5,
+  },
   centerContainer: {
-    flex: 1,
+    height: 250,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
@@ -202,26 +217,5 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     color: 'gray',
-  },
-  modalContainer: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.9)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContent: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  fullImage: {
-    width: '100%',
-    height: '80%',
-  },
-  closeButton: {
-    position: 'absolute',
-    top: 40,
-    right: 20,
   },
 });

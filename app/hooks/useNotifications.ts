@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import * as Notifications from 'expo-notifications';
+import { API_URL } from '../api/api.rutas';
+import { useNavigation } from '@react-navigation/native';
 import {
   registerForPushNotificationsAsync,
   addNotificationReceivedListener,
@@ -20,6 +22,9 @@ export function useNotifications() {
   const [notification, setNotification] = useState<NotificationData | null>(null);
   const notificationListener = useRef<any>();
   const responseListener = useRef<any>();
+  
+  // Obtener la referencia de navegación si está disponible
+  const navigation = useNavigation();
 
   useEffect(() => {
     // Registrar para notificaciones push
@@ -30,7 +35,6 @@ export function useNotifications() {
       if (token) {
         getCurrentUserToken().then(userToken => {
           if (userToken) {
-            const API_URL = 'http://localhost:8080/api'; // TODO: Mover a config
             sendPushTokenToBackend(token, userToken, API_URL);
           }
         });
@@ -73,12 +77,20 @@ export function useNotifications() {
     // Maneja la navegación basada en el tipo de notificación
     console.log('Notification tapped with data:', data);
     
-    // Ejemplo: navegar según el tipo de notificación
-    // if (data.type === 'nueva_adopcion') {
-    //   router.push(`/adopciones/${data.id}`);
-    // } else if (data.type === 'avistamiento') {
-    //   router.push(`/extravios/${data.extravioId}`);
-    // }
+    try {
+      if (data.type === 'avistamiento' && data.extravioId) {
+        navigation.navigate('VistaExtravio' as never, { id: data.extravioId } as never);
+      } else if (data.type === 'adopcion' && data.adopcionId) {
+        navigation.navigate('Home' as never, { screen: 'Adopciones' } as never);
+      } else if (data.type === 'extravio_encontrado' && data.extravioId) {
+        navigation.navigate('VistaExtravio' as never, { id: data.extravioId } as never);
+      } else if (data.type === 'postulacion' && data.postulacionId) {
+        // Navegar a postulaciones
+        navigation.navigate('Home' as never);
+      }
+    } catch (error) {
+      console.error('Error al navegar desde notificación:', error);
+    }
   };
 
   return {

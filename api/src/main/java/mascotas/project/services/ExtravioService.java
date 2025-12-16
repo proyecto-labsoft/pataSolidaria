@@ -17,7 +17,9 @@ import mascotas.project.repositories.ExtravioRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -30,6 +32,7 @@ public class ExtravioService {
     private MascotaService mascotaService;
     private ExtravioMapper extravioMapper;
     private ExtravioRepository extravioRepository;
+    private FirebaseNotificationService notificationService;
 
     @Transactional
     public void saveExtravio(ExtravioRequestDTO extravioDto, Boolean animalAnonimo) {
@@ -85,9 +88,42 @@ public class ExtravioService {
             throw new ForbiddenException(ErrorsEnums.EXTRAVIO_FORBIDDEN_ERROR.getDescription() + extravio.getId());
         }
 
-        extravio = extravioMapper.putToEntity(extravioRequest, extravioId);
+        // Verificar si se está marcando como resuelto
+        boolean estaMarcandoComoResuelto = !extravio.getResuelto() && extravioRequest.getResuelto();
 
-        return extravioRepository.save(extravio);
+        extravio = extravioMapper.putToEntity(extravioRequest, extravioId);
+        Extravio savedExtravio = extravioRepository.save(extravio);
+
+        // Enviar notificación si se marcó como encontrado
+        if (estaMarcandoComoResuelto) {
+            try {
+                var duenioEntity = usuarioService.findByFirebaseUid(usuario.getFirebaseUid());
+                
+                if (duenioEntity != null && duenioEntity.getPushToken() != null && 
+                    duenioEntity.getNotificacionesHabilitadas()) {
+                    
+                    String nombreMascota = savedExtravio.getMascota() != null ? 
+                        savedExtravio.getMascota().getNombre() : "tu mascota";
+                    
+                    Map<String, String> data = new HashMap<>();
+                    data.put("type", "extravio_encontrado");
+                    data.put("extravioId", savedExtravio.getId().toString());
+                    
+                    notificationService.sendNotification(
+                        duenioEntity.getPushToken(),
+                        "🎉 ¡" + nombreMascota + " fue encontrad" + (savedExtravio.getMascota() != null && "Hembra".equalsIgnoreCase(savedExtravio.getMascota().getSexo()) ? "a" : "o") + "!",
+                        "El caso de extravio ha sido marcado como resuelto. ¡Felicitaciones!",
+                        data
+                    );
+                    
+                    log.info("🔔 Notificación de extravio resuelto enviada al usuario: {}", duenioEntity.getEmail());
+                }
+            } catch (Exception e) {
+                log.error("❌ Error al enviar notificación de extravio resuelto: {}", e.getMessage());
+            }
+        }
+
+        return savedExtravio;
     }
 
 

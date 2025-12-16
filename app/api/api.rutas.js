@@ -12,8 +12,33 @@
 //const URL_API = "http://192.168.49.93:8083" // Muni
 // const URL_API = "http://192.168.0.44:8083" 
 // const URL_API = "http://192.168.1.127:8083"
-// const URL_API = "http://192.168.1.14:8083"  // eze
- const URL_API = "192.168.49.54"; // muni eze
+ const URL_API = "http://192.168.1.14:8083"  // eze
+// const URL_API = "http://192.168.49.54"; // muni eze
+
+/**
+ * URL base de la API - Exportada para uso en otros módulos
+ * @constant
+ * @type {string}
+ */
+export const API_URL = URL_API;
+
+/**
+ * Endpoints específicos de la API
+ * @constant
+ * @type {Object}
+ */
+export const API_ENDPOINTS = {
+  usuarios: `${URL_API}/usuarios`,
+  mascotas: `${URL_API}/mascotas`,
+  extravios: `${URL_API}/extravios`,
+  adopciones: `${URL_API}/adopciones`,
+  avistamientos: `${URL_API}/avistamientos`,
+  postulaciones: `${URL_API}/postulaciones`,
+  pushToken: `${URL_API}/usuarios/push-token`,
+  syncUser: `${URL_API}/usuarios/sync`,
+  userProfile: `${URL_API}/usuarios/perfil`,
+  notifications: `${URL_API}/notifications`,
+};
 
 export const rutas = {
   extravios: `${URL_API}/extravios`, // Query Params: resueltos=${resueltos}

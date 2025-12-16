@@ -14,7 +14,9 @@ import mascotas.project.exceptions.NotFoundException;
 import mascotas.project.mapper.AdopcionMapper;
 import mascotas.project.repositories.AdopocionRepository;
 import org.springframework.stereotype.Service;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -26,6 +28,7 @@ public class AdopcionService {
     private AdopocionRepository adopcionRepository;
     private AdopcionMapper adopcionMapper;
     private MascotaService mascotaService;
+    private FirebaseNotificationService notificationService;
 
     @Transactional
     public AdopcionDetailDTO saveAdopcion(AdopcionRequestDTO adopcionRequestDtoRequest) {
@@ -46,6 +49,30 @@ public class AdopcionService {
                         }
                     )
                     .map(adopcionRepository::save)
+                    .map(adopcion -> {
+                        // Enviar notificación al topic de adopciones
+                        try {
+                            Mascota mascota = mascotaService.getMascotaEntityById(adopcion.getMascota());
+                            
+                            Map<String, String> data = new HashMap<>();
+                            data.put("type", "adopcion");
+                            data.put("adopcionId", adopcion.getId().toString());
+                            data.put("mascotaId", adopcion.getMascota().toString());
+                            
+                            notificationService.sendToTopic(
+                                "adopciones",
+                                "🐶 Nueva mascota en adopción",
+                                mascota.getNombre() + " está buscando un hogar. ¿Te interesa adoptarlo?",
+                                data
+                            );
+                            
+                            log.info("🔔 Notificación de nueva adopción enviada al topic 'adopciones'");
+                        } catch (Exception e) {
+                            log.error("❌ Error al enviar notificación de nueva adopción: {}", e.getMessage());
+                        }
+                        
+                        return adopcion;
+                    })
                     .map(adopcionMapper::toDetailDto)
                     .orElseThrow(() -> new BadRequestException(ErrorsEnums.BODY_NOT_NULL_ERROR.getDescription()));
     }

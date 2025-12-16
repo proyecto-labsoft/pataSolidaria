@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth } from '../../config/firebase';
+import { API_URL } from '../api/api.rutas';
 import { 
   registerUser, 
   loginUser, 
@@ -64,9 +65,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [pushToken, setPushToken] = useState<string | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-
-  // Configuración del backend - TODO: Mover a archivo de configuración
-  const API_URL = 'http://192.168.49.54:8083'; // Cambia esto a tu URL de backend
 
   /**
    * Registra el dispositivo para notificaciones y envía el token al backend

@@ -6,7 +6,7 @@ import { calcularTiempoTranscurrido } from "@/app/utiles/calcularTiempoTranscurr
 import { obtenerValorSexo } from "@/app/utiles/obtenerValorEnum";
 import BannerCoverOverlay from './bannerCoverOverlay';
 import { useUsuario } from "@/app/hooks/useUsuario";
-import { useApiGetEsFavorito, useApiPostFavorito } from "@/app/api/hooks";
+import { useApiDeleteFavorito, useApiGetEsFavorito, useApiPostFavorito } from "@/app/api/hooks";
 
 interface Props {
     data: {
@@ -40,14 +40,24 @@ export default function CardAnimal({ data, navigateTo }: Props) {
         enabled: !!usuarioId && !!data?.extravioId
     })
     const { mutateAsync: guardarCaso } = useApiPostFavorito({})
-
+    const { mutateAsync: borrarFavorito } = useApiDeleteFavorito({
+            params: { 
+                id: data?.extravioId, 
+                queryParams: {
+                    usuarioId: usuarioId
+                } 
+            },
+        })
     const handleGuardarCaso = () => { 
         // Aquí podrías implementar la lógica para guardar el caso, como agregarlo a una lista de favoritos
-        console.log("handleGuardarCaso")
-        guardarCaso({data: {
-            usuarioId: usuarioId,
-            extravioId: data?.extravioId
-        }})
+        if (esFavorito) {
+            borrarFavorito()
+        } else {
+            guardarCaso({data: {
+                usuarioId: usuarioId,
+                extravioId: data?.extravioId
+            }})
+        }
     }
 
     return (

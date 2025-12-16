@@ -28,8 +28,15 @@ export default function BotonAdopciones({onPress,showButton} : Props) {
                         style: { ...styles.fabItem, backgroundColor: theme?.colors.secondary},
                         label: 'Agregar nueva adopción',
                         labelStyle: { ...styles.labelFab },
-                        onPress: () => onPress("NuevaAdopcion"),
-                    }, 
+                        onPress: () => onPress("NuevaAdopcion", { esTransito: false }),
+                    },
+                    {
+                        icon: () => <Icon source='plus' size={26} color={theme.colors.onTertiaryContainer} />,
+                        style: { ...styles.fabItem, backgroundColor: theme?.colors.tertiary},
+                        label: 'Agregar nuevo tránsito',
+                        labelStyle: { ...styles.labelFab },
+                        onPress: () => onPress("NuevaAdopcion", { esTransito: true }),
+                    },
                     ]}
                 onStateChange={handleChange}
                 fabStyle={{...styles.fab, backgroundColor: open ? theme?.colors.inverseSurface : theme?.colors.tertiary}}

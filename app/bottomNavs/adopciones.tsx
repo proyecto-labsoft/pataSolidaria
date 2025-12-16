@@ -25,9 +25,9 @@ export default function VistaAdopciones() {
           contentContainerStyle={{ justifyContent: 'center', alignItems: "center", paddingBottom: 80 }}
           renderItem={({ item }) => (
             <View style={{ flexDirection: 'row', width: '100%' }}>
-              <CardAdopcion navigateTo="Familiar" data={item[0]} />
+              <CardAdopcion navigateTo="VistaAdopcion" data={item[0]} />
               {item[1] ? (
-                <CardAdopcion navigateTo="Familiar" data={item[1]} />
+                <CardAdopcion navigateTo="VistaAdopcion" data={item[1]} />
               ) : (
                 <View style={{ flex: 1 }} />
               )}

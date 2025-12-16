@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text, Card, Divider } from 'react-native-paper';
 import AppbarNav from '../navegacion/appbarNav';
-import { ImageManager } from '../imagenes';
+import { ImageGallery } from '../imagenes';
 
 interface VistaImagenesProps {
   entityType: 'mascotas' | 'extravios' | 'avistamientos' | 'adopciones';
@@ -36,14 +36,17 @@ export default function VistaImagenesEntidad({
             </Card>
           )}
 
-          {/* Gestor de imágenes */}
-          <ImageManager
-            entityType={entityType}
-            entityId={entityId}
-            maxImages={5}
-            editable={true}
-            showUploader={true}
-          />
+          {/* Galería de imágenes con FAB integrado */}
+          <Card style={styles.galleryCard}>
+            <Card.Content>
+              <ImageGallery
+                entityType={entityType}
+                entityId={entityId}
+                maxImages={5}
+                editable={true}
+              />
+            </Card.Content>
+          </Card>
 
           {/* Instrucciones */}
           <Card style={styles.helpCard}>
@@ -55,10 +58,10 @@ export default function VistaImagenesEntidad({
                 • Puedes subir hasta 5 imágenes
               </Text>
               <Text variant="bodySmall" style={styles.helpText}>
-                • Toca una imagen para verla en grande
+                • Usa el botón flotante para agregar o eliminar imágenes
               </Text>
               <Text variant="bodySmall" style={styles.helpText}>
-                • Usa el botón 🗑️ para eliminar imágenes
+                • Toca el botón 🗑️ en cada imagen para eliminarla individualmente
               </Text>
             </Card.Content>
           </Card>
@@ -78,6 +81,9 @@ const styles = StyleSheet.create({
   infoCard: {
     margin: 16,
     marginBottom: 0,
+  },
+  galleryCard: {
+    margin: 16,
   },
   helpCard: {
     margin: 16,

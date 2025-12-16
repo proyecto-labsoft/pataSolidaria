@@ -6,9 +6,11 @@ import {
   Dimensions,
   Alert,
   Image,
+  Platform,
 } from 'react-native';
-import { IconButton, ActivityIndicator, Text, useTheme } from 'react-native-paper';
-import { useObtenerImagenes, useEliminarImagen } from '../../api/imagenes.hooks';
+import { IconButton, ActivityIndicator, Text, useTheme, FAB } from 'react-native-paper';
+import * as ImagePicker from 'expo-image-picker';
+import { useObtenerImagenes, useEliminarImagen, useSubirImagen } from '../../api/imagenes.hooks';
 
 const { width } = Dimensions.get('screen');
 
@@ -17,6 +19,7 @@ interface ImageGalleryProps {
   entityId: number;
   editable?: boolean;
   onImageCountChange?: (count: number) => void;
+  maxImages?: number;
 }
 
 interface ImageData {
@@ -36,14 +39,19 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
   entityId,
   editable = false,
   onImageCountChange,
+  maxImages = 5,
 }) => {
   const scrollX = useRef(new Animated.Value(0)).current;
   const theme = useTheme();
   const { data: imagenes, isLoading, error, isFetching } = useObtenerImagenes(entityType, entityId);
   const eliminarImagen = useEliminarImagen(entityType);
+  const subirImagen = useSubirImagen(entityType);
   
   // Estado de carga/error para cada imagen
   const [imageStates, setImageStates] = useState<Record<number, ImageState>>({});
+  const [fabOpen, setFabOpen] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   // Debug logging
   React.useEffect(() => {
@@ -94,10 +102,144 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
     }));
   };
 
-  const handleDelete = (imagenId: number, nombreArchivo: string) => {
+  // Solicitar permisos para acceder a la galería
+  const requestPermissions = async () => {
+    if (Platform.OS !== 'web') {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert(
+          'Permisos necesarios',
+          'Necesitamos permisos para acceder a tu galería de fotos'
+        );
+        return false;
+      }
+    }
+    return true;
+  };
+
+  // Seleccionar imagen de la galería
+  const pickImage = async () => {
+    const currentCount = imagenes?.length || 0;
+    
+    // Verificar límite de imágenes
+    if (currentCount >= maxImages) {
+      Alert.alert(
+        'Límite alcanzado',
+        `Solo puedes subir un máximo de ${maxImages} imágenes`
+      );
+      return;
+    }
+
+    const hasPermission = await requestPermissions();
+    if (!hasPermission) return;
+
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 0.8,
+        allowsMultipleSelection: false,
+      });
+
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        await uploadImage(result.assets[0]);
+      }
+    } catch (error) {
+      console.error('Error al seleccionar imagen:', error);
+      Alert.alert('Error', 'No se pudo seleccionar la imagen');
+    } finally {
+      setFabOpen(false);
+    }
+  };
+
+  // Tomar foto con la cámara
+  const takePhoto = async () => {
+    const currentCount = imagenes?.length || 0;
+    
+    // Verificar límite de imágenes
+    if (currentCount >= maxImages) {
+      Alert.alert(
+        'Límite alcanzado',
+        `Solo puedes subir un máximo de ${maxImages} imágenes`
+      );
+      return;
+    }
+
+    if (Platform.OS !== 'web') {
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert(
+          'Permisos necesarios',
+          'Necesitamos permisos para usar la cámara'
+        );
+        return;
+      }
+    }
+
+    try {
+      const result = await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        await uploadImage(result.assets[0]);
+      }
+    } catch (error) {
+      console.error('Error al tomar foto:', error);
+      Alert.alert('Error', 'No se pudo tomar la foto');
+    } finally {
+      setFabOpen(false);
+    }
+  };
+
+  // Subir imagen al backend
+  const uploadImage = async (asset: ImagePicker.ImagePickerAsset) => {
+    setIsUploading(true);
+
+    try {
+      // Preparar el archivo para FormData
+      const file = {
+        uri: asset.uri,
+        type: 'image/jpeg',
+        name: `image-${Date.now()}.jpg`,
+      };
+
+      const currentCount = imagenes?.length || 0;
+
+      await subirImagen.mutateAsync({
+        entityId,
+        file,
+        orden: currentCount,
+      });
+
+      Alert.alert('Éxito', 'Imagen subida correctamente');
+    } catch (error: any) {
+      console.error('Error al subir imagen:', error);
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        'No se pudo subir la imagen';
+      Alert.alert('Error', errorMessage);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleDeleteCurrent = () => {
+    if (!imagenes || imagenes.length === 0) {
+      Alert.alert('Sin imágenes', 'No hay imágenes para eliminar');
+      return;
+    }
+
+    const currentImage = imagenes[currentIndex];
+    if (!currentImage) return;
+
     Alert.alert(
       'Eliminar imagen',
-      `¿Estás seguro de que quieres eliminar "${nombreArchivo}"?`,
+      `¿Estás seguro de que quieres eliminar "${currentImage.nombreArchivo}"?`,
       [
         { text: 'Cancelar', style: 'cancel' },
         {
@@ -105,8 +247,12 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
           style: 'destructive',
           onPress: async () => {
             try {
-              await eliminarImagen.mutateAsync(imagenId);
+              await eliminarImagen.mutateAsync(currentImage.id);
               Alert.alert('Éxito', 'Imagen eliminada correctamente');
+              // Ajustar el índice si es necesario
+              if (currentIndex >= imagenes.length - 1 && currentIndex > 0) {
+                setCurrentIndex(currentIndex - 1);
+              }
             } catch (error: any) {
               console.error('Error al eliminar imagen:', error);
               Alert.alert('Error', 'No se pudo eliminar la imagen');
@@ -115,6 +261,7 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
         },
       ]
     );
+    setFabOpen(false);
   };
 
   // Renderizado de cada imagen en el carrusel
@@ -151,18 +298,6 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
             <Text style={styles.imageErrorText}>Error al cargar imagen</Text>
             <Text style={styles.imageErrorSubtext}>{item.nombreArchivo}</Text>
           </View>
-        )}
-        
-        {editable && !imageState.loading && (
-          <IconButton
-            icon="delete"
-            size={24}
-            mode="contained"
-            containerColor="rgba(0,0,0,0.7)"
-            iconColor="white"
-            style={styles.deleteButton}
-            onPress={() => handleDelete(item.id, item.nombreArchivo)}
-          />
         )}
       </View>
     );
@@ -223,11 +358,53 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
 
   if (!imagenes || imagenes.length === 0) {
     return (
-      <View style={styles.centerContainer}>
-        <Text style={styles.emptyText}>No hay imágenes</Text>
+      <View style={styles.container}>
+        <View style={styles.centerContainer}>
+          <Text style={styles.emptyText}>No hay imágenes</Text>
+        </View>
+        {editable && (
+          <FAB.Group
+            open={fabOpen}
+            visible={!isUploading}
+            icon={fabOpen ? 'close' : 'plus'}
+            actions={[
+              {
+                icon: 'camera',
+                label: 'Cámara',
+                onPress: takePhoto,
+              },
+              {
+                icon: 'image',
+                label: 'Galería',
+                onPress: pickImage,
+              },
+            ]}
+            onStateChange={({ open }) => setFabOpen(open)}
+            style={styles.fab}
+          />
+        )}
+        {isUploading && (
+          <View style={styles.uploadingOverlay}>
+            <ActivityIndicator size="large" color={theme.colors.primary} />
+            <Text style={styles.uploadingText}>Subiendo imagen...</Text>
+          </View>
+        )}
       </View>
     );
   }
+
+  // Calcular el índice actual basado en el scroll
+  const handleScroll = Animated.event(
+    [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+    {
+      useNativeDriver: false,
+      listener: (event: any) => {
+        const offsetX = event.nativeEvent.contentOffset.x;
+        const index = Math.round(offsetX / width);
+        setCurrentIndex(index);
+      },
+    }
+  );
 
   return (
     <View style={styles.container}>
@@ -236,15 +413,59 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
         keyExtractor={(item) => item.id.toString()}
         horizontal
         showsHorizontalScrollIndicator={false}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-          { useNativeDriver: false }
-        )}
+        onScroll={handleScroll}
         pagingEnabled
         renderItem={renderSliderItem}
         style={styles.carouselList}
       />
       {renderIndicators()}
+
+      {/* Overlay blanco cuando el FAB está abierto */}
+      {editable && fabOpen && (
+        <View style={styles.fabBackdrop} />
+      )}
+
+      {/* FAB con opciones */}
+      {editable && (
+        <FAB.Group
+          open={fabOpen}
+          visible={!isUploading}
+          icon={fabOpen ? 'close' : 'camera-plus'}
+          color="white"
+          backdropColor="transparent"
+          actions={[
+            ...(imagenes && imagenes[currentIndex]?.id !== 0 ? [{
+              icon: 'delete',
+              label: 'Eliminar',
+              onPress: handleDeleteCurrent,
+              small: false,
+            }] : []),
+            {
+              icon: 'camera',
+              label: 'Cámara',
+              onPress: takePhoto,
+              disabled: (imagenes?.length || 0) >= maxImages,
+            },
+            {
+              icon: 'image',
+              label: 'Galería',
+              onPress: pickImage,
+              disabled: (imagenes?.length || 0) >= maxImages,
+            },
+          ]}
+          onStateChange={({ open }) => setFabOpen(open)}
+          style={styles.fab}
+          fabStyle={{...styles.fabButton, backgroundColor: fabOpen ? theme.colors.inversePrimary : theme.colors.primary }}
+        />
+      )}
+
+      {/* Overlay de carga cuando se está subiendo */}
+      {isUploading && (
+        <View style={styles.uploadingOverlay}>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+          <Text style={styles.uploadingText}>Subiendo imagen...</Text>
+        </View>
+      )}
     </View>
   );
 };
@@ -255,6 +476,7 @@ const styles = StyleSheet.create({
     width: width - 20,
     alignItems: 'center',
     borderRadius: 20,
+    position: 'relative',
   },
   carouselList: {
     width: width,
@@ -269,12 +491,6 @@ const styles = StyleSheet.create({
     width: '90%',
     height: '90%',
     borderRadius: 12,
-  },
-  deleteButton: {
-    position: 'absolute',
-    top: 8,
-    right: 20,
-    margin: 0,
   },
   imageLoadingOverlay: {
     ...StyleSheet.absoluteFillObject,
@@ -341,5 +557,34 @@ const styles = StyleSheet.create({
   emptyText: {
     color: 'gray',
     fontSize: 14,
+  },
+  uploadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 20,
+    zIndex: 1000,
+  },
+  uploadingText: {
+    marginTop: 12,
+    fontSize: 16,
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  fab: {
+    position: 'absolute',
+    right: 0,
+    top: 170,
+    zIndex: 2,
+  },
+  fabButton: {
+    borderRadius: 50,
+  },
+  fabBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: 20,
+    zIndex: 1,
   },
 });

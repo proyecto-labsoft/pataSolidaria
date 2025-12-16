@@ -17,6 +17,7 @@ import mascotas.project.services.interfaces.UsuarioService;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -43,6 +44,15 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario usuario = usuarioMapper.toEntity(usuarioDTO);
         Usuario savedUsuario = usuarioRepository.save(usuario);
         return usuarioMapper.toUsuarioDto(savedUsuario);
+    }
+
+    /**
+     * Busca un usuario entity por su ID
+     */
+    @Transactional
+    @Override
+    public Usuario findById(Long idUsuario) {
+        return usuarioRepository.findById(idUsuario).orElse(null);
     }
 
     /**
@@ -230,6 +240,7 @@ public class UsuarioServiceImpl implements UsuarioService {
      * Obtiene todos los usuarios con notificaciones habilitadas
      */
     @Transactional
+    @Override
     public List<Usuario> findAllWithNotificationsEnabled() {
         return usuarioRepository.findAllWithNotificationsEnabled();
     }

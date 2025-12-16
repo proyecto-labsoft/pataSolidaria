@@ -7,11 +7,14 @@ import mascotas.project.dto.AvistamientoDetailDTO;
 import mascotas.project.dto.AvistamientoRequestDTO;
 import mascotas.project.entities.Avistamiento;
 import mascotas.project.entities.Extravio;
+import mascotas.project.entities.Mascota;
 import mascotas.project.exceptions.NoContentException;
 import mascotas.project.mapper.AvistamientoMapper;
 import mascotas.project.repositories.AvistamientoRepository;
+import mascotas.project.repositories.UsuarioRepository;
 import mascotas.project.services.interfaces.AvistamientoService;
 import mascotas.project.services.interfaces.ExtravioService;
+import mascotas.project.services.interfaces.FireBaseNotificationService;
 import mascotas.project.services.interfaces.UsuarioService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +33,9 @@ public class AvistamientoServiceImpl implements AvistamientoService {
     private final ExtravioService extravioService;
     private final AvistamientoRepository avistamientoRepository;
     private final AvistamientoMapper avistamientoMapper;
-    private final FirebaseNotificationService notificationService;
+    private final FireBaseNotificationService notificationService;
+    private final UsuarioRepository usuarioRepository;
+    private final mascotas.project.services.interfaces.MascotaService mascotaService;
 
 
     @Override
@@ -55,13 +60,15 @@ public class AvistamientoServiceImpl implements AvistamientoService {
         // Enviar notificación al dueño del extravio
         try {
             var duenio = usuarioService.getUsuarioById(extravioEntity.getCreador());
-            var duenioEntity = usuarioService.findByFirebaseUid(duenio.getFirebaseUid());
+            // Obtener la entidad Usuario completa del repositorio (UsuarioDTO no tiene firebaseUid ni pushToken)
+            var duenioEntity = usuarioRepository.findById(duenio.getId()).orElse(null);
             
             if (duenioEntity != null && duenioEntity.getPushToken() != null && 
                 duenioEntity.getNotificacionesHabilitadas()) {
                 
-                String nombreMascota = extravioEntity.getMascota() != null ? 
-                    extravioEntity.getMascota().getNombre() : "tu mascota";
+                // Obtener la mascota completa (getMascota() retorna Long, no Mascota)
+                Mascota mascotaEntity = mascotaService.getMascotaEntityById(extravioEntity.getMascota());
+                String nombreMascota = mascotaEntity != null ? mascotaEntity.getNombre() : "tu mascota";
                 
                 Map<String, String> data = new HashMap<>();
                 data.put("type", "avistamiento");

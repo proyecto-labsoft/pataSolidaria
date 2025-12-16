@@ -2,9 +2,9 @@ package mascotas.project.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mascotas.project.entities.Usuario;
-import mascotas.project.services.interfaces.FireBaseAuthService;
 import mascotas.project.services.interfaces.FireBaseNotificationService;
 import mascotas.project.services.interfaces.UsuarioService;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +19,11 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestController
 @RequestMapping("/notifications")
+@AllArgsConstructor
 @Tag(name = "Notificaciones", description = "Endpoints para gestión de notificaciones push")
 public class NotificationController {
 
     private final FireBaseNotificationService fireBaseNotificationService;
-    private final FireBaseAuthService fireBaseAuthService;
     private final UsuarioService usuarioService;
 
     /**
@@ -166,7 +166,7 @@ public class NotificationController {
             }
 
             // Enviar notificación multicast
-            var response = notificationService.sendMulticastNotification(tokens, title, body, data);
+            var response = fireBaseNotificationService.sendMulticastNotification(tokens, title, body, data);
 
             if (response != null) {
                 log.info("📢 Notificación broadcast enviada a {} usuarios. Exitosas: {}, Fallidas: {}",
@@ -232,7 +232,7 @@ public class NotificationController {
             }
 
             // Enviar notificación al topic
-            String response = notificationService.sendToTopic(topic, title, body, data);
+            String response = fireBaseNotificationService.sendToTopic(topic, title, body, data);
 
             if (response != null) {
                 log.info("📢 Notificación enviada al topic '{}'", topic);
@@ -286,8 +286,8 @@ public class NotificationController {
             }
 
             Long userId = Long.parseLong(userIdStr);
-            var usuarioDto = usuarioService.getUsuarioById(userId);
-            var usuario = usuarioService.findByFirebaseUid(usuarioDto.getFirebaseUid());
+            // Obtener Usuario directamente por ID (UsuarioDTO no tiene firebaseUid)
+            var usuario = usuarioService.findById(userId);
 
             if (usuario == null || usuario.getPushToken() == null) {
                 return ResponseEntity.badRequest().body(Map.of(
@@ -310,7 +310,7 @@ public class NotificationController {
             }
 
             // Enviar notificación
-            String response = notificationService.sendNotification(
+            String response = fireBaseNotificationService.sendNotification(
                     usuario.getPushToken(),
                     title,
                     body,

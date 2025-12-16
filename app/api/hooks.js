@@ -63,6 +63,20 @@ export function useApiDeleteMascota({ params, ...opciones}) {
         configuracion: { ...opciones, queriesToInvalidate:['useApiGetMascotasPorUsuario', { idUsuario: params?.id }] }
     });
 }
+
+export function useApiGetImagenesMascota({ parametros, ...opciones }) {
+    return useGet({
+        nombreHook: "useApiGetImagenesMascota",
+        url: rutas.imagenesMascota,
+        params: parametros,
+        configuracion: { 
+            ...opciones,
+            staleTime: 0, // Siempre considera los datos como obsoletos
+            cacheTime: 0, // No mantener en caché
+        }
+    });
+}
+
 // Adopciones
 export function useApiGetAdopciones({ ...opciones }) {
     return useGet({

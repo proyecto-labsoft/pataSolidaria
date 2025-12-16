@@ -2,10 +2,26 @@ import React from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import { useTheme, Text, Surface } from 'react-native-paper'
 import CardFamiliar from "../componentes/cards/cardFamiliar"; 
-import { useApiGetExtraviosPorUsuario, useApiGetMascotasPorUsuario } from "../api/hooks";
+import { useApiGetExtraviosPorUsuario, useApiGetMascotasPorUsuario, useApiGetImagenesMascota } from "../api/hooks";
 import { useUsuario } from "../hooks/useUsuario";
 import DogHouseIcon from "../componentes/iconos/DogHouseIcon";
 import VisitVetIcon from "../componentes/iconos/VisitVetIcon";
+
+// Componente wrapper para cargar imágenes de cada mascota
+const CardFamiliarWithImages = ({ item, navigateTo, estaExtraviado }) => {
+  const { data: imagenes } = useApiGetImagenesMascota({ 
+    parametros: { mascotaId: item.id },
+    enabled: !!item.id 
+  });
+
+  return (
+    <CardFamiliar 
+      navigateTo={navigateTo}
+      data={{ ...item, imagenes }}
+      estaExtraviado={estaExtraviado}
+    />
+  );
+};
 
 export default function VistaFamilia() {
   const theme = useTheme();  
@@ -36,9 +52,9 @@ export default function VistaFamilia() {
         refreshing={cargandoVista}
         onRefresh={refetchQueries}
         renderItem={({ item }) => (
-          <CardFamiliar 
+          <CardFamiliarWithImages 
+            item={item}
             navigateTo="Familiar" 
-            data={item} 
             estaExtraviado={extraviadosMap.has(item.id)}
           />
         )}

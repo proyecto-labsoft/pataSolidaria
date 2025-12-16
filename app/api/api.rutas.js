@@ -57,6 +57,8 @@ export const rutas = {
   registrarMascota: `${URL_API}/mascotas`, // POST
   mascotasPorUsuario: `${URL_API}/mascotas/user/{idUsuario}`, // GET
 
+  imagenesMascota: `${URL_API}/imagenes/mascota/{mascotaId}`, // GET
+  
   crearUsuario: `${URL_API}/usuarios`, // POST 
   usuarioPorId: `${URL_API}/usuarios/{id}`, // GET, PUT, DELETE
 

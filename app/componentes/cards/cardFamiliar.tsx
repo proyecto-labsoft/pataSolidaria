@@ -7,6 +7,7 @@ interface Props {
         id?: number,
         nombre: string,
         especie: string,
+        imagenes?: Array<{urlPublica: string}>,
     },
     navigateTo: any,
     estaExtraviado?: boolean
@@ -76,20 +77,26 @@ export default function CardFamiliar({data, navigateTo, estaExtraviado = false} 
                     
                     )}
                     leftStyle={{alignItems: 'center'}}
-                    left={() => (
-                        <View style={{ position: 'relative' }}>
-                            <Avatar.Image
-                                source={{ uri: 'https://static.fundacion-affinity.org/cdn/farfuture/PVbbIC-0M9y4fPbbCsdvAD8bcjjtbFc0NSP3lRwlWcE/mtime:1643275542/sites/default/files/los-10-sonidos-principales-del-perro.jpg' }}
-                                style={{ 
-                                    overflow:'hidden',
-                                    borderColor: estaExtraviado ? theme.colors.error : theme.colors.primary,
-                                    borderWidth: 2
-                                }}
-                                size={100}
-                                onProgress={() => (<ActivityIndicator animating/>)}
-                            />
-                        </View>
-                    )}
+                    left={() => {
+                        // Siempre mostrar la primera imagen que devuelve la API
+                        const imageUrl = data.imagenes?.[0]?.urlPublica || 
+                            'https://static.fundacion-affinity.org/cdn/farfuture/PVbbIC-0M9y4fPbbCsdvAD8bcjjtbFc0NSP3lRwlWcE/mtime:1643275542/sites/default/files/los-10-sonidos-principales-del-perro.jpg';
+                        
+                        return (
+                            <View style={{ position: 'relative' }}>
+                                <Avatar.Image
+                                    source={{ uri: imageUrl }}
+                                    style={{ 
+                                        overflow:'hidden',
+                                        borderColor: estaExtraviado ? theme.colors.error : theme.colors.primary,
+                                        borderWidth: 2
+                                    }}
+                                    size={100}
+                                    onProgress={() => (<ActivityIndicator animating/>)}
+                                />
+                            </View>
+                        );
+                    }}
                 />
             </Pressable>
         </Card>

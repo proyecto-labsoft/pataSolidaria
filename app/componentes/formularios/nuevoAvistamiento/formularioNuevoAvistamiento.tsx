@@ -54,8 +54,8 @@ export default function FormularioNuevoAvistamiento({extravioId}: {extravioId: n
         onSuccess: async (response) => {
             console.log('✅ Avistamiento creado, respuesta completa:', JSON.stringify(response, null, 2));
             
-            // Intentar obtener el ID de diferentes maneras
-            let avistamientoId = response?.id || response?.avistamientoId || response?.data?.id;
+            // Obtener el ID del avistamiento de la respuesta
+            let avistamientoId = response?.id || response?.data?.id;
             console.log('🔍 Response del POST:', response);
             
             // Si no tenemos el ID en la respuesta, obtener el avistamiento más reciente del usuario
@@ -69,12 +69,12 @@ export default function FormularioNuevoAvistamiento({extravioId}: {extravioId: n
                     if (avistamientos && avistamientos.length > 0) {
                         // Ordenar por ID descendente (el más reciente tendrá el ID más alto)
                         const avistamientosOrdenados = [...avistamientos].sort((a, b) => {
-                            const idA = a.avistamientoId || a.id;
-                            const idB = b.avistamientoId || b.id;
+                            const idA = a.id;
+                            const idB = b.id;
                             return idB - idA;
                         });
                         
-                        avistamientoId = avistamientosOrdenados[0]?.avistamientoId || avistamientosOrdenados[0]?.id;
+                        avistamientoId = avistamientosOrdenados[0]?.id;
                         console.log('🎯 ID obtenido del avistamiento más reciente (ID más alto):', avistamientoId);
                         console.log('📊 Avistamiento seleccionado:', avistamientosOrdenados[0]);
                     }

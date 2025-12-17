@@ -75,6 +75,24 @@ export default function VistaExtravio({route}: any) {
         datosExtravio?.extravioId
     );
 
+    // Obtener imágenes del último avistamiento
+    const primerAvistamiento = avistamientos?.[0];
+    const ultimoAvistamientoId = primerAvistamiento?.id;
+    const hayAvistamientos = avistamientos && avistamientos.length > 0;
+    
+    console.log('🔍 Hay avistamientos?:', hayAvistamientos);
+    console.log('🔍 Primer avistamiento completo:', primerAvistamiento);
+    console.log('🔍 Último avistamiento ID:', ultimoAvistamientoId);
+    
+    // Solo consultar imágenes si hay avistamientos
+    const { data: imagenesUltimoAvistamiento, isLoading: isLoadingImagenesAvistamiento } = useObtenerImagenes(
+        'avistamientos',
+        ultimoAvistamientoId,
+        { enabled: hayAvistamientos && !!ultimoAvistamientoId }
+    );
+    
+    console.log('📸 Imágenes del último avistamiento:', imagenesUltimoAvistamiento);
+
     const ultimoAvistamiento = useMemo(() => {
         if (avistamientos && avistamientos?.length > 0) {
             // Ordenar avistamientos por fecha (más reciente primero)
@@ -383,6 +401,30 @@ export default function VistaExtravio({route}: any) {
                             style={styles.map}
                         />
                     </View>
+                    
+                    {/* Imágenes del último avistamiento */}
+                    {hayAvistamientos ? (
+                        // Si hay avistamientos, mostrar imágenes del último avistamiento
+                        imagenesUltimoAvistamiento && imagenesUltimoAvistamiento.length > 0 && (
+                            <View style={{ marginVertical: 8 }}>
+                                <CarruselImagenes 
+                                    imagenesReales={imagenesUltimoAvistamiento}
+                                    isLoading={isLoadingImagenesAvistamiento}
+                                />
+                            </View>
+                        )
+                    ) : (
+                        // Si no hay avistamientos, mostrar imágenes del extravío
+                        imagenesExtravio && imagenesExtravio.length > 0 && (
+                            <View style={{ marginVertical: 8 }}>
+                                <CarruselImagenes 
+                                    imagenesReales={imagenesExtravio}
+                                    isLoading={isLoadingImagenes}
+                                />
+                            </View>
+                        )
+                    )}
+                    
                     <View style={{padding: 16}}>
                         {ultimoAvistamiento && (
                             <>

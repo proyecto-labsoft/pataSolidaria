@@ -30,6 +30,7 @@ public class ImagenService {
     private final ExtravioImagenRepository extravioImagenRepository;
     private final AvistamientoImagenRepository avistamientoImagenRepository;
     private final AdopcionImagenRepository adopcionImagenRepository;
+    private final EmergenciaImagenRepository emergenciaImagenRepository;
     private final ImagenMapper imagenMapper;
 
     /**
@@ -246,6 +247,59 @@ public class ImagenService {
     }
 
     /**
+     * Sube una imagen para una emergencia
+     */
+    @Transactional
+    public ImagenUploadResponseDTO subirImagenEmergencia(MultipartFile file, Long emergenciaId) throws IOException {
+        validarArchivo(file);
+        
+        String rutaStorage = firebaseStorageService.subirArchivo(file, "emergencias", emergenciaId);
+        String urlPublica = firebaseStorageService.obtenerUrlPublica(rutaStorage);
+        
+        Imagen imagen = crearImagen(file, rutaStorage, urlPublica);
+        imagen = imagenRepository.save(imagen);
+        
+        int orden = emergenciaImagenRepository.findByIdEmergenciaIdOrderByOrdenAsc(emergenciaId).size();
+        
+        // Crear Emergencia reference (solo necesitamos el ID)
+        Emergencia emergencia = new Emergencia();
+        emergencia.setId(emergenciaId);
+        
+        EmergenciaImagen emergenciaImagen = EmergenciaImagen.builder()
+                .id(new EmergenciaImagen.EmergenciaImagenId(emergenciaId, imagen.getId()))
+                .emergencia(emergencia)
+                .imagen(imagen)
+                .orden(orden)
+                .build();
+        
+        emergenciaImagenRepository.save(emergenciaImagen);
+        
+        log.info("Imagen subida para emergencia {}: {}", emergenciaId, imagen.getId());
+        
+        return ImagenUploadResponseDTO.builder()
+                .imagenId(imagen.getId())
+                .urlPublica(urlPublica)
+                .rutaStorage(rutaStorage)
+                .mensaje("Imagen subida exitosamente")
+                .build();
+    }
+
+    /**
+     * Obtiene todas las imágenes de una emergencia
+     */
+    public List<ImagenDTO> obtenerImagenesEmergencia(Long emergenciaId) {
+        List<EmergenciaImagen> relaciones = emergenciaImagenRepository.findByIdEmergenciaIdOrderByOrdenAsc(emergenciaId);
+
+        if (relaciones.isEmpty()) {
+            return Collections.singletonList(crearImagenPlaceholder());
+        }
+
+        return relaciones.stream()
+                .map(imagenMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    /**
      * Elimina una imagen
      */
     @Transactional
@@ -259,6 +313,7 @@ public class ImagenService {
         extravioImagenRepository.deleteByIdImagenId(imagenId);
         avistamientoImagenRepository.deleteByIdImagenId(imagenId);
         adopcionImagenRepository.deleteByIdImagenId(imagenId);
+        emergenciaImagenRepository.deleteByIdImagenId(imagenId);
         
         // Eliminar de Firebase Storage
         firebaseStorageService.eliminarArchivo(imagen.getRutaStorage());

@@ -181,6 +181,18 @@ CREATE TABLE IF NOT EXISTS adopcion_imagen (
         REFERENCES imagen(id) ON DELETE CASCADE
 );
 
+-- Tabla intermedia: Emergencias e Imágenes
+CREATE TABLE IF NOT EXISTS emergencia_imagen (
+    emergencia_id BIGINT NOT NULL,
+    imagen_id BIGINT NOT NULL,
+    orden INT DEFAULT 0,
+    PRIMARY KEY (emergencia_id, imagen_id),
+    CONSTRAINT fk_emergencia FOREIGN KEY (emergencia_id) 
+        REFERENCES emergencia(id) ON DELETE CASCADE,
+    CONSTRAINT fk_emergencia_imagen FOREIGN KEY (imagen_id) 
+        REFERENCES imagen(id) ON DELETE CASCADE
+);
+
 -- ==========================================
 -- 4. ÍNDICES
 -- ==========================================
@@ -197,4 +209,5 @@ CREATE INDEX IF NOT EXISTS idx_mascota_imagen_mascota ON mascota_imagen(mascota_
 CREATE INDEX IF NOT EXISTS idx_extravio_imagen_extravio ON extravio_imagen(extravio_id);
 CREATE INDEX IF NOT EXISTS idx_avistamiento_imagen_avistamiento ON avistamiento_imagen(avistamiento_id);
 CREATE INDEX IF NOT EXISTS idx_adopcion_imagen_adopcion ON adopcion_imagen(adopcion_id);
+CREATE INDEX IF NOT EXISTS idx_emergencia_imagen_emergencia ON emergencia_imagen(emergencia_id);
 CREATE INDEX IF NOT EXISTS idx_imagen_fecha ON imagen(fecha_subida);

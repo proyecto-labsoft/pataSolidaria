@@ -8,7 +8,7 @@ import UbicacionStep from './ubicacionStep'
 import FechaStep from './fechaStep'
 import ConfirmacionStep from './confirmacionStep'
 import AspectoStep from './aspectoStep'
-import { useApiPostExtravioSinFamiliar } from '@/app/api/hooks' 
+import { useApiPostEmergencia, useApiPostExtravioSinFamiliar } from '@/app/api/hooks' 
 import { obtenerValorSexo, obtenerValorTamanio } from '@/app/utiles/obtenerValorEnum'
 import { useUsuario } from '@/app/hooks/useUsuario'
 import { CameraModal } from '../../CameraModal'
@@ -37,7 +37,7 @@ export default function FormularioNuevaEmergencia() {
         new Animated.Value(0), // Línea 3-4
     ]).current
 
-    const { mutateAsync: declararExtraviado, isPending: isPendingDeclararExtraviado } = useApiPostExtravioSinFamiliar({ 
+    const { mutateAsync: declararEmergencia, isPending: isPendingDeclararEmergencia } = useApiPostEmergencia({ 
         onSuccess: () => {setSuccessMensaje(true);setVisible(false)},
     });
     
@@ -82,9 +82,26 @@ export default function FormularioNuevaEmergencia() {
     const onSubmit = (formData: any) => { 
         const fechaHora = `${formData?.fecha} ${formData?.hora}:00`;  
 
-        declararExtraviado({ data: {
-            datosExtravio: { 
-                creador: usuarioId,
+        if (formData?.sexo === 'Macho') {
+            formData.sexo = 'M';
+        } else if (formData?.sexo === 'Hembra') {
+            formData.sexo = 'H';
+        } else if (formData?.sexo === 'No lo sé') {
+            formData.sexo = null;
+        }
+        if (formData?.tamanio === 'Pequeño') {
+            formData.tamanio = 'PEQUENIO';
+        } else if (formData?.tamanio === 'Mediano') {
+            formData.tamanio = 'MEDIANO';
+        } else if (formData?.tamanio === 'Grande') {
+            formData.tamanio = 'GRANDE';
+        } else if (formData?.tamanio === 'Muy grande') {
+            formData.tamanio = 'GIGANTE';
+        }
+        declararEmergencia({ data: {
+            datosEmergencia: { 
+                atendido: false, 
+                usuarioId: usuarioId,
                 zona: 'Zona',
                 mascotaId: null,
                 observacion: 'sin observacion',
@@ -103,8 +120,8 @@ export default function FormularioNuevaEmergencia() {
                 especie: formData?.especie || null,
                 raza: formData?.raza || null,
                 color: formData?.color || null,
-                sexo: obtenerValorSexo(formData?.sexo) || null,
-                tamanio: obtenerValorTamanio(formData?.tamanio) || null,
+                sexo: formData?.sexo || null,
+                tamanio: formData?.tamanio || null,
             } 
         }
         })
@@ -312,18 +329,20 @@ export default function FormularioNuevaEmergencia() {
                     >
                         <View style={{flex: 1, gap:20}}>
                             <Portal>
-                                {successMensaje && (<BackdropSuccess texto="Nueva extravío confirmado" onTap={() => navigation.navigate('Home')}/>)}
+                                {successMensaje && (<BackdropSuccess texto="Nueva emergencia publicada" onTap={() => navigation.navigate('Home')}/>)}
                                 <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={{...styles.containerStyle,backgroundColor:theme.colors.surface}}>
-                                    <Text variant="titleMedium" style={{textAlign: 'center'}}>Al reportar el extravío compartirá sus datos de contacto con los demás usuarios para que se comuniquen con usted.</Text>
+                                    <Text variant="titleMedium" style={{textAlign: 'center'}}>Al reportar la emergencia compartirá sus datos de contacto con la asociación para que se comuniquen con usted.</Text>
                                     <View style={{ flexDirection: 'row', display: 'flex', width: '100%', justifyContent: 'space-between' }}>
                                 
-                                    <Button buttonColor={theme.colors.error} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={() => setVisible(false)}>
-                                        <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Cancelar</Text>
-                                    </Button>
+                                        <View style={{ flexDirection: 'column', justifyContent: 'space-between', width: '100%', paddingHorizontal: 10, marginTop: 20 }}>
 
-                                    <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={handleSubmit(onSubmit)} loading={isPendingDeclararExtraviado} disabled={isPendingDeclararExtraviado}>
-                                        <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Confirmar</Text>
-                                    </Button>
+                                            <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={handleSubmit(onSubmit)} loading={isPendingDeclararExtraviado} disabled={isPendingDeclararExtraviado}>
+                                                <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Confirmar</Text>
+                                            </Button>
+                                            <Button buttonColor={theme.colors.error} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={() => setVisible(false)}>
+                                                <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Cancelar</Text>
+                                            </Button>
+                                        </View>
                                     </View>
                                 </Modal>
                             </Portal>

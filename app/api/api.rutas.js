@@ -72,6 +72,8 @@ export const rutas = {
   avistamientos: `${URL_API}/avistamientos`, 
   avistamientosPorExtravio: `${URL_API}/avistamientos/extravio/{id}`, 
   
+  emergencia: `${URL_API}/emergencias`, 
+  emergenciaPorId: `${URL_API}/emergencias/{id}`, 
   // novedadesPorLicenciaCumplidas: `${URL_API}/novedades/{tipo}/{agencia}/{nroLicencia}?cumplidas=true`,
   // novedadesPorLicenciaNoCumplidas: `${URL_API}/novedades/{tipo}/{agencia}/{nroLicencia}?cumplidas=false`,
   // reporteNovedades: `${URL_API}/novedades/reporte`, // Query Params: desde={desde}, hasta={hasta} , tipo=${tipo} y licencia=${licencia}

@@ -5,6 +5,7 @@ import TimeNoteIcon from '../../iconos/TimeNoteIcon'
 import PropTypes from 'prop-types'
 import CampoHora from '../campos/campoHora'
 import CampoFecha from '../campos/campoFecha'
+import DescripcionVista from '../../descripcionVista'
 
 export default function FechaStep({control}) {
     const theme = useTheme()
@@ -14,8 +15,8 @@ export default function FechaStep({control}) {
             <View style={{alignItems: 'center', marginVertical: -50}}>
                 <TimeNoteIcon width={250} height={250} color={theme.colors.primary} />
             </View>
-            <Text variant="headlineMedium" style={{textAlign: 'center',color: theme.colors.primary }}>Fecha y hora</Text>
-            <Text variant="titleLarge" style={{textAlign: 'center',color: theme.colors.primary }}>¿Cuándo ocurrió?</Text>
+            <DescripcionVista style={{textAlign: 'center',color: theme.colors.primary }} tamanioTexto="headlineMedium" texto="Fecha y hora"/>
+            <DescripcionVista style={{textAlign: 'center',color: theme.colors.primary }}  tamanioTexto="titleLarge" texto="¿Cuándo ocurrió?"/>
             <View style={{width:'100%',justifyContent:'center',alignContent:'center',gap:10}}>
                 <CampoFecha
                     label="Fecha"

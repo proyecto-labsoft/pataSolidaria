@@ -8,7 +8,7 @@ export default function NuevaEmergencia() {
 
     return (
         <>
-            <AppbarNav titulo="Nuevo extravío" tamanioTitulo="headlineSmall"/>     
+            <AppbarNav titulo="Nueva emergencia" tamanioTitulo="headlineSmall"/>     
             <SafeAreaView style={{flex:1}}>    
                 <FormularioNuevaEmergencia /> 
             </SafeAreaView>

@@ -15,7 +15,7 @@ export default function AspectoStep({control}) {
     return (
         <View style={{gap:20}}>
             <View style={{width:'100%',justifyContent:'center',alignContent:'center',gap:10,marginTop: 20}}>
-                <Text style={{textAlign:'center'}} variant="headlineSmall">Aspecto del familiar</Text>
+                <DescripcionVista style={{textAlign:'center'}} tamanioTexto="titleLarge" texto="Aspecto del familiar"/>
                 <CampoTexto
                     control={control}
                     label="Colores"

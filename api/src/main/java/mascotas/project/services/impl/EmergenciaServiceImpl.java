@@ -68,14 +68,13 @@ public class EmergenciaServiceImpl implements EmergenciaService {
     @Override
     public List<EmergenciaDetailDTO> getAllEmergencias(Boolean atendidos) {
 
-        List<EmergenciaDetailDTO> emergenciaDtos = Optional.of(atendidos)
-                                                            .map(repository::findAllByAtendidoOrderByHoraDesc)
-                                                            .filter(emergencias -> !emergencias.isEmpty())
-                                                            .map( mapper::toDetailDtoList )
-                                                            .orElseThrow(
-                                                                    ()-> new NoContentException(ErrorsEnums.NO_CONTENT_ERROR.getDescription())
-                                                            );
+        List<Emergencia> emergenciaEntityList = Optional.ofNullable(atendidos)
+                                                            .map(repository::findAllByAtendidoOrderByHoraDesc )
+                                                            .orElseGet( repository::findAllByOrderByHoraDesc );
 
+        if ( emergenciaEntityList.isEmpty() ){ throw new NoContentException(ErrorsEnums.NO_CONTENT_ERROR.getDescription()); }
+
+        List<EmergenciaDetailDTO> emergenciaDtos = mapper.toDetailDtoList(emergenciaEntityList);
 
         return emergenciaDtos;
     }

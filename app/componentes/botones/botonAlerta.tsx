@@ -27,6 +27,13 @@ export default function BotonAlerta ({onPress,showButton} : Props) {
             color="white"
             actions={[
                 {
+                    icon: () => <SearchMapIcon width={32} height={32} color={theme?.colors.onError} />,
+                    style: { ...styles.fabItem, backgroundColor: theme?.colors.error},
+                    label: '¡Emergencia!',
+                    labelStyle: { ...styles.labelFab },
+                    onPress: () => onPress("NuevaEmergencia"),
+                },
+                {
                     icon: () => <SearchMapIcon width={32} height={32} color={theme?.colors.onSecondaryContainer} />,
                     style: { ...styles.fabItem, backgroundColor: theme?.colors.secondary},
                     label: 'Encontré un animal perdido',

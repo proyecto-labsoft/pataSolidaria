@@ -25,6 +25,7 @@ import NuevoFamiliar from "../pantallas/nuevoFamiliar";
 import NuevaAdopcion from '../pantallas/nuevaAdopcion';
 import ConfirmarAdopcion from '../pantallas/confirmarAdopcion';
 import VistaAdopcion from '../pantallas/vistaAdopcion';
+import NuevaEmergencia from '../pantallas/nuevaEmergencia';
 
 const Stack = createNativeStackNavigator();
 
@@ -97,6 +98,7 @@ export default function AuthNavigator() {
             <Stack.Screen name="NuevaAdopcion" component={NuevaAdopcion} />
             <Stack.Screen name="ConfirmarAdopcion" component={ConfirmarAdopcion} />
             <Stack.Screen name="VistaAdopcion" component={VistaAdopcion} />
+            <Stack.Screen name="NuevaEmergencia" component={NuevaEmergencia} />
           </>
         ) : (
           // Usuario NO autenticado - Solo Login y Registro

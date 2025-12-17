@@ -21,7 +21,7 @@ public class AdopcionImagen {
     @EmbeddedId
     private AdopcionImagenId id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("adopcionId")
     @JoinColumn(name = "adopcion_id")
     private Adopcion adopcion;

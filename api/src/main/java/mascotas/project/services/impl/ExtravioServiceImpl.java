@@ -16,7 +16,7 @@ import mascotas.project.mapper.ExtravioMapper;
 import mascotas.project.repositories.ExtravioRepository;
 import mascotas.project.repositories.UsuarioRepository;
 import mascotas.project.services.interfaces.ExtravioService;
-import mascotas.project.services.interfaces.FireBaseNotificationService;
+import mascotas.project.services.interfaces.ExpoPushNotificationService;
 import mascotas.project.services.interfaces.MascotaService;
 import mascotas.project.services.interfaces.UsuarioService;
 import org.springframework.stereotype.Service;
@@ -37,7 +37,7 @@ public class ExtravioServiceImpl implements ExtravioService {
     private final MascotaService mascotaService;
     private final ExtravioMapper extravioMapper;
     private final ExtravioRepository extravioRepository;
-    private final FireBaseNotificationService fireBaseNotificationService;
+    private final ExpoPushNotificationService expoPushNotificationService;
     private final UsuarioRepository usuarioRepository;
 
     @Override
@@ -131,14 +131,14 @@ public class ExtravioServiceImpl implements ExtravioService {
                         genero = "a";
                     }
                     
-                    fireBaseNotificationService.sendNotification(
+                    expoPushNotificationService.sendNotification(
                         usuarioEntity.getPushToken(),
                         "🎉 ¡" + nombreMascota + " fue encontrad" + genero + "!",
                         "El caso de extravio ha sido marcado como resuelto. ¡Felicitaciones!",
                         data
                     );
                     
-                    log.info("🔔 Notificación de extravio resuelto enviada al usuario: {}", usuarioEntity.getEmail());
+                    log.info("🔔 Notificación Expo de extravio resuelto enviada al usuario: {}", usuarioEntity.getEmail());
                 }
             } catch (Exception e) {
                 log.error("❌ Error al enviar notificación de extravio resuelto: {}", e.getMessage());

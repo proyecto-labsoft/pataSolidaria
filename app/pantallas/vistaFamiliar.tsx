@@ -49,10 +49,10 @@ export default function VistaFamiliar() {
 
   const { data: extravio } = useApiGetExtravioPorMascota({ params: {id: familiarId}})
 
-  useEffect(() => { 
-    console.log("extravio?.estaExtraviado",extravio?.estaExtraviado)
+  useEffect(() => {  
     setPerdido(extravio?.estaExtraviado);
   }, [extravio]);
+  
   const { mutateAsync: declararExtraviado } = useApiPostExtravioFamiliar({
     params: {id: familiarId},
     onSuccess: () => {setPerdido(true)}
@@ -222,8 +222,8 @@ export default function VistaFamiliar() {
                   <Text style={{textAlign:'center',width:'100%'}} variant="headlineSmall">Aspecto físico</Text>
                   <Divider style={{marginBottom: 20 , width: "90%", alignSelf: 'center'}}/>
                   <ItemDato label='Tamaño' data={datosFamiliar?.tamanio}  />
-                  <ItemDato label='Colores' data={datosFamiliar?.colores}  />
-                  <ItemDato label='Observaciones' data={datosFamiliar?.observaciones}  />
+                  <ItemDato label='Colores' data={datosFamiliar?.color}  />
+                  <ItemDato label='Observaciones' data={datosFamiliar?.descripcion}  />
                 </View>
                 <View style={{width:'90%',justifyContent:'center',alignContent:'center',gap:10,marginTop: 20}}>
                   <Text style={{textAlign:'center',width:'100%'}} variant="headlineSmall">Domicilio</Text>

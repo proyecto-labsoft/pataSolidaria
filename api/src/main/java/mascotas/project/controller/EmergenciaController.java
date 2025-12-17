@@ -51,9 +51,9 @@ public class EmergenciaController {
     @Operation(
             operationId = "getEmergencias",
             summary = "Listado de Emergencias filtrados",
-            parameters = {@Parameter(name="atendidos", description = "Emergencias atendidos o no", required = true)}
+            parameters = {@Parameter(name="atendidos", description = "Emergencias atendidos o no", required = false)}
     )
-    public ResponseEntity<List<EmergenciaDetailDTO>> getEmergencias(@RequestParam(name = "atendidos", required = true) Boolean atendidos) {
+    public ResponseEntity<List<EmergenciaDetailDTO>> getEmergencias(@RequestParam(name = "atendidos", required = false) Boolean atendidos) {
 
         List<EmergenciaDetailDTO> emergencias = emergenciaService.getAllEmergencias(atendidos);
         return ResponseEntity.status(HttpStatus.OK).body(emergencias);

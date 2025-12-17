@@ -1,6 +1,6 @@
 import { auth } from '@/config/firebase';
 import { useAuth } from '../contexts/AuthContext';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface UserData {
   usuarioId: string | null;
@@ -11,6 +11,7 @@ interface UserData {
   direccion: string | null;
   token: string | null;
   notificacionesHabilitadas: boolean;
+  isAdmin: boolean;
   isAuthenticated: boolean;
 }
 
@@ -20,30 +21,39 @@ interface UserData {
  */
 export const useUsuario = (): UserData => {
     const { user, userProfile } = useAuth();
-    const [usuarioId, setUsuarioId] =  useState<string | null>(null);
-    const getUsuarioId = async (): Promise<string | null> => {
-
-        // console.log("Auth firebase", user, auth)
-        
-        if (user) {
-          const tokenResult = await user.getIdTokenResult(true);
-          // console.log("Token result",tokenResult)
-          const rol = tokenResult.claims.rol;  // "admin" o "user"
-          const usuarioId = tokenResult.claims.usuarioId;
-          setUsuarioId(usuarioId as string);
-          // console.log('Rol:', rol);
-          // console.log('usuarioId:',usuarioId);
-        }
-    }
-    // const user = auth.currentUser;
+    const [usuarioId, setUsuarioId] = useState<string | null>(null);
+    const [isAdmin, setIsAdmin] = useState<boolean>(false);
     
-    getUsuarioId()
+    useEffect(() => {
+        const getUserData = async () => {
+            if (user) {
+                try {
+                    const tokenResult = await user.getIdTokenResult(true);
+                    const rol = tokenResult.claims.rol;  // "admin" o "user"
+                    const usuarioId = tokenResult.claims.usuarioId;
+                    
+                    setUsuarioId(usuarioId as string);
+                    setIsAdmin(rol === 'admin');
+                    
+                    // console.log('Rol:', rol);
+                    // console.log('usuarioId:', usuarioId);
+                    // console.log('isAdmin:', rol === 'admin');
+                } catch (error) {
+                    console.error('Error obteniendo datos del usuario:', error);
+                }
+            } else {
+                setUsuarioId(null);
+                setIsAdmin(false);
+            }
+        };
+        
+        getUserData();
+    }, [user]);
 
     return {
         // Datos de Firebase Auth
-        
         token: user?.accessToken || null,
-        usuarioId: usuarioId || null,
+        usuarioId: usuarioId,
         email: user?.email || null,
         displayName: user?.displayName || null,
         
@@ -53,7 +63,8 @@ export const useUsuario = (): UserData => {
         direccion: userProfile?.direccion || null,
         notificacionesHabilitadas: userProfile?.notificacionesHabilitadas || false,
         
-        // // Estado de autenticación
-        // isAuthenticated: !!user,
+        // Rol y autenticación
+        isAdmin: isAdmin,
+        isAuthenticated: !!user,
     };
 };

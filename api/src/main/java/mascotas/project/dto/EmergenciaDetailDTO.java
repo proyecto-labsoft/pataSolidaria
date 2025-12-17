@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @Data
 public class EmergenciaDetailDTO {
 
+    private Long id;
     private UsuarioDTO usuarioCreador;
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime hora;

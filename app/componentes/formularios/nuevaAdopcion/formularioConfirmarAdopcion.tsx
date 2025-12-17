@@ -1,6 +1,6 @@
 import { View, Image } from 'react-native'
 import { useState } from 'react'
-import { Button, useTheme, Text, Portal, Divider, Switch } from 'react-native-paper'
+import { Button, useTheme, Text, Portal, Divider, Switch, Card } from 'react-native-paper'
 import { useForm } from 'react-hook-form'
 import { useNavigation } from '@react-navigation/native'
 import BackdropSuccess from '../../backdropSuccess'
@@ -102,7 +102,7 @@ export default function FormularioConfirmarAdopcion({ data }: Props) {
 
             <DescripcionVista texto="Información del familiar" tamanioTexto="titleLarge" />
 
-            <View style={{ gap: 10, backgroundColor: theme.colors.surfaceVariant, padding: 15, borderRadius: 10 }}>
+            <Card style={{ gap: 10, backgroundColor: theme.colors.surfaceVariant, padding: 15, marginHorizontal: 10,borderRadius: 10 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <Text variant="titleMedium" style={{ color: theme.colors.onSurfaceVariant }}>Especie:</Text>
                     <Text variant="titleMedium" style={{ fontWeight: 'bold' }}>{data.especie}</Text>
@@ -151,10 +151,27 @@ export default function FormularioConfirmarAdopcion({ data }: Props) {
                         {data.chipeado ? 'Sí' : 'No'}
                     </Text>
                 </View>
-            </View>
+            </Card>
 
+
+            <Card style={{ gap: 10, backgroundColor: theme.colors.surfaceVariant, padding: 15, borderRadius: 10, marginHorizontal: 10 }}>
+                <DescripcionVista 
+                    texto="Descripción adicional (opcional)" 
+                    tamanioTexto="titleMedium" 
+                />
+            <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant, marginBottom: 10 }}>
+                Agrega información adicional que pueda ayudar a los adoptantes a conocer mejor a tu familiar.
+            </Text>
+
+            <CampoTextoArea
+                control={control}
+                label="Descripción"
+                nombre="descripcion"
+                style={{ backgroundColor: theme?.colors.surface, marginHorizontal: 4 }}
+            />
+            </Card>
             <Divider style={{ height: 2, marginVertical: 10 }} />
-
+            <Card style={{ gap: 10, backgroundColor: theme.colors.surfaceVariant, padding: 15, borderRadius: 10, marginHorizontal: 10 }}>
             <DescripcionVista 
                 texto="Requisitos para adopción" 
                 tamanioTexto="titleMedium" 
@@ -169,24 +186,10 @@ export default function FormularioConfirmarAdopcion({ data }: Props) {
             <CampoTextoArea
                 control={control}
                 label="Requisitos"
+                style={{ backgroundColor: theme?.colors.surface, marginHorizontal: 4 }}
                 nombre="requisitos"
             />
-
-            <Divider style={{ height: 2, marginVertical: 10 }} />
-
-            <DescripcionVista 
-                texto="Descripción adicional (opcional)" 
-                tamanioTexto="titleMedium" 
-            />
-            <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant, marginBottom: 10 }}>
-                Agrega información adicional que pueda ayudar a los adoptantes a conocer mejor a tu familiar.
-            </Text>
-
-            <CampoTextoArea
-                control={control}
-                label="Descripción"
-                nombre="descripcion"
-            />
+            </Card>
 
             <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', width: '100%', marginTop: 20 }}>
                 <Button

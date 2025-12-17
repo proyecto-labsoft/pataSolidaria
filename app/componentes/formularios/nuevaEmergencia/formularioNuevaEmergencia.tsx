@@ -1,40 +1,27 @@
 import { View, StyleSheet, Animated, KeyboardAvoidingView, Platform, ScrollView } from 'react-native'
 import {useState, useEffect, useRef, useCallback} from 'react'
-import { Button, useTheme, Text, Portal, Modal } from 'react-native-paper'
-import { useForm } from 'react-hook-form'
-import { useNavigation } from '@react-navigation/native'
-import BackdropSuccess from '../backdropSuccess'
-import { useApiPostExtravioFamiliar } from '@/app/api/hooks'
+import { Button, useTheme, Text, Portal, Modal } from 'react-native-paper' 
+import { useForm } from 'react-hook-form' 
+import { useNavigation } from '@react-navigation/native' 
+import BackdropSuccess from '../../backdropSuccess' 
+import UbicacionStep from './ubicacionStep'
+import FechaStep from './fechaStep'
+import ConfirmacionStep from './confirmacionStep'
+import AspectoStep from './aspectoStep'
+import { useApiPostEmergencia, useApiPostExtravioSinFamiliar } from '@/app/api/hooks' 
+import { obtenerValorSexo, obtenerValorTamanio } from '@/app/utiles/obtenerValorEnum'
 import { useUsuario } from '@/app/hooks/useUsuario'
-import { formatearFechaHoraCompletaBuenosAires } from '@/app/utiles/fechaHoraBuenosAires'
-import UbicacionStep from './confirmarBuscado/ubicacionStep'
-import DatosAnimalStep from './confirmarBuscado/datosAnimalStep'
-import ConfirmacionStep from './confirmarBuscado/confirmacionStep'
-import FechaStep from './confirmarBuscado/fechaStep'
-interface Props {
-    data: {
-        nombre: string,
-        especie: string,
-        raza: string,
-        tamanio: string,
-        color: string,
-        fechaNacimiento: string,
-        descripcion: string,
-        sexo: string,
-        esterilizado: boolean,
-        chipeado: boolean,
-        domicilio: string
-        ubicacion?: string
-    },
-}
-export default function FormularioConfirmarBuscado({ data } : Props) {
-    const theme = useTheme()
-    const navigation = useNavigation()
-    const {usuarioId} = useUsuario()
-    
-    const [visible, setVisible] = useState(false)
-    const [successMensaje, setSuccessMensaje] = useState(false)
+import { CameraModal } from '../../CameraModal'
+import { formatearFechaBuenosAires, formatearHoraBuenosAires } from '@/app/utiles/fechaHoraBuenosAires'
+
+export default function FormularioNuevaEmergencia() {
+    const theme = useTheme() 
+    const [visible,setVisible] = useState(false)
+    const [successMensaje,setSuccessMensaje] = useState(false)
     const [currentStep, setCurrentStep] = useState(1)
+    const [showCamera, setShowCamera] = useState(true)
+    const [capturedPhoto, setCapturedPhoto] = useState<string | null>(null)
+    const navigation = useNavigation()
 
     // Valores animados para cada paso y línea
     const stepAnimations = useRef([
@@ -50,18 +37,25 @@ export default function FormularioConfirmarBuscado({ data } : Props) {
         new Animated.Value(0), // Línea 3-4
     ]).current
 
-    const { control, setValue, watch, handleSubmit, formState: {errors} } = useForm({
-        defaultValues: {...data, sexo: data?.sexo === "M" ? "Macho" : data?.sexo === "H" ? "Hembra" : "No lo sé"} || {}
-    });
-    
-    const watchedValues = watch(); // Para mostrar valores en confirmación
-     
-    const { mutateAsync: declararExtraviado, isPending: isPendingDeclararExtraviado } = useApiPostExtravioFamiliar({
-        params: {id: data?.id},
-        queriesToInvalidate: ['useApiGetExtraviosPorUsuario','useApiGetExtravios'],
+    const { mutateAsync: declararEmergencia, isPending: isPendingDeclararEmergencia } = useApiPostEmergencia({ 
         onSuccess: () => {setSuccessMensaje(true);setVisible(false)},
     });
+    
+    // Obtener fecha y hora actual de Buenos Aires para valores por defecto
+    const defaultFecha = formatearFechaBuenosAires();
+    const defaultHora = formatearHoraBuenosAires();
+    
+    const { control, handleSubmit, formState: {errors}, watch } = useForm({
+        defaultValues: {
+            fecha: defaultFecha,
+            hora: defaultHora
+        }
+    });
 
+    const watchedValues = watch(); // Para mostrar valores en confirmación
+
+    const { usuarioId } = useUsuario()
+    
     // Efecto para animar los cambios de paso
     useEffect(() => {
         // Animar círculos de pasos
@@ -84,9 +78,10 @@ export default function FormularioConfirmarBuscado({ data } : Props) {
             }).start()
         })
     }, [currentStep, stepAnimations, lineAnimations])
+    
+    const onSubmit = (formData: any) => { 
+        const fechaHora = `${formData?.fecha} ${formData?.hora}:00`;  
 
-    const onSubmit = (formData: any) => {
-        setVisible(false)
         if (formData?.sexo === 'Macho') {
             formData.sexo = 'M';
         } else if (formData?.sexo === 'Hembra') {
@@ -103,19 +98,32 @@ export default function FormularioConfirmarBuscado({ data } : Props) {
         } else if (formData?.tamanio === 'Muy grande') {
             formData.tamanio = 'GIGANTE';
         }
-
-        declararExtraviado({
-            data: {
-                creador: usuarioId,
-                mascotaId: data?.id,
-                resuelto: false, 
-                latitud: formData?.latitud || null,
-                longitud: formData?.longitud || null,
-                direccion: formData?.ubicacion || null,
-                zona: "",
-                hora: formatearFechaHoraCompletaBuenosAires(),
-                observacion: formData?.observacionExtravio || null,
-            }
+        declararEmergencia({ data: {
+            datosEmergencia: { 
+                atendido: false, 
+                usuarioId: usuarioId,
+                zona: 'Zona',
+                mascotaId: null,
+                observacion: 'sin observacion',
+                hora: fechaHora,
+                latitud: formData?.latitud,
+                longitud: formData?.longitud,
+                direccion: formData?.ubicacion
+            },
+            datosMascota: {
+                familiar: null,
+                nombre: null,
+                esterilizado: null,
+                chipeado: null,
+                fechaNacimiento: null,
+                descripcion: formData?.descripcion || null,
+                especie: formData?.especie || null,
+                raza: formData?.raza || null,
+                color: formData?.color || null,
+                sexo: formData?.sexo || null,
+                tamanio: formData?.tamanio || null,
+            } 
+        }
         })
     }
 
@@ -130,21 +138,34 @@ export default function FormularioConfirmarBuscado({ data } : Props) {
             setCurrentStep(currentStep - 1)
         }
     }
+    
+    const handleTakePicture = (photoBase64: string) => {
+        setCapturedPhoto(photoBase64);
+        // Cerrar la cámara para mostrar los pasos del formulario
+        setShowCamera(false);
+    }
+
+    const handleCloseCamera = useCallback(() => {
+        setShowCamera(false);
+        if (!capturedPhoto) {
+            navigation.goBack();
+        }
+    }, [capturedPhoto])
 
     const renderStep = useCallback(() => {
         switch (currentStep) {
             case 1: 
                 return <UbicacionStep control={control} />
             case 2:
-                return <DatosAnimalStep control={control} setValue={setValue} watch={watch} />
-            case 3:
                 return <FechaStep control={control} />
+            case 3:
+                return <AspectoStep control={control} />
             case 4:
                 return <ConfirmacionStep valores={watchedValues} />
             default:
                 return <UbicacionStep control={control} />
         }
-    }, [currentStep, control, setValue , watch, watchedValues])
+    }, [currentStep, control, watchedValues])
 
     const renderNavigationButtons = () => (
         <View style={{ 
@@ -281,43 +302,64 @@ export default function FormularioConfirmarBuscado({ data } : Props) {
                 </View>
             ))}
         </View>
-    )
+    ) 
 
-    return( 
-        <View style={{flex: 1, gap:20}}>
-            <Portal>
-                {successMensaje && (
-                    <BackdropSuccess
-                        texto="Nuevo extravío reportado con éxito"
-                        onTap={() => {
-                            navigation.navigate("Home")
-                        }}
-                    />
-                )}
-            </Portal>
-            <Portal>
-                <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={{...styles.containerStyle,backgroundColor:theme.colors.surface}}>
-                    <Text variant="titleMedium" style={{textAlign: 'center'}}>Al reportar la nueva búsqueda compartirá sus datos de contacto con los demás usuarios.</Text>
-                    <View style={{ flexDirection: 'column', display: 'flex', width: '100%', justifyContent: 'space-between' }}>
-                        <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" loading={isPendingDeclararExtraviado} disabled={isPendingDeclararExtraviado} onPress={handleSubmit(onSubmit)}>
-                            <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Confirmar</Text>
-                        </Button>
-                        <Button buttonColor={theme.colors.error} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={() => setVisible(false)}>
-                            <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Cancelar</Text>
-                        </Button>
-                    </View>
-                </Modal>
-            </Portal>
+    // TODO: Post del nuevo caso de busqueda
+    return(
+        <>
+            {/* Modal de cámara - Se muestra antes del formulario */}
+            <CameraModal
+                visible={showCamera}
+                onClose={() => handleCloseCamera()}
+                onTakePicture={handleTakePicture}
+                showPreview={true}
+            />
             
-            <View style={{flex: 1}}>
-                {renderProgressIndicator()}
-                {renderStep()}
-            </View>
-            
-            <View style={styles.fixedButtonContainer}>
-                {renderNavigationButtons()}
-            </View>
-        </View> 
+            {/* Formulario de pasos - Solo se muestra después de tomar la foto */}
+            {!showCamera && (
+                <KeyboardAvoidingView 
+                    style={{flex: 1}} 
+                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                    keyboardVerticalOffset={100}
+                >
+                    <ScrollView 
+                        style={{flex: 1}} 
+                        contentContainerStyle={{flexGrow: 1}}
+                        keyboardShouldPersistTaps="handled"
+                    >
+                        <View style={{flex: 1, gap:20}}>
+                            <Portal>
+                                {successMensaje && (<BackdropSuccess texto="Nueva emergencia publicada" onTap={() => navigation.navigate('Home')}/>)}
+                                <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={{...styles.containerStyle,backgroundColor:theme.colors.surface}}>
+                                    <Text variant="titleMedium" style={{textAlign: 'center'}}>Al reportar la emergencia compartirá sus datos de contacto con la asociación para que se comuniquen con usted.</Text>
+                                    <View style={{ flexDirection: 'row', display: 'flex', width: '100%', justifyContent: 'space-between' }}>
+                                
+                                        <View style={{ flexDirection: 'column', justifyContent: 'space-between', width: '100%', paddingHorizontal: 10, marginTop: 20 }}>
+
+                                            <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={handleSubmit(onSubmit)} loading={isPendingDeclararExtraviado} disabled={isPendingDeclararExtraviado}>
+                                                <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Confirmar</Text>
+                                            </Button>
+                                            <Button buttonColor={theme.colors.error} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={() => setVisible(false)}>
+                                                <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Cancelar</Text>
+                                            </Button>
+                                        </View>
+                                    </View>
+                                </Modal>
+                            </Portal>
+                            
+                            <View style={{flex: 1}}>
+                                {renderProgressIndicator()}
+                                {renderStep()}
+                            </View>
+                            
+                            <View style={styles.fixedButtonContainer}>
+                                {renderNavigationButtons()}
+                            </View>
+                        </View>
+                    </ScrollView>
+                </KeyboardAvoidingView>
+            )}
+        </>
     )
 }
 

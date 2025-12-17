@@ -228,6 +228,17 @@ export function useApiGetEsFavorito({ params,...opciones }) {
     });
 }
 
+
+// Emergencias
+
+export function useApiPostEmergencia({ ...opciones }) {
+    const { token } = useUsuario() 
+    return usePost({
+        nombreHook: "useApiPostEmergencia",
+        url: rutas.emergencia,
+        configuracion: { ...opciones, token: token, queriesToInvalidate:['useApiGetExtravios'] }
+    });
+}
 // export function useApiGetTransporteLicenciaPorDominio({ parametros, ...opciones }) {
 //   return (useGet(
 //       {

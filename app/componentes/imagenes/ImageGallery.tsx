@@ -44,7 +44,7 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
   const scrollX = useRef(new Animated.Value(0)).current;
   const theme = useTheme();
   const { data: imagenes, isLoading, error, isFetching } = useObtenerImagenes(entityType, entityId);
-  const eliminarImagen = useEliminarImagen(entityType);
+  const eliminarImagen = useEliminarImagen(entityType, entityId);
   const subirImagen = useSubirImagen(entityType);
   
   // Estado de carga/error para cada imagen
@@ -366,7 +366,9 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
           <FAB.Group
             open={fabOpen}
             visible={!isUploading}
-            icon={fabOpen ? 'close' : 'plus'}
+            icon={fabOpen ? 'close' : 'camera-plus'}
+            color="white"
+            backdropColor="transparent"
             actions={[
               {
                 icon: 'camera',
@@ -381,6 +383,7 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
             ]}
             onStateChange={({ open }) => setFabOpen(open)}
             style={styles.fab}
+            fabStyle={{...styles.fabButton, backgroundColor: fabOpen ? theme.colors.inversePrimary : theme.colors.primary }}
           />
         )}
         {isUploading && (

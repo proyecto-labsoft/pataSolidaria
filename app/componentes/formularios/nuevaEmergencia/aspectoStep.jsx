@@ -1,7 +1,10 @@
 
-import { View } from 'react-native' 
-import { Text } from 'react-native-paper' 
-import CampoTexto from '../campos/campoTexto'  
+import { View,StyleSheet, Animated } from 'react-native'
+import {useState, useEffect, useRef} from 'react'
+import { Button, useTheme, Text, Portal, Modal } from 'react-native-paper'
+import { Mapa } from '../../mapa'
+import CampoTexto from '../campos/campoTexto' 
+import DescripcionVista from '../../descripcionVista' 
 import CampoSelectorModal from '../campos/campoSelectorModal'
 import CampoTextoArea from '../campos/campoTextoArea'
 
@@ -12,7 +15,7 @@ export default function AspectoStep({control}) {
     return (
         <View style={{gap:20}}>
             <View style={{width:'100%',justifyContent:'center',alignContent:'center',gap:10,marginTop: 20}}>
-                <Text style={{textAlign:'center'}} variant="headlineSmall">Aspecto del familiar</Text>
+                <DescripcionVista style={{textAlign:'center'}} tamanioTexto="titleLarge" texto="Aspecto del familiar"/>
                 <CampoTexto
                     control={control}
                     label="Colores"

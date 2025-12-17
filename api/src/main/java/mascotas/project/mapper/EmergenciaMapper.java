@@ -13,9 +13,10 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses = {UsuarioMapper.class, MascotaMapper.class}, imports = Mascota.class)
 public interface EmergenciaMapper {
 
+    @Mapping(target = "id", source = "emergenciaEntity.id")
     @Mapping(target = "mascotaDetalle", source = "mascota")
     @Mapping(target = "usuarioCreador", source = "creador", qualifiedByName = "toUsuarioDtoDetail")
-    EmergenciaDetailDTO toDetailDto (Emergencia adopcionEntity);
+    EmergenciaDetailDTO toDetailDto (Emergencia emergenciaEntity);
 
     List<EmergenciaDetailDTO> toDetailDtoList (List <Emergencia> emergenciaEntityList);
 

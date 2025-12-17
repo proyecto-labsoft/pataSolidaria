@@ -152,7 +152,7 @@ public class ImagenService {
      */
     public List<ImagenDTO> obtenerImagenesMascota(Long mascotaId) {
         List<MascotaImagen> relaciones = mascotaImagenRepository.findByIdMascotaIdOrderByOrdenAsc(mascotaId);
-        
+
         if (relaciones.isEmpty()) {
             return Collections.singletonList(crearImagenPlaceholder());
         }
@@ -167,11 +167,11 @@ public class ImagenService {
      */
     public List<ImagenDTO> obtenerImagenesExtravio(Long extravioId) {
         List<ExtravioImagen> relaciones = extravioImagenRepository.findByIdExtravioIdOrderByOrdenAsc(extravioId);
-        
+
         if (relaciones.isEmpty()) {
             return Collections.singletonList(crearImagenPlaceholder());
         }
-        
+
         return relaciones.stream()
                 .map(imagenMapper::toDTO)
                 .collect(Collectors.toList());
@@ -182,11 +182,11 @@ public class ImagenService {
      */
     public List<ImagenDTO> obtenerImagenesAvistamiento(Long avistamientoId) {
         List<AvistamientoImagen> relaciones = avistamientoImagenRepository.findByIdAvistamientoIdOrderByOrdenAsc(avistamientoId);
-        
+
         if (relaciones.isEmpty()) {
             return Collections.singletonList(crearImagenPlaceholder());
         }
-        
+
         return relaciones.stream()
                 .map(imagenMapper::toDTO)
                 .collect(Collectors.toList());
@@ -235,11 +235,11 @@ public class ImagenService {
      */
     public List<ImagenDTO> obtenerImagenesAdopcion(Long adopcionId) {
         List<AdopcionImagen> relaciones = adopcionImagenRepository.findByIdAdopcionIdOrderByOrdenAsc(adopcionId);
-        
+
         if (relaciones.isEmpty()) {
             return Collections.singletonList(crearImagenPlaceholder());
         }
-        
+
         return relaciones.stream()
                 .map(imagenMapper::toDTO)
                 .collect(Collectors.toList());
@@ -282,7 +282,7 @@ public class ImagenService {
                 .orden(0)
                 .build();
     }
-
+    
     private void validarArchivo(MultipartFile file) {
         if (!firebaseStorageService.esImagenValida(file)) {
             throw new BadRequestException("El archivo debe ser una imagen válida (JPEG, PNG, WEBP)");

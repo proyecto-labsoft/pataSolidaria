@@ -12,8 +12,9 @@
 //const URL_API = "http://192.168.49.93:8083" // Muni
 // const URL_API = "http://192.168.0.44:8083" 
 // const URL_API = "http://192.168.1.127:8083"
- const URL_API = "http://192.168.1.14:8083"  // eze
+// const URL_API = "http://192.168.1.14:8083"  // eze
 // const URL_API = "http://192.168.49.54"; // muni eze
+const URL_API = "https://patasolidaria-production.up.railway.app"; // Producción
 
 /**
  * URL base de la API - Exportada para uso en otros módulos
@@ -71,6 +72,8 @@ export const rutas = {
   avistamientos: `${URL_API}/avistamientos`, 
   avistamientosPorExtravio: `${URL_API}/avistamientos/extravio/{id}`, 
   
+  emergencia: `${URL_API}/emergencias`, 
+  emergenciaPorId: `${URL_API}/emergencias/{id}`, 
   // novedadesPorLicenciaCumplidas: `${URL_API}/novedades/{tipo}/{agencia}/{nroLicencia}?cumplidas=true`,
   // novedadesPorLicenciaNoCumplidas: `${URL_API}/novedades/{tipo}/{agencia}/{nroLicencia}?cumplidas=false`,
   // reporteNovedades: `${URL_API}/novedades/reporte`, // Query Params: desde={desde}, hasta={hasta} , tipo=${tipo} y licencia=${licencia}

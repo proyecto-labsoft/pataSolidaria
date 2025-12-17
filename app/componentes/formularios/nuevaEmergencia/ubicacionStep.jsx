@@ -6,7 +6,7 @@ import { Mapa } from '../../mapa'
 import CampoTexto from '../campos/campoTexto'  
 import LocationIcon from '../../iconos/LocationIcon'
 import PropTypes from 'prop-types'
-import CampoTextoArea from '../campos/campoTextoArea'
+import DescripcionVista from '../../descripcionVista'
 
 export default function UbicacionStep({control}) {
     const theme = useTheme()
@@ -25,8 +25,8 @@ export default function UbicacionStep({control}) {
             <View style={{alignItems: 'center', marginVertical: -50 }}>
                 <LocationIcon width={250} height={250} color={theme.colors.primary} />
             </View>
-            <Text variant="headlineMedium" style={{textAlign: 'center',color: theme.colors.primary }}>Ubicación</Text>
-            <Text variant="titleLarge" style={{textAlign: 'center',color: theme.colors.primary }}>¿Por dónde se extravió?</Text>
+            <DescripcionVista style={{textAlign: 'center',color: theme.colors.primary }} tamanioTexto="headlineMedium" texto="Ubicación"/>
+            <DescripcionVista style={{textAlign: 'center',color: theme.colors.primary }}  tamanioTexto="titleLarge" texto="¿Por dónde se extravió?"/>
 
             <Mapa 
                 localizar 
@@ -41,11 +41,6 @@ export default function UbicacionStep({control}) {
                 disabled
                 label='Ubicación'
                 nombre='ubicacion'
-                control={control}
-            />
-            <CampoTextoArea
-                label='Información adicional (opcional)'
-                nombre='observacion'
                 control={control}
             />
 

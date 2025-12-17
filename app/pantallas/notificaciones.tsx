@@ -4,14 +4,18 @@ import { useTheme, Text as TextPaper, Divider, Card, IconButton, FAB } from "rea
 import React, { useState, useEffect } from "react";
 import AppbarNav from "../componentes/navegacion/appbarNav";
 import * as Notifications from 'expo-notifications';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { calcularTiempoTranscurrido } from "../utiles/calcularTiempoTranscurrido";
 import { useAuth } from "../contexts/AuthContext";
+
+const NOTIFICATIONS_STORAGE_KEY = '@notifications_history';
+const MAX_NOTIFICATIONS = 100; // Límite de notificaciones guardadas
 
 interface NotificationItem {
   id: string;
   title: string;
   body: string;
-  date: Date;
+  date: string; // Cambiar a string para facilitar serialización
   data?: any;
   read: boolean;
 }
@@ -19,20 +23,8 @@ interface NotificationItem {
 export default function Notificaciones() {
   const theme = useTheme();
   const navigation = useNavigation();
-  const { user } = useAuth();
+  const { isAdmin } = useAuth();
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  // Verificar si el usuario es administrador
-  useEffect(() => {
-    const checkAdmin = async () => {
-      if (user) {
-        const tokenResult = await user.getIdTokenResult();
-        setIsAdmin(tokenResult.claims.rol === 'admin');
-      }
-    };
-    checkAdmin();
-  }, [user]);
 
   useEffect(() => {
     // Cargar notificaciones previas
@@ -44,12 +36,13 @@ export default function Notificaciones() {
         id: notification.request.identifier,
         title: notification.request.content.title || 'Notificación',
         body: notification.request.content.body || '',
-        date: new Date(),
+        date: new Date().toISOString(),
         data: notification.request.content.data,
         read: false,
       };
 
-      setNotifications(prev => [newNotification, ...prev]);
+      // Guardar y actualizar notificaciones
+      saveNotification(newNotification);
     });
 
     return () => {
@@ -57,31 +50,59 @@ export default function Notificaciones() {
     };
   }, []);
 
+  // Cargar notificaciones desde AsyncStorage
   const loadNotifications = async () => {
     try {
-      // Cargar notificaciones programadas y entregadas
-      const delivered = await Notifications.getPresentedNotificationsAsync();
-      
-      const mappedNotifications: NotificationItem[] = delivered.map(n => ({
-        id: n.request.identifier,
-        title: n.request.content.title || 'Notificación',
-        body: n.request.content.body || '',
-        date: n.date ? new Date(n.date) : new Date(),
-        data: n.request.content.data,
-        read: false,
-      }));
-
-      setNotifications(mappedNotifications);
+      const stored = await AsyncStorage.getItem(NOTIFICATIONS_STORAGE_KEY);
+      if (stored) {
+        const parsed: NotificationItem[] = JSON.parse(stored);
+        setNotifications(parsed);
+      }
     } catch (error) {
       console.error('Error cargando notificaciones:', error);
     }
   };
 
+  // Guardar una nueva notificación
+  const saveNotification = async (newNotification: NotificationItem) => {
+    try {
+      const stored = await AsyncStorage.getItem(NOTIFICATIONS_STORAGE_KEY);
+      let allNotifications: NotificationItem[] = stored ? JSON.parse(stored) : [];
+      
+      // Agregar la nueva notificación al inicio
+      allNotifications = [newNotification, ...allNotifications];
+      
+      // Limitar el número de notificaciones guardadas
+      if (allNotifications.length > MAX_NOTIFICATIONS) {
+        allNotifications = allNotifications.slice(0, MAX_NOTIFICATIONS);
+      }
+      
+      // Guardar en AsyncStorage
+      await AsyncStorage.setItem(NOTIFICATIONS_STORAGE_KEY, JSON.stringify(allNotifications));
+      
+      // Actualizar el estado
+      setNotifications(allNotifications);
+    } catch (error) {
+      console.error('Error guardando notificación:', error);
+    }
+  };
+
+  // Actualizar notificaciones en AsyncStorage
+  const updateNotifications = async (updatedNotifications: NotificationItem[]) => {
+    try {
+      await AsyncStorage.setItem(NOTIFICATIONS_STORAGE_KEY, JSON.stringify(updatedNotifications));
+      setNotifications(updatedNotifications);
+    } catch (error) {
+      console.error('Error actualizando notificaciones:', error);
+    }
+  };
+
   const handleNotificationPress = (item: NotificationItem) => {
-    // Marcar como leída
-    setNotifications(prev =>
-      prev.map(n => (n.id === item.id ? { ...n, read: true } : n))
+    // Marcar como leída y actualizar en AsyncStorage
+    const updatedNotifications = notifications.map(n => 
+      n.id === item.id ? { ...n, read: true } : n
     );
+    updateNotifications(updatedNotifications);
 
     // Navegar según el tipo de notificación
     if (item.data?.type === 'avistamiento' && item.data?.extravioId) {
@@ -93,10 +114,12 @@ export default function Notificaciones() {
   };
 
   const markAllAsRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    const updatedNotifications = notifications.map(n => ({ ...n, read: true }));
+    updateNotifications(updatedNotifications);
   };
 
   const clearAll = async () => {
+    await AsyncStorage.removeItem(NOTIFICATIONS_STORAGE_KEY);
     setNotifications([]);
     await Notifications.dismissAllNotificationsAsync();
   };
@@ -147,7 +170,7 @@ export default function Notificaciones() {
             variant="bodySmall" 
             style={{ color: theme.colors.onSurfaceVariant, marginTop: 8 }}
           >
-            {calcularTiempoTranscurrido(item.date.toISOString())}
+            {calcularTiempoTranscurrido(item.date)}
           </TextPaper>
         </Card.Content>
       </Card>
@@ -202,15 +225,15 @@ export default function Notificaciones() {
         />
       )}
 
-      {/* FAB para administradores - TODO: Descomentar cuando se implemente verificación de roles */}
-      {/* {isAdmin && ( */}
+      {/* FAB solo visible para administradores */}
+      {isAdmin && (
         <FAB
           icon="send"
           color="white"
           style={[styles.fab, { backgroundColor: theme.colors.primary }]}
           onPress={() => navigation.navigate('AdminNotificaciones' as never)}
         />
-      {/* )} */}
+      )}
     </View>
   );
 }

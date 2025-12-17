@@ -4,29 +4,15 @@ import { useTheme, Text, Card } from 'react-native-paper'
 import PropTypes from 'prop-types'
 import DescripcionVista from '../../descripcionVista'
 
-interface ConfirmacionStepProps {
-    valores?: {
-        fecha?: string;
-        hora?: string;
-        ubicacion?: string;
-        identificacion?: string | number;
-        especie?: string;
-        raza?: string;
-        sexo?: string;
-        tamanio?: string;
-        color?: string;
-        comentario?: string;
-    }; 
-}
-
-export default function ConfirmacionStep({valores}: ConfirmacionStepProps) {
+export default function ConfirmacionStep({valores, ubic}) {
     
     const theme = useTheme()
 
     return (
         <View style={{gap:15}}>
-            <DescripcionVista tamanioTexto="headlineSmall" texto="Confirmar avistamiento" />
-                        
+            
+            <DescripcionVista style={{textAlign:'center'}} tamanioTexto="headlineSmall" texto="Confirmar datos" />
+            
             <Card style={{ gap: 10, backgroundColor: theme.colors.surfaceVariant, padding: 15, marginHorizontal: 10,borderRadius: 10 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <Text variant="titleMedium" style={{ color: theme.colors.onSurfaceVariant }}>Ubicación:</Text>
@@ -69,21 +55,21 @@ export default function ConfirmacionStep({valores}: ConfirmacionStepProps) {
             </Card> 
 
 
-            {valores?.comentario && ( 
+            {valores?.descripcion && ( 
                 <>
                     <DescripcionVista 
-                        texto="Información adicional" 
+                        texto="Descripción adicional" 
                         tamanioTexto="titleLarge" 
                     />
                     <Card style={{ gap: 10, backgroundColor: theme.colors.surfaceVariant, padding: 15, borderRadius: 10, marginHorizontal: 10 }}>
                         
                         <Text variant="titleMedium" style={{ color: theme.colors.onSurfaceVariant }}>
-                            {valores?.comentario}
+                            {valores?.descripcion}
                         </Text>
                         
                     </Card>
                 </>
-            )}  
+            )} 
         </View>
     )
 }

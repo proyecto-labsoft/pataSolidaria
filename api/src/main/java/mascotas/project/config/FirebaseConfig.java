@@ -16,7 +16,7 @@ import java.nio.charset.StandardCharsets;
 @Configuration
 public class FirebaseConfig {
 
-    @Value("${firebase.config.json}")
+    @Value("${firebase.config.json:}")
     private String firebaseConfigJson;
     
     @Bean
@@ -41,13 +41,12 @@ public class FirebaseConfig {
 
     /**
      * Obtiene el InputStream de las credenciales de Firebase.
-     * Primero intenta desde la variable de entorno FIREBASE_SERVICE_ACCOUNT,
+     * Primero intenta desde la variable de entorno o propiedad firebase.config.json,
      * si no existe, usa el archivo firebase-service-account.json del classpath.
      */
     private InputStream getServiceAccountStream() throws IOException {
-        String firebaseConfigJson = System.getenv("firebase.config.json");
-        
-        if (firebaseConfigJson != null && !firebaseConfigJson.isEmpty()) {
+        // Primero intenta desde la propiedad inyectada
+        if (firebaseConfigJson != null && !firebaseConfigJson.trim().isEmpty()) {
             System.out.println("✅ Usando credenciales de Firebase desde variable de entorno FIREBASE_SERVICE_ACCOUNT");
             return new ByteArrayInputStream(firebaseConfigJson.getBytes(StandardCharsets.UTF_8));
         } else {

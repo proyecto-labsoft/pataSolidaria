@@ -1,15 +1,14 @@
 import { View } from 'react-native'
-import { Text, Button, useTheme, Divider } from 'react-native-paper'
+import { Text, Button, useTheme } from 'react-native-paper'
 import CampoTexto from './campos/campoTexto'
 import CampoTextoArea from './campos/campoTextoArea' 
-import { useForm } from 'react-hook-form'
-import CampoFecha from './campos/campoFecha'
-import CampoHora from './campos/campoHora'
+import { useForm } from 'react-hook-form' 
 import CampoSelectorModal from './campos/campoSelectorModal'
 import { useMemo } from 'react'
 
 interface Props {
     onSubmit: (data: any) => void,
+    submitting?: boolean,
     onCancel: () => void,
     data?: {
         zona?: string,
@@ -29,7 +28,7 @@ interface Props {
     }
 }
 
-export default function FormularioEditarExtravio({data, onCancel, onSubmit} : Props) {
+export default function FormularioEditarExtravio({data, onCancel, submitting, onSubmit} : Props) {
     const theme = useTheme()
     
     // Separar fecha y hora del campo 'hora' (formato: "dd-MM-yyyy HH:mm:ss")
@@ -111,7 +110,7 @@ export default function FormularioEditarExtravio({data, onCancel, onSubmit} : Pr
                 <Button  buttonColor={theme.colors.error} style={{  marginVertical: 8 ,borderRadius:10}} uppercase mode="contained" onPress={onCancel}>
                     <Text variant='labelLarge' style={{color: theme.colors.onError, marginLeft: "5%"}}>Cancelar</Text>
                 </Button>
-                <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={handleSubmit(onSubmit)}>
+                <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" disabled={submitting} loading={submitting} onPress={handleSubmit(onSubmit)}>
                     <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Guardar</Text>
                 </Button>
             </View>

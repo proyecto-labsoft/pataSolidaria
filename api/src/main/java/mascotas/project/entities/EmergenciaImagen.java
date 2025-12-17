@@ -15,16 +15,16 @@ import java.io.Serializable;
 @Builder
 @Entity
 @Data
-@Table(name = "adopcion_imagen", schema = "public")
-public class AdopcionImagen {
+@Table(name = "emergencia_imagen", schema = "public")
+public class EmergenciaImagen {
 
     @EmbeddedId
-    private AdopcionImagenId id;
+    private EmergenciaImagenId id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @MapsId("adopcionId")
-    @JoinColumn(name = "adopcion_id")
-    private Adopcion adopcion;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("emergenciaId")
+    @JoinColumn(name = "emergencia_id")
+    private Emergencia emergencia;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("imagenId")
@@ -41,9 +41,9 @@ public class AdopcionImagen {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class AdopcionImagenId implements Serializable {
-        @Column(name = "adopcion_id")
-        private Long adopcionId;
+    public static class EmergenciaImagenId implements Serializable {
+        @Column(name = "emergencia_id")
+        private Long emergenciaId;
 
         @Column(name = "imagen_id")
         private Long imagenId;

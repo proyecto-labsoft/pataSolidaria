@@ -7,6 +7,7 @@ import { obtenerValorSexo } from "@/app/utiles/obtenerValorEnum";
 import BannerCoverOverlay from './bannerCoverOverlay';
 import { useUsuario } from "@/app/hooks/useUsuario";
 import { useApiDeleteFavorito, useApiGetEsFavorito, useApiPostFavorito } from "@/app/api/hooks";
+import { useObtenerImagenes } from "@/app/api/imagenes.hooks";
 
 interface Props {
     data: {
@@ -29,6 +30,17 @@ export default function CardAnimal({ data, navigateTo }: Props) {
     const creadorPorMi = data?.creadorId === usuarioId;
     const navigation = useNavigation();
     const randomImage = ImageSlider[0].imagenes[Math.floor(Math.random() * ImageSlider[0].imagenes.length)];
+
+    // Obtener imágenes del extravío
+    const { data: imagenesExtravio } = useObtenerImagenes(
+        'extravios',
+        data?.extravioId
+    );
+
+    // Usar la primera imagen del extravío o una imagen random como fallback
+    const imagenMostrar = imagenesExtravio && imagenesExtravio.length > 0
+        ? { uri: imagenesExtravio[0].url || imagenesExtravio[0].urlPublica }
+        : randomImage;
 
     const { data: esFavorito } = useApiGetEsFavorito({
         params: {
@@ -90,7 +102,7 @@ export default function CardAnimal({ data, navigateTo }: Props) {
                 ]}
             >
                 <View style={{ position: 'relative' }}>
-                    <Card.Cover style={styles.fotoAnimal} source={randomImage} />
+                    <Card.Cover style={styles.fotoAnimal} source={imagenMostrar} />
                     {((esBuscado && creadorPorMi) || creadorPorMi) && (
                     <BannerCoverOverlay texto="Creado por ti" />
                     )}

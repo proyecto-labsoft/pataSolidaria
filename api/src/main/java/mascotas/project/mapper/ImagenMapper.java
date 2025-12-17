@@ -53,6 +53,17 @@ public interface ImagenMapper {
     @Mapping(target = "orden", source = "orden")
     ImagenDTO toDTO(AdopcionImagen adopcionImagen);
 
+    // Mapeo desde EmergenciaImagen a DTO
+    @Mapping(target = "id", source = "imagen.id")
+    @Mapping(target = "nombreArchivo", source = "imagen.nombreArchivo")
+    @Mapping(target = "rutaStorage", source = "imagen.rutaStorage")
+    @Mapping(target = "urlPublica", source = "imagen.urlPublica")
+    @Mapping(target = "tipoMime", source = "imagen.tipoMime")
+    @Mapping(target = "tamanio", source = "imagen.tamanio")
+    @Mapping(target = "fechaSubida", source = "imagen.fechaSubida")
+    @Mapping(target = "orden", source = "orden")
+    ImagenDTO toDTO(EmergenciaImagen emergenciaImagen);
+
     // Helper para crear ImagenUploadResponseDTO
     @Mapping(target = "imagenId", source = "id")
     @Mapping(target = "mensaje", constant = "Imagen subida exitosamente")

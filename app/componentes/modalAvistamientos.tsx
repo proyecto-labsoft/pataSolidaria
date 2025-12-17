@@ -6,6 +6,7 @@ import CarruselImagenes from './carrusel/carruselImagenes';
 import ItemDato from './itemDato';
 import { calcularTiempoTranscurrido } from '../utiles/calcularTiempoTranscurrido';
 import { ImageSlider } from '../testData/sliderData';
+import { useObtenerImagenes } from '../api/imagenes.hooks';
 
 const imagenes = ImageSlider[0].imagenes;
 
@@ -27,6 +28,26 @@ export default function ModalAvistamientos({
     setAvistamientoSeleccionado,
 }: ModalAvistamientosProps) {
     const theme = useTheme();
+
+    // Obtener imágenes del avistamiento seleccionado
+    const avistamientoId = avistamientoSeleccionado?.id;
+    const esExtravio = avistamientoSeleccionado === datosExtravio;
+    const entityType = esExtravio ? 'extravios' : 'avistamientos';
+    const entityId = esExtravio ? datosExtravio?.extravioId : avistamientoId;
+    
+    console.log('🎯 Modal - Avistamiento seleccionado completo:', avistamientoSeleccionado);
+    console.log('🔍 Modal - Avistamiento ID:', avistamientoId);
+    console.log('🔍 Modal - Es extravío?:', esExtravio);
+    console.log('🔍 Modal - Entity type:', entityType);
+    console.log('🔍 Modal - Entity ID:', entityId);
+    
+    const { data: imagenesAvistamiento, isLoading: isLoadingImagenes } = useObtenerImagenes(
+        entityType,
+        entityId,
+        { enabled: !!avistamientoSeleccionado && !!entityId }
+    );
+    
+    console.log('📸 Modal - Imágenes del avistamiento:', imagenesAvistamiento);
 
     const handleClose = () => {
         setAvistamientoSeleccionado(null);
@@ -145,11 +166,14 @@ export default function ModalAvistamientos({
                             </View>
 
                             {/* Imágenes (si existen) */}
-                            {/* {imagenes && imagenes.length > 0 && (
+                            {imagenesAvistamiento && imagenesAvistamiento.length > 0 && (
                                 <View style={{ marginBottom: 16 }}>
-                                    <CarruselImagenes data={imagenes} />
+                                    <CarruselImagenes 
+                                        imagenesReales={imagenesAvistamiento}
+                                        isLoading={isLoadingImagenes}
+                                    />
                                 </View>
-                            )} */}
+                            )}
 
                             {/* Información */}
                             <Surface style={styles.infoSurface}>

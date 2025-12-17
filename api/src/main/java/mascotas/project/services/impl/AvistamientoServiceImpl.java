@@ -71,7 +71,9 @@ public class AvistamientoServiceImpl implements AvistamientoService {
                 
                 // Obtener la mascota completa (getMascota() retorna Long, no Mascota)
                 Mascota mascotaEntity = mascotaService.getMascotaEntityById(extravioEntity.getMascota());
-                String nombreMascota = mascotaEntity != null ? mascotaEntity.getNombre() : "tu mascota";
+                String nombreMascota = mascotaEntity != null && mascotaEntity.getNombre() != null && mascotaEntity.getNombre().length() > 0
+                                            ? mascotaEntity.getNombre()
+                                            : "";
                 
                 Map<String, String> data = new HashMap<>();
                 data.put("type", "avistamiento");
@@ -80,8 +82,8 @@ public class AvistamientoServiceImpl implements AvistamientoService {
                 
                 boolean enviado = notificationService.sendNotification(
                     duenioEntity.getPushToken(),
-                    "🐾 ¡Nuevo avistamiento de " + nombreMascota + "!",
-                    "Alguien reportó haber visto a " + nombreMascota + ". Revisa los detalles.",
+                    "🐾 ¡Nuevo avistamiento" + (nombreMascota.length() > 0 ? " de " + nombreMascota : "") + "!",
+                    "Alguien reportó haber" + (nombreMascota.length() > 0 ? " visto a " + nombreMascota : "lo visto") + ". Revisa los detalles.",
                     data
                 );
                 

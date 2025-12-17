@@ -10,6 +10,10 @@ import { formatearFechaBuenosAires, formatearHoraBuenosAires } from '@/app/utile
 import UbicacionStep from './ubicacionStep'
 import ConfirmacionStep from './confirmacionStep'
 import FechaStep from './fechaStep'
+import { CameraModal } from '../../CameraModal'
+import { useSubirImagen } from '@/app/api/imagenes.hooks'
+import { api } from '@/app/api/api'
+import { API_URL } from '@/app/api/api.rutas'
 
 // TODO: Falta parte del back
 export default function FormularioNuevoAvistamiento({extravioId}: {extravioId: number}) {
@@ -18,6 +22,8 @@ export default function FormularioNuevoAvistamiento({extravioId}: {extravioId: n
     const [visible,setVisible] = useState(false)
     const [currentStep, setCurrentStep] = useState(1)
     const [success,setSuccess] = useState(false)
+    const [showCamera, setShowCamera] = useState(true)
+    const [capturedPhoto, setCapturedPhoto] = useState<string | null>(null)
     const { usuarioId,email,displayName,nombre,celular,direccion } = useUsuario()
 
     // Valores animados para cada paso y línea
@@ -42,9 +48,63 @@ export default function FormularioNuevoAvistamiento({extravioId}: {extravioId: n
         celular: celular || ''
     }});
 
+    const subirImagen = useSubirImagen('avistamientos');
+
     const { mutateAsync: crearAvistamiento, isPending: isPendingCrearAvistamiento } = useApiPostAvistamiento({
-        onSuccess: () => {
-            setSuccess(true)
+        onSuccess: async (response) => {
+            console.log('✅ Avistamiento creado, respuesta completa:', JSON.stringify(response, null, 2));
+            
+            // Obtener el ID del avistamiento de la respuesta
+            let avistamientoId = response?.id || response?.data?.id;
+            console.log('🔍 Response del POST:', response);
+            
+            // Si no tenemos el ID en la respuesta, obtener el avistamiento más reciente del usuario
+            if (!avistamientoId) {
+                console.log('⏳ ID no encontrado en respuesta, consultando avistamientos del usuario...');
+                try {
+                    const avistamientosResponse = await api.get(`${API_URL}/avistamientos/usuario/${usuarioId}`);
+                    const avistamientos = avistamientosResponse?.data;
+                    console.log('📋 Todos los avistamientos del usuario:', avistamientos);
+                    
+                    if (avistamientos && avistamientos.length > 0) {
+                        // Ordenar por ID descendente (el más reciente tendrá el ID más alto)
+                        const avistamientosOrdenados = [...avistamientos].sort((a, b) => {
+                            const idA = a.id;
+                            const idB = b.id;
+                            return idB - idA;
+                        });
+                        
+                        avistamientoId = avistamientosOrdenados[0]?.id;
+                        console.log('🎯 ID obtenido del avistamiento más reciente (ID más alto):', avistamientoId);
+                        console.log('📊 Avistamiento seleccionado:', avistamientosOrdenados[0]);
+                    }
+                } catch (error) {
+                    console.error('❌ Error obteniendo avistamientos del usuario:', error);
+                }
+            }
+            
+            console.log('🎯 ID final a usar:', avistamientoId);
+            
+            // Si hay foto capturada, subirla automáticamente
+            if (capturedPhoto && avistamientoId) {
+                try {
+                    console.log('📤 Subiendo foto capturada al avistamiento:', avistamientoId);
+                    await subirImagen.mutateAsync({
+                        entityId: avistamientoId,
+                        file: {
+                            uri: capturedPhoto,
+                            type: 'image/jpeg',
+                            name: `captured-${Date.now()}.jpg`
+                        },
+                        orden: 0
+                    });
+                    console.log('✅ Foto capturada subida exitosamente');
+                } catch (error) {
+                    console.error('❌ Error subiendo foto capturada:', error);
+                }
+            }
+            
+            setSuccess(true);
         }
     })
     const onSumbit = (formData: any) => {
@@ -53,14 +113,18 @@ export default function FormularioNuevoAvistamiento({extravioId}: {extravioId: n
         const horaStr = formData?.hora || '00:00'
         const fechaHora = `${fechaStr} ${horaStr}:00`
         
+        console.log('📋 Datos del formulario:', formData);
+        console.log('👤 Usuario ID:', usuarioId);
+        console.log('🔍 Extravío ID:', extravioId);
+        
         crearAvistamiento({data: {
             usuarioId: usuarioId,
             extravioId: extravioId,
-            zona: "",
-            comentario: formData?.descripcion,
+            zona: formData?.ubicacion || 'Sin zona',
+            comentario: formData?.comentario || 'Avistamiento reportado',
             hora: fechaHora,
-            latitud: formData?.latitud,
-            longitud: formData?.longitud,
+            latitud: formData?.latitud || null,
+            longitud: formData?.longitud || null,
         }})
     }
     const [ubicacion,setUbicacion] = useState("")
@@ -99,6 +163,20 @@ export default function FormularioNuevoAvistamiento({extravioId}: {extravioId: n
             setCurrentStep(currentStep - 1)
         }
     }
+
+    const handleTakePicture = (photoBase64: string) => {
+        setCapturedPhoto(photoBase64);
+        // Cerrar la cámara y mostrar el formulario
+        // La foto se subirá después de crear el avistamiento con todos los datos
+        setShowCamera(false);
+    }
+
+    const handleCloseCamera = useCallback(() => {
+        setShowCamera(false);
+        if (!capturedPhoto) {
+            navigation.goBack();
+        }
+    }, [capturedPhoto, navigation])
 
     const watchedValues = watch(); // Para mostrar valores en confirmación
 
@@ -253,9 +331,20 @@ export default function FormularioNuevoAvistamiento({extravioId}: {extravioId: n
         ) 
 
     return(
-        <View style={{gap:20}}>
-            <Portal>
-                {success && (<BackdropSuccess texto="Nuevo avistamiento confirmado" onTap={() => navigation.goBack()}/>)}
+        <>
+            {/* Modal de cámara - Se muestra antes del formulario */}
+            <CameraModal
+                visible={showCamera}
+                onClose={() => handleCloseCamera()}
+                onTakePicture={handleTakePicture}
+                showPreview={true}
+            />
+            
+            {/* Formulario de pasos - Solo se muestra después de tomar la foto */}
+            {!showCamera && (
+                <View style={{gap:20}}>
+                    <Portal>
+                        {success && (<BackdropSuccess texto="Nuevo avistamiento confirmado" onTap={() => navigation.goBack()}/>)}
                 <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={{...styles.containerStyle,backgroundColor:theme.colors.surface}}>
                     <Text style={{textAlign: 'center'}}>Al reportar el nuevo avistamiento compartirá sus datos de contacto con los familiares del animal.</Text>
                     <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={handleSubmit(onSumbit)} loading={isPendingCrearAvistamiento} disabled={isPendingCrearAvistamiento}>
@@ -271,7 +360,9 @@ export default function FormularioNuevoAvistamiento({extravioId}: {extravioId: n
             <View style={styles.fixedButtonContainer}>
                 {renderNavigationButtons()}
             </View> 
-        </View>
+                </View>
+            )}
+        </>
     )
 }
 

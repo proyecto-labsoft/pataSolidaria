@@ -235,8 +235,26 @@ export function useApiPostEmergencia({ ...opciones }) {
     const { token } = useUsuario() 
     return usePost({
         nombreHook: "useApiPostEmergencia",
-        url: rutas.emergencia,
-        configuracion: { ...opciones, token: token, queriesToInvalidate:['useApiGetExtravios'] }
+        url: rutas.emergencias,
+        configuracion: { ...opciones, token: token, queriesToInvalidate:['useApiGetEmergencias'] }
+    });
+}
+
+export function useApiPutEmergencia({ params, ...opciones }) {
+    const { token } = useUsuario() 
+    return usePut({
+        nombreHook: "useApiPutEmergencia",
+        params,
+        url: rutas.emergenciaPorId,
+        configuracion: { ...opciones, token: token, queriesToInvalidate:['useApiGetEmergencias'] }
+    });
+}
+export function useApiGetEmergencias({ params, ...opciones }) {
+    return useGet({
+        nombreHook: "useApiGetEmergencias",
+        params,
+        url: rutas.emergencias,
+        configuracion: { ...opciones }
     });
 }
 // export function useApiGetTransporteLicenciaPorDominio({ parametros, ...opciones }) {

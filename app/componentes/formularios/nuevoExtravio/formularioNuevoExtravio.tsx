@@ -10,8 +10,11 @@ import ConfirmacionStep from './confirmacionStep'
 import AspectoStep from './aspectoStep'
 import { useApiPostExtravioSinFamiliar } from '@/app/api/hooks'  
 import { useUsuario } from '@/app/hooks/useUsuario'
-import { CameraModal } from '../../CameraModal'
 import { formatearFechaBuenosAires, formatearHoraBuenosAires } from '@/app/utiles/fechaHoraBuenosAires'
+import { CameraModal } from '../../CameraModal'
+import { useSubirImagen } from '@/app/api/imagenes.hooks'
+import { api } from '@/app/api/api'
+import { API_URL } from '@/app/api/api.rutas'
 
 export default function FormularioNuevoExtravio() {
     const theme = useTheme() 
@@ -22,12 +25,12 @@ export default function FormularioNuevoExtravio() {
     const [capturedPhoto, setCapturedPhoto] = useState<string | null>(null)
     const navigation = useNavigation()
 
-    // Valores animados para cada paso y línea
+    // Valores animados para cada paso y línea (4 pasos)
     const stepAnimations = useRef([
-        new Animated.Value(0), // Paso 1
-        new Animated.Value(0), // Paso 2
-        new Animated.Value(0), // Paso 3
-        new Animated.Value(0), // Paso 4
+        new Animated.Value(0), // Paso 1 - Ubicación
+        new Animated.Value(0), // Paso 2 - Fecha
+        new Animated.Value(0), // Paso 3 - Aspecto
+        new Animated.Value(0), // Paso 4 - Confirmación
     ]).current
 
     const lineAnimations = useRef([
@@ -36,8 +39,65 @@ export default function FormularioNuevoExtravio() {
         new Animated.Value(0), // Línea 3-4
     ]).current
 
+    const subirImagen = useSubirImagen('extravios');
+
     const { mutateAsync: declararExtraviado, isPending: isPendingDeclararExtraviado } = useApiPostExtravioSinFamiliar({ 
-        onSuccess: () => {setSuccessMensaje(true);setVisible(false)},
+        onSuccess: async (response) => {
+            console.log('✅ Extravío creado, respuesta completa:', JSON.stringify(response, null, 2));
+            
+            // Intentar obtener el ID de diferentes maneras
+            let extravioId = response?.id || response?.extravioId || response?.data?.id;
+            console.log('🔍 Response del POST:', response);
+            
+            // Si no tenemos el ID en la respuesta, obtener el extravío más reciente del usuario
+            if (!extravioId) {
+                console.log('⏳ ID no encontrado en respuesta, consultando extravíos del usuario...');
+                try {
+                    const extraviosResponse = await api.get(`${API_URL}/extravios/user/${usuarioId}?resueltos=false`);
+                    const extravios = extraviosResponse?.data;
+                    console.log('📋 Todos los extravíos del usuario:', extravios);
+                    
+                    if (extravios && extravios.length > 0) {
+                        // Ordenar por ID descendente (el más reciente tendrá el ID más alto)
+                        const extraviosOrdenados = [...extravios].sort((a, b) => {
+                            const idA = a.extravioId || a.id;
+                            const idB = b.extravioId || b.id;
+                            return idB - idA;
+                        });
+                        
+                        extravioId = extraviosOrdenados[0]?.extravioId || extraviosOrdenados[0]?.id;
+                        console.log('🎯 ID obtenido del extravío más reciente (ID más alto):', extravioId);
+                        console.log('📊 Extravío seleccionado:', extraviosOrdenados[0]);
+                    }
+                } catch (error) {
+                    console.error('❌ Error obteniendo extravíos del usuario:', error);
+                }
+            }
+            
+            console.log('🎯 ID final a usar:', extravioId);
+            
+            // Si hay foto capturada, subirla automáticamente
+            if (capturedPhoto && extravioId) {
+                try {
+                    console.log('📤 Subiendo foto capturada al extravío:', extravioId);
+                    await subirImagen.mutateAsync({
+                        entityId: extravioId,
+                        file: {
+                            uri: capturedPhoto,
+                            type: 'image/jpeg',
+                            name: `captured-${Date.now()}.jpg`
+                        },
+                        orden: 0
+                    });
+                    console.log('✅ Foto capturada subida exitosamente');
+                } catch (error) {
+                    console.error('❌ Error subiendo foto capturada:', error);
+                }
+            }
+            
+            setSuccessMensaje(true);
+            setVisible(false);
+        },
     });
     
     // Obtener fecha y hora actual de Buenos Aires para valores por defecto
@@ -138,7 +198,8 @@ export default function FormularioNuevoExtravio() {
     
     const handleTakePicture = (photoBase64: string) => {
         setCapturedPhoto(photoBase64);
-        // Cerrar la cámara para mostrar los pasos del formulario
+        // Cerrar la cámara y mostrar el formulario
+        // La foto se subirá después de crear el extravío con todos los datos
         setShowCamera(false);
     }
 
@@ -326,7 +387,7 @@ export default function FormularioNuevoExtravio() {
                     >
                         <View style={{flex: 1, gap:20}}>
                             <Portal>
-                                {successMensaje && (<BackdropSuccess texto="Nueva extravío confirmado" onTap={() => navigation.navigate('Home')}/>)}
+                                {successMensaje && (<BackdropSuccess texto="Nuevo extravío reportado" onTap={() => navigation.navigate('Home')}/>)}
                                 <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={{...styles.containerStyle,backgroundColor:theme.colors.surface}}>
                                     <Text variant="titleMedium" style={{textAlign: 'center'}}>Al reportar el extravío compartirá sus datos de contacto con los demás usuarios para que se comuniquen con usted.</Text>
                                     <View style={{ flexDirection: 'column', display: 'flex', width: '100%', justifyContent: 'space-between' }}>

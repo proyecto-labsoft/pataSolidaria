@@ -19,7 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/imagenes")
 @RequiredArgsConstructor
-@Tag(name = "Imágenes", description = "Gestión de imágenes para mascotas, adopciones, extravíos y avistamientos")
+@Tag(name = "Imágenes", description = "Gestión de imágenes para mascotas, adopciones, extravíos, avistamientos y emergencias")
 public class ImagenController {
 
     private final ImagenService imagenService;
@@ -105,6 +105,27 @@ public class ImagenController {
             @Parameter(description = "ID de la adopción") @PathVariable Long adopcionId
     ) {
         List<ImagenDTO> imagenes = imagenService.obtenerImagenesAdopcion(adopcionId);
+        return ResponseEntity.ok(imagenes);
+    }
+
+    // ========== EMERGENCIAS ==========
+
+    @PostMapping(value = "/emergencia/{emergenciaId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Subir imagen de emergencia", description = "Sube una imagen asociada a una emergencia")
+    public ResponseEntity<ImagenUploadResponseDTO> subirImagenEmergencia(
+            @Parameter(description = "Archivo de imagen") @RequestParam("file") MultipartFile file,
+            @Parameter(description = "ID de la emergencia") @PathVariable Long emergenciaId
+    ) throws IOException {
+        ImagenUploadResponseDTO response = imagenService.subirImagenEmergencia(file, emergenciaId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping("/emergencia/{emergenciaId}")
+    @Operation(summary = "Obtener imágenes de emergencia", description = "Obtiene todas las imágenes de una emergencia")
+    public ResponseEntity<List<ImagenDTO>> obtenerImagenesEmergencia(
+            @Parameter(description = "ID de la emergencia") @PathVariable Long emergenciaId
+    ) {
+        List<ImagenDTO> imagenes = imagenService.obtenerImagenesEmergencia(emergenciaId);
         return ResponseEntity.ok(imagenes);
     }
 

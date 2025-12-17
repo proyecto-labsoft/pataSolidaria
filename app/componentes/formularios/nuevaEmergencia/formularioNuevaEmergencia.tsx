@@ -336,7 +336,7 @@ export default function FormularioNuevaEmergencia() {
                                 
                                         <View style={{ flexDirection: 'column', justifyContent: 'space-between', width: '100%', paddingHorizontal: 10, marginTop: 20 }}>
 
-                                            <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={handleSubmit(onSubmit)} loading={isPendingDeclararExtraviado} disabled={isPendingDeclararExtraviado}>
+                                            <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={handleSubmit(onSubmit)} loading={isPendingDeclararEmergencia} disabled={isPendingDeclararEmergencia}>
                                                 <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Confirmar</Text>
                                             </Button>
                                             <Button buttonColor={theme.colors.error} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={() => setVisible(false)}>

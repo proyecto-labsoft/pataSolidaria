@@ -11,6 +11,9 @@ import UbicacionStep from './confirmarBuscado/ubicacionStep'
 import DatosAnimalStep from './confirmarBuscado/datosAnimalStep'
 import ConfirmacionStep from './confirmarBuscado/confirmacionStep'
 import FechaStep from './confirmarBuscado/fechaStep'
+import { useObtenerImagenes, useSubirImagen } from '@/app/api/imagenes.hooks'
+import { api } from '@/app/api/api'
+import { API_URL } from '@/app/api/api.rutas'
 interface Props {
     data: {
         nombre: string,
@@ -35,6 +38,13 @@ export default function FormularioConfirmarBuscado({ data } : Props) {
     const [visible, setVisible] = useState(false)
     const [successMensaje, setSuccessMensaje] = useState(false)
     const [currentStep, setCurrentStep] = useState(1)
+    const [copiandoImagenes, setCopiandoImagenes] = useState(false)
+
+    // Obtener imágenes de la mascota
+    const { data: imagenesMascota } = useObtenerImagenes('mascotas', data?.id);
+    
+    console.log('🔍 Imágenes mascota obtenidas:', imagenesMascota);
+    console.log('🔍 ID de mascota:', data?.id);
 
     // Valores animados para cada paso y línea
     const stepAnimations = useRef([
@@ -58,8 +68,85 @@ export default function FormularioConfirmarBuscado({ data } : Props) {
      
     const { mutateAsync: declararExtraviado, isPending: isPendingDeclararExtraviado } = useApiPostExtravioFamiliar({
         params: {id: data?.id},
-        queriesToInvalidate: ['useApiGetExtraviosPorUsuario','useApiGetExtravios'],
-        onSuccess: () => {setSuccessMensaje(true);setVisible(false)},
+        queriesToInvalidate: ['useApiGetExtraviosPorUsuario','useApiGetExtravios', 'useApiGetExtravioPorMascota'],
+        onSuccess: async (response) => {
+            console.log('✅ Extravío creado, respuesta completa:', JSON.stringify(response, null, 2));
+            
+            // Intentar obtener el ID de diferentes maneras
+            let extravioId = response?.id || response?.extravioId || response?.data?.id;
+            
+            // Si no tenemos el ID en la respuesta, obtenerlo consultando el extravío por mascota
+            if (!extravioId) {
+                console.log('⏳ ID no encontrado en respuesta, consultando extravío por mascota...');
+                try {
+                    const extravioResponse = await api.get(`${API_URL}/extravios/mascota/${data?.id}`);
+                    extravioId = extravioResponse?.data?.extravio?.id;
+                    console.log('🎯 ID obtenido de consulta:', extravioId);
+                } catch (error) {
+                    console.error('❌ Error obteniendo extravío por mascota:', error);
+                }
+            }
+            
+            console.log('🎯 ID final a usar:', extravioId);
+            console.log('📸 Imágenes disponibles:', imagenesMascota);
+            console.log('📸 Cantidad de imágenes:', imagenesMascota?.length);
+            
+            // Copiar imágenes de la mascota al extravío
+            if (imagenesMascota && imagenesMascota.length > 0 && extravioId) {
+                console.log(`📸 Copiando ${imagenesMascota.length} imágenes al extravío ${extravioId}`);
+                setCopiandoImagenes(true);
+                try {
+                    // Copiar cada imagen al extravío
+                    for (const imagen of imagenesMascota) {
+                        try {
+                            const imageUrl = imagen.url || imagen.urlPublica;
+                            console.log('📤 Copiando imagen desde:', imageUrl);
+                            
+                            // Crear FormData para React Native
+                            const formData = new FormData();
+                            
+                            // En React Native, agregamos el archivo con URI
+                            formData.append('file', {
+                                uri: imageUrl,
+                                type: imagen.tipoMime || 'image/jpeg',
+                                name: imagen.nombreArchivo || `imagen-${Date.now()}-${imagen.id || Math.random()}.jpg`,
+                            } as any);
+                            formData.append('orden', imagen.orden?.toString() || '0');
+                            
+                            // Subir al extravío
+                            const uploadResponse = await api.post(
+                                `${API_URL}/imagenes/extravio/${extravioId}`,
+                                formData,
+                                {
+                                    headers: {
+                                        'Content-Type': 'multipart/form-data',
+                                    },
+                                }
+                            );
+                            console.log('✅ Imagen copiada exitosamente:', uploadResponse.data);
+                        } catch (error) {
+                            console.error('❌ Error copiando imagen individual:', error);
+                            if (error.response) {
+                                console.error('   Response status:', error.response.status);
+                                console.error('   Response data:', error.response.data);
+                            }
+                            // Continuar con las demás imágenes aunque una falle
+                        }
+                    }
+                } catch (error) {
+                    console.error('❌ Error general copiando imágenes:', error);
+                } finally {
+                    setCopiandoImagenes(false);
+                }
+            } else {
+                console.log('ℹ️ Razones por las que no se copian imágenes:');
+                console.log('  - Hay imágenes?', !!imagenesMascota);
+                console.log('  - Cantidad:', imagenesMascota?.length);
+                console.log('  - Hay ID de extravío?', !!extravioId);
+            }
+            setSuccessMensaje(true);
+            setVisible(false);
+        },
     });
 
     // Efecto para animar los cambios de paso
@@ -299,8 +386,18 @@ export default function FormularioConfirmarBuscado({ data } : Props) {
                 <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={{...styles.containerStyle,backgroundColor:theme.colors.surface}}>
                     <Text variant="titleMedium" style={{textAlign: 'center'}}>Al reportar la nueva búsqueda compartirá sus datos de contacto con los demás usuarios.</Text>
                     <View style={{ flexDirection: 'column', display: 'flex', width: '100%', justifyContent: 'space-between' }}>
-                        <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" loading={isPendingDeclararExtraviado} disabled={isPendingDeclararExtraviado} onPress={handleSubmit(onSubmit)}>
-                            <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Confirmar</Text>
+                        <Button 
+                            buttonColor={theme.colors.primary} 
+                            style={{  marginVertical: 8,borderRadius:10}} 
+                            uppercase 
+                            mode="contained" 
+                            loading={isPendingDeclararExtraviado || copiandoImagenes} 
+                            disabled={isPendingDeclararExtraviado || copiandoImagenes} 
+                            onPress={handleSubmit(onSubmit)}
+                        >
+                            <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>
+                                {copiandoImagenes ? 'Copiando imágenes...' : 'Confirmar'}
+                            </Text>
                         </Button>
                         <Button buttonColor={theme.colors.error} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={() => setVisible(false)}>
                             <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Cancelar</Text>

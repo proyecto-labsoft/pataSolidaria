@@ -4,14 +4,20 @@ import React from 'react';
 const { width } = Dimensions.get('screen');
 
 type Props = {
-  item: {
-    uri: string;
-    // otros props como key, etc.
-  };
+  item: any;
   index: number;
 };
 
 export default function SliderItem({ item }: Props) {
+  // Determinar la fuente de la imagen
+  const imageSource = typeof item === 'number' 
+    ? item // Es un require()
+    : item.imagen 
+      ? { uri: item.imagen } // Es una URL de imagen real
+      : item.require 
+        ? item.require // Es un require() envuelto
+        : item; // Fallback
+
   return (
     <View
       style={{
@@ -22,7 +28,7 @@ export default function SliderItem({ item }: Props) {
       }}
     >
       <Image
-        source={item }
+        source={imageSource}
         resizeMode="contain" 
         style={{
           width: '90%',     

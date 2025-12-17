@@ -16,6 +16,8 @@ import { useApiDeleteFavorito, useApiGetAvistamientosPorExtravio, useApiGetEsFav
 import { obtenerValorSexo } from '../utiles/obtenerValorEnum';
 import ModalAvistamientos from '../componentes/modalAvistamientos';
 import BotonAccionesExtravioFAB from '../componentes/botones/BotonAccionesExtravioFAB';
+import { useObtenerImagenes } from '../api/imagenes.hooks';
+import { ImageGallery } from '../componentes/imagenes';
 
 // Basandose en colores de la pagina de ARAF
 // primario: 0f7599 
@@ -66,6 +68,12 @@ export default function VistaExtravio({route}: any) {
         params: { id: datosExtravio?.extravioId },
         enabled: !!datosExtravio?.extravioId
     }) 
+
+    // Obtener imágenes del extravío
+    const { data: imagenesExtravio, isLoading: isLoadingImagenes } = useObtenerImagenes(
+        'extravios',
+        datosExtravio?.extravioId
+    );
 
     const ultimoAvistamiento = useMemo(() => {
         if (avistamientos && avistamientos?.length > 0) {
@@ -264,13 +272,30 @@ export default function VistaExtravio({route}: any) {
                     <BannerEstadoExtravio titulo={ultimaModificacion} tipo={esBuscado} />
                 </View>
 
-                {/* Carrusel de imágenes - Segunda posición */}
-                <View style={{ position: 'relative', margin: 0, marginBottom: 24, padding: 0, backgroundColor: theme.colors.background }} >
-                    <CarruselImagenes data={imagenes} />
-                    <View style={{ position: 'absolute' , top: 200, right: 10 }}>
-                        <IconButton icon={esFavorito ? "heart" : "heart-outline"} iconColor={theme.colors.secondary} size={48} onPress={handleGuardarCaso} />
+                {/* Galería de imágenes - Segunda posición */}
+                {esCreadorDelExtravio ? (
+                    // Si es el creador, mostrar galería editable
+                    <View style={{ marginBottom: 24 }}>
+                        <ImageGallery
+                            entityType="extravios"
+                            entityId={datosExtravio?.extravioId}
+                            editable={true}
+                            maxImages={5}
+                        />
                     </View>
-                </View>
+                ) : (
+                    // Si no es el creador, mostrar carrusel solo lectura
+                    <View style={{ position: 'relative', margin: 0, marginBottom: 24, padding: 0, backgroundColor: theme.colors.background }} >
+                        <CarruselImagenes 
+                            data={imagenes} 
+                            imagenesReales={imagenesExtravio}
+                            isLoading={isLoadingImagenes}
+                        />
+                        <View style={{ position: 'absolute' , top: 200, right: 10 }}>
+                            <IconButton icon={esFavorito ? "heart" : "heart-outline"} iconColor={theme.colors.secondary} size={48} onPress={handleGuardarCaso} />
+                        </View>
+                    </View>
+                )}
 
                     
                 {/* Mensaje indicador de creador */}

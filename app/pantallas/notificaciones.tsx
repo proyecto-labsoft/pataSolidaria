@@ -19,20 +19,8 @@ interface NotificationItem {
 export default function Notificaciones() {
   const theme = useTheme();
   const navigation = useNavigation();
-  const { user } = useAuth();
+  const { isAdmin } = useAuth();
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  // Verificar si el usuario es administrador
-  useEffect(() => {
-    const checkAdmin = async () => {
-      if (user) {
-        const tokenResult = await user.getIdTokenResult();
-        setIsAdmin(tokenResult.claims.rol === 'admin');
-      }
-    };
-    checkAdmin();
-  }, [user]);
 
   useEffect(() => {
     // Cargar notificaciones previas
@@ -202,15 +190,15 @@ export default function Notificaciones() {
         />
       )}
 
-      {/* FAB para administradores - TODO: Descomentar cuando se implemente verificación de roles */}
-      {/* {isAdmin && ( */}
+      {/* FAB solo visible para administradores */}
+      {isAdmin && (
         <FAB
           icon="send"
           color="white"
           style={[styles.fab, { backgroundColor: theme.colors.primary }]}
           onPress={() => navigation.navigate('AdminNotificaciones' as never)}
         />
-      {/* )} */}
+      )}
     </View>
   );
 }

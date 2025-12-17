@@ -18,49 +18,41 @@ public class FirebaseConfig {
 
     @Value("${firebase.config.json}")
     private String firebaseConfigJson;
-
+    
     @Bean
     public FirebaseApp initializeFirebase() throws IOException {
-
         if (FirebaseApp.getApps().isEmpty()) {
-            //InputStream serviceAccount = getServiceAccountStream();
-            // Validamos si el String tiene contenido
-            if (firebaseConfigJson == null || firebaseConfigJson.isEmpty() || firebaseConfigJson.startsWith("${")) {
-                throw new IllegalStateException("La configuración de Firebase no está definida en las variables de entorno.");
-            }
-
-            InputStream serviceAccount = new ByteArrayInputStream(
-                    firebaseConfigJson.getBytes(StandardCharsets.UTF_8)
-            );
+            InputStream serviceAccount = getServiceAccountStream();
             
             try {
                 FirebaseOptions options = FirebaseOptions.builder()
                         .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                         .build();
 
-                System.out.println("✅ Firebase inicializado correctamente desde variable de entorno.");
                 return FirebaseApp.initializeApp(options);
             } finally {
+                if (serviceAccount != null) {
                     serviceAccount.close();
+                }
             }
         }
         return FirebaseApp.getInstance();
     }
 
-  /*  *//**
+    /**
      * Obtiene el InputStream de las credenciales de Firebase.
      * Primero intenta desde la variable de entorno FIREBASE_SERVICE_ACCOUNT,
      * si no existe, usa el archivo firebase-service-account.json del classpath.
-     *//*
+     */
     private InputStream getServiceAccountStream() throws IOException {
-        String firebaseCredentials = System.getenv("firebase.config.json");
+        String firebaseConfigJson = System.getenv("firebase.config.json");
         
-        if (firebaseCredentials != null && !firebaseCredentials.isEmpty()) {
+        if (firebaseConfigJson != null && !firebaseConfigJson.isEmpty()) {
             System.out.println("✅ Usando credenciales de Firebase desde variable de entorno FIREBASE_SERVICE_ACCOUNT");
-            return new ByteArrayInputStream(firebaseCredentials.getBytes(StandardCharsets.UTF_8));
+            return new ByteArrayInputStream(firebaseConfigJson.getBytes(StandardCharsets.UTF_8));
         } else {
             System.out.println("ℹ️ Usando credenciales de Firebase desde archivo firebase-service-account.json");
             return new ClassPathResource("firebase-service-account.json").getInputStream();
         }
-    }*/
+    }
 }

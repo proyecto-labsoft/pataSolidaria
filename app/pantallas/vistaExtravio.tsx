@@ -300,6 +300,9 @@ export default function VistaExtravio({route}: any) {
                             editable={true}
                             maxImages={5}
                         />
+                        <View style={{ position: 'absolute' , top: 200, left: 10 }}>
+                            <IconButton icon={esFavorito ? "heart" : "heart-outline"} iconColor={theme.colors.secondary} size={48} onPress={handleGuardarCaso} />
+                        </View>
                     </View>
                 ) : (
                     // Si no es el creador, mostrar carrusel solo lectura
@@ -309,7 +312,7 @@ export default function VistaExtravio({route}: any) {
                             imagenesReales={imagenesExtravio}
                             isLoading={isLoadingImagenes}
                         />
-                        <View style={{ position: 'absolute' , top: 200, right: 10 }}>
+                        <View style={{ position: 'absolute' , top: 200, left: 10 }}>
                             <IconButton icon={esFavorito ? "heart" : "heart-outline"} iconColor={theme.colors.secondary} size={48} onPress={handleGuardarCaso} />
                         </View>
                     </View>

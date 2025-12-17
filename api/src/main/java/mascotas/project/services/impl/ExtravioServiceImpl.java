@@ -39,6 +39,7 @@ public class ExtravioServiceImpl implements ExtravioService {
     private final ExtravioRepository extravioRepository;
     private final ExpoPushNotificationService expoPushNotificationService;
     private final UsuarioRepository usuarioRepository;
+    private final mascotas.project.repositories.AvistamientoRepository avistamientoRepository;
 
     @Override
     @Transactional
@@ -110,48 +111,135 @@ public class ExtravioServiceImpl implements ExtravioService {
         // Enviar notificación si se marcó como encontrado
         if (estaMarcandoComoResuelto) {
             try {
-                // Obtener la entidad Usuario completa por ID usando el repositorio
-                var usuarioEntity = usuarioRepository.findById(usuario.getId()).orElse(null);
+                // Obtener la mascota completa
+                Mascota mascotaEntity = mascotaService.getMascotaEntityById(savedExtravio.getMascota());
+                String nombreMascota = mascotaEntity != null && mascotaEntity.getNombre() != null && mascotaEntity.getNombre().length() > 0
+                                            ? mascotaEntity.getNombre()
+                                            : "";
                 
-                if (usuarioEntity != null && 
-                    usuarioEntity.getNotificacionesHabilitadas() && 
-                    usuarioEntity.getPushToken() != null && 
-                    !usuarioEntity.getPushToken().trim().isEmpty() && 
-                    !"null".equalsIgnoreCase(usuarioEntity.getPushToken().trim())) {
+                // Determinar el género para el mensaje
+                String genero = "o"; // Por defecto masculino
+                if (mascotaEntity != null && mascotaEntity.getSexo() != null && 
+                    "H".equalsIgnoreCase(mascotaEntity.getSexo().toString())) {
+                    genero = "a";
+                }
+                
+                String titulo = "🎉 ¡" + (nombreMascota.length() > 0 ? nombreMascota + " fue encontrad" + genero : "Fue encontrad" + genero) + "!";
+                String cuerpo = "El caso de extravio ha sido marcado como resuelto. ¡Felicitaciones!";
+                
+                Map<String, String> data = new HashMap<>();
+                data.put("type", "extravio_encontrado");
+                data.put("extravioId", savedExtravio.getId().toString());
+                
+                boolean esCreador = isCreador(extravio, usuario.getId());
+                
+                // Si el creador lo marcó como resuelto, notificar a los que reportaron avistamientos
+                if (esCreador) {
+                    // Obtener todos los avistamientos del extravío
+                    List<mascotas.project.entities.Avistamiento> avistamientos = avistamientoRepository.findByExtravioIdOrderByHoraDesc(savedExtravio.getId());
                     
-                    // Obtener la mascota completa (getMascota() retorna Long, no Mascota)
-                    Mascota mascotaEntity = mascotaService.getMascotaEntityById(savedExtravio.getMascota());
-                    String nombreMascota = mascotaEntity != null ? mascotaEntity.getNombre() : "tu mascota";
+                    // Obtener IDs únicos de usuarios que reportaron avistamientos (excluir al creador)
+                    java.util.Set<Long> usuariosAvistadores = avistamientos.stream()
+                        .map(mascotas.project.entities.Avistamiento::getUsuarioId)
+                        .filter(id -> !id.equals(usuario.getId()))
+                        .collect(java.util.stream.Collectors.toSet());
                     
-                    Map<String, String> data = new HashMap<>();
-                    data.put("type", "extravio_encontrado");
-                    data.put("extravioId", savedExtravio.getId().toString());
+                    log.info("🔔 Notificando a {} usuarios que reportaron avistamientos", usuariosAvistadores.size());
                     
-                    // Determinar el género para el mensaje
-                    String genero = "o"; // Por defecto masculino
-                    if (mascotaEntity != null && mascotaEntity.getSexo() != null && 
-                        "H".equalsIgnoreCase(mascotaEntity.getSexo().toString())) {
-                        genero = "a";
-                    }
-                    
-                    boolean enviado = expoPushNotificationService.sendNotification(
-                        usuarioEntity.getPushToken(),
-                        "🎉 ¡" + nombreMascota + " fue encontrad" + genero + "!",
-                        "El caso de extravio ha sido marcado como resuelto. ¡Felicitaciones!",
-                        data
-                    );
-                    
-                    if (enviado) {
-                        log.info("🔔 Notificación Expo de extravio resuelto enviada al usuario: {}", usuarioEntity.getEmail());
-                    } else {
-                        log.warn("⚠️ No se pudo enviar notificación de extravio resuelto al usuario: {} (token inválido o error de servicio)", usuarioEntity.getEmail());
+                    // Enviar notificación a cada usuario avistador
+                    for (Long avistadorId : usuariosAvistadores) {
+                        try {
+                            var avistadorEntity = usuarioRepository.findById(avistadorId).orElse(null);
+                            
+                            if (avistadorEntity != null && 
+                                avistadorEntity.getNotificacionesHabilitadas() && 
+                                avistadorEntity.getPushToken() != null && 
+                                !avistadorEntity.getPushToken().trim().isEmpty() && 
+                                !"null".equalsIgnoreCase(avistadorEntity.getPushToken().trim())) {
+                                
+                                boolean enviado = expoPushNotificationService.sendNotification(
+                                    avistadorEntity.getPushToken(),
+                                    titulo,
+                                    "¡Gracias por tu ayuda! " + cuerpo,
+                                    data
+                                );
+                                
+                                if (enviado) {
+                                    log.info("🔔 Notificación enviada al avistador: {}", avistadorEntity.getEmail());
+                                } else {
+                                    log.warn("⚠️ No se pudo enviar notificación al avistador: {}", avistadorEntity.getEmail());
+                                }
+                            }
+                        } catch (Exception e) {
+                            log.error("❌ Error al enviar notificación a avistador {}: {}", avistadorId, e.getMessage());
+                        }
                     }
                 } else {
-                    log.debug("ℹ️ No se envió notificación de extravio resuelto: usuario {} no cumple requisitos", 
-                             usuarioEntity != null ? usuarioEntity.getEmail() : "desconocido");
+                    // Si otra persona lo marcó como resuelto, notificar al creador Y a los avistadores
+                    
+                    // 1. Notificar al creador del extravío
+                    var creadorEntity = usuarioRepository.findById(savedExtravio.getCreador()).orElse(null);
+                    
+                    if (creadorEntity != null && 
+                        creadorEntity.getNotificacionesHabilitadas() && 
+                        creadorEntity.getPushToken() != null && 
+                        !creadorEntity.getPushToken().trim().isEmpty() && 
+                        !"null".equalsIgnoreCase(creadorEntity.getPushToken().trim())) {
+                        
+                        boolean enviado = expoPushNotificationService.sendNotification(
+                            creadorEntity.getPushToken(),
+                            titulo,
+                            cuerpo,
+                            data
+                        );
+                        
+                        if (enviado) {
+                            log.info("🔔 Notificación enviada al creador: {}", creadorEntity.getEmail());
+                        } else {
+                            log.warn("⚠️ No se pudo enviar notificación al creador: {}", creadorEntity.getEmail());
+                        }
+                    }
+                    
+                    // 2. Notificar a los que reportaron avistamientos (excluir al creador y al que resolvió)
+                    List<mascotas.project.entities.Avistamiento> avistamientos = avistamientoRepository.findByExtravioIdOrderByHoraDesc(savedExtravio.getId());
+                    
+                    java.util.Set<Long> usuariosAvistadores = avistamientos.stream()
+                        .map(mascotas.project.entities.Avistamiento::getUsuarioId)
+                        .filter(id -> !id.equals(savedExtravio.getCreador()) && !id.equals(usuario.getId()))
+                        .collect(java.util.stream.Collectors.toSet());
+                    
+                    log.info("🔔 Notificando a {} usuarios que reportaron avistamientos", usuariosAvistadores.size());
+                    
+                    for (Long avistadorId : usuariosAvistadores) {
+                        try {
+                            var avistadorEntity = usuarioRepository.findById(avistadorId).orElse(null);
+                            
+                            if (avistadorEntity != null && 
+                                avistadorEntity.getNotificacionesHabilitadas() && 
+                                avistadorEntity.getPushToken() != null && 
+                                !avistadorEntity.getPushToken().trim().isEmpty() && 
+                                !"null".equalsIgnoreCase(avistadorEntity.getPushToken().trim())) {
+                                
+                                boolean enviado = expoPushNotificationService.sendNotification(
+                                    avistadorEntity.getPushToken(),
+                                    titulo,
+                                    "¡Gracias por tu ayuda! " + cuerpo,
+                                    data
+                                );
+                                
+                                if (enviado) {
+                                    log.info("🔔 Notificación enviada al avistador: {}", avistadorEntity.getEmail());
+                                } else {
+                                    log.warn("⚠️ No se pudo enviar notificación al avistador: {}", avistadorEntity.getEmail());
+                                }
+                            }
+                        } catch (Exception e) {
+                            log.error("❌ Error al enviar notificación a avistador {}: {}", avistadorId, e.getMessage());
+                        }
+                    }
                 }
             } catch (Exception e) {
-                log.error("❌ Error al enviar notificación de extravio resuelto: {}", e.getMessage());
+                log.error("❌ Error al enviar notificaciones de extravio resuelto: {}", e.getMessage());
             }
         }
 

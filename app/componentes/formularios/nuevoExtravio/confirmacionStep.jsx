@@ -4,7 +4,7 @@ import { useTheme, Text, Card } from 'react-native-paper'
 import PropTypes from 'prop-types'
 import DescripcionVista from '../../descripcionVista'
 
-export default function ConfirmacionStep({valores, ubic}) {
+export default function ConfirmacionStep({valores}) {
     
     const theme = useTheme()
 
@@ -51,19 +51,24 @@ export default function ConfirmacionStep({valores, ubic}) {
                     <Text variant="titleMedium" style={{ color: theme.colors.onSurfaceVariant }}>Colores:</Text>
                     <Text variant="titleMedium" style={{ fontWeight: 'bold' }}>{valores?.color || 'No especificados'}</Text>
                 </View>
+
+                <View style={{ flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <Text variant="titleMedium" style={{ color: theme.colors.onSurfaceVariant }}>Descripción adicional:</Text>
+                    <Text variant="titleMedium" style={{ fontWeight: 'bold' }}>{valores?.descripcion || 'No especificada'}</Text>
+                </View>
             </Card> 
 
 
-            {valores?.descripcion && ( 
+            {valores?.observacion && ( 
                 <>
                     <DescripcionVista 
-                        texto="Descripción adicional" 
+                        texto="Información adicional" 
                         tamanioTexto="titleLarge" 
                     />
                     <Card style={{ gap: 10, backgroundColor: theme.colors.surfaceVariant, padding: 15, borderRadius: 10, marginHorizontal: 10 }}>
                         
                         <Text variant="titleMedium" style={{ color: theme.colors.onSurfaceVariant }}>
-                            {valores?.descripcion}
+                            {valores?.observacion}
                         </Text>
                         
                     </Card>

@@ -7,8 +7,7 @@ import CampoTextoArea from './campos/campoTextoArea'
 import { useNavigation } from '@react-navigation/native'
 import DescripcionVista from '../descripcionVista'
 import BackdropSuccess from '../backdropSuccess'
-import CampoSelectorModal from './campos/campoSelectorModal'
-import CampoCheckbox from './campos/campoCheckbox'
+import CampoSelectorModal from './campos/campoSelectorModal' 
 import CampoFecha from './campos/campoFecha'
 import { useApiPostRegistrarMascota } from '@/app/api/hooks'
 import { useUsuario } from '@/app/hooks/useUsuario'
@@ -16,8 +15,7 @@ import { ImageGallery } from '../imagenes'
 
 export default function FormularioNuevoFamiliar() {
     
-    const theme = useTheme()
-    const [ubic, setUbic] = useState("");
+    const theme = useTheme() 
     const [successMensaje, setSuccessMensaje] = useState(false);
     const [familiarCreado, setFamiliarCreado] = useState<number | null>(null);
     const [mostrarImagenes, setMostrarImagenes] = useState(false);
@@ -29,7 +27,8 @@ export default function FormularioNuevoFamiliar() {
     const { control, setValue, watch, handleSubmit } = useForm({});
     const esterilizado = watch('esterilizado');
     const chipeado = watch('chipeado');
-    const {mutateAsync: crearFamiliar } = useApiPostRegistrarMascota({
+    
+    const {mutateAsync: crearFamiliar, isPending: isLoadingCrearFamiliar } = useApiPostRegistrarMascota({
         params: {id: usuarioId},
         onSuccess: (data) => {
             setFamiliarCreado(data?.id);
@@ -37,10 +36,6 @@ export default function FormularioNuevoFamiliar() {
         }
     })
 
-    
-    useEffect(() => {
-        console.log("usuario Id",usuarioId)
-    },[usuarioId])
     const onSubmit = (data: any) => { 
 
         if (data?.sexo === 'Macho') {
@@ -58,8 +53,7 @@ export default function FormularioNuevoFamiliar() {
             data.tamanio = 'GRANDE';
         } else if (data?.tamanio === 'Muy grande') {
             data.tamanio = 'GIGANTE';
-        }
-        // data.ubicacion = ubic
+        } 
 
         crearFamiliar({ 
             data: {
@@ -105,6 +99,7 @@ export default function FormularioNuevoFamiliar() {
                 nombre="nombre"
             />
             <CampoFecha 
+                disableFutureDates
                 label="Fecha de nacimiento"
                 nombre="fechaNacimiento"
                 control={control}
@@ -184,7 +179,7 @@ export default function FormularioNuevoFamiliar() {
                 <Button  buttonColor={theme.colors.error} style={{  marginHorizontal:'5%',marginVertical: 8 ,borderRadius:10}} uppercase mode="contained" onPress={() => navigation.goBack()}>
                     <Text variant='labelLarge' style={{color: theme.colors.onError, marginLeft: "5%"}}>Cancelar</Text>
                 </Button>
-                <Button buttonColor={theme.colors.primary} style={{  marginHorizontal:'5%',marginVertical: 8,borderRadius:10}} uppercase mode="contained"  onPress={handleSubmit(onSubmit)}>
+                <Button buttonColor={theme.colors.primary} style={{  marginHorizontal:'5%',marginVertical: 8,borderRadius:10}} uppercase mode="contained" loading={isLoadingCrearFamiliar} disabled={isLoadingCrearFamiliar} onPress={handleSubmit(onSubmit)}>
                     <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Guardar</Text>
                 </Button>
             </View>

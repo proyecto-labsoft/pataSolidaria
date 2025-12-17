@@ -41,7 +41,7 @@
       "usesCleartextTraffic": true,
       "config": {
         "googleMaps": {
-          "apiKey": "AIzaSyDummyKeyNotUsed-UsingOpenStreetMap"
+          "apiKey": "AIzaSyAyFCJySRZBdEA3-veyTmkT0iAkDEyvwOc"
         }
       },
       "googleServicesFile": "./google-services.json",

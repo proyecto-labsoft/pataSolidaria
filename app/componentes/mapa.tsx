@@ -109,17 +109,9 @@ export const Mapa: FC<MapProps> = ({ localizar = false, puntoModificable = true,
         zoomControlEnabled
         // initialRegion={INITIAL_REGION}
         initialCamera={ INITIAL_CAMERA }
-        mapType='none'
+        mapType='standard' // Cambiar a 'standard' para usar el mapa base de Google Maps
         onPress={ puntoModificable ? handleMarkerPoint : () => {} } // PAra no poder moficiar la ubicacion
       >
-        <UrlTile
-          urlTemplate="https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png"
-          maximumZ={19}
-          minimumZ={1}
-          flipY={false}
-          zIndex={-1}
-          shouldReplaceMapContent={true}
-        />
         {location.latitude && location.longitude && 
           <>
             <Marker

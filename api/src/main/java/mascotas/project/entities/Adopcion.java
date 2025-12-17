@@ -15,11 +15,11 @@ public class Adopcion {
     @SequenceGenerator(name = "adopcion_id_seq", sequenceName = "adopcion_id_seq", allocationSize = 1)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "administrador")
     private Usuario administrador;
 
-    @ManyToOne(fetch = FetchType.LAZY) // no seria un @OneToOne? no deberia haber varias adopciones para una mascota en un mismo momento
+    @ManyToOne(fetch = FetchType.EAGER) // no seria un @OneToOne? no deberia haber varias adopciones para una mascota en un mismo momento
     @JoinColumn(name = "mascota")
     private Mascota mascota;
 

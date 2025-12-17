@@ -48,6 +48,11 @@ export const useSubirImagen = (entityType) => {
     onSuccess: (data, variables) => {
       // Invalidar las queries de imágenes de esta entidad
       invalidateAndRefetch([`imagenes-${entityType}`, variables.entityId]);
+      
+      // También invalidar el hook useApiGetImagenesMascota que usa el listado
+      if (entityType === 'mascotas') {
+        invalidateAndRefetch(['useApiGetImagenesMascota', { mascotaId: variables.entityId }]);
+      }
     },
   });
 };
@@ -101,7 +106,7 @@ export const useObtenerImagenes = (entityType, entityId) => {
 /**
  * Hook para eliminar una imagen
  */
-export const useEliminarImagen = (entityType) => {
+export const useEliminarImagen = (entityType, entityId) => {
   const invalidateAndRefetch = useInvalidateAndRefetch();
 
   return useMutation({
@@ -112,6 +117,11 @@ export const useEliminarImagen = (entityType) => {
     onSuccess: (data, imagenId, context) => {
       // Invalidar todas las queries de imágenes de este tipo
       invalidateAndRefetch([`imagenes-${entityType}`]);
+      
+      // También invalidar el hook useApiGetImagenesMascota que usa el listado
+      if (entityType === 'mascotas' && entityId) {
+        invalidateAndRefetch(['useApiGetImagenesMascota', { mascotaId: entityId }]);
+      }
     },
   });
 };

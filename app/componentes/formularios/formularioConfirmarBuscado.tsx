@@ -10,6 +10,7 @@ import { formatearFechaHoraCompletaBuenosAires } from '@/app/utiles/fechaHoraBue
 import UbicacionStep from './confirmarBuscado/ubicacionStep'
 import DatosAnimalStep from './confirmarBuscado/datosAnimalStep'
 import ConfirmacionStep from './confirmarBuscado/confirmacionStep'
+import FechaStep from './confirmarBuscado/fechaStep'
 interface Props {
     data: {
         nombre: string,
@@ -40,11 +41,13 @@ export default function FormularioConfirmarBuscado({ data } : Props) {
         new Animated.Value(0), // Paso 1
         new Animated.Value(0), // Paso 2
         new Animated.Value(0), // Paso 3
+        new Animated.Value(0), // Paso 4
     ]).current
 
     const lineAnimations = useRef([
         new Animated.Value(0), // Línea 1-2
         new Animated.Value(0), // Línea 2-3
+        new Animated.Value(0), // Línea 3-4
     ]).current
 
     const { control, setValue, watch, handleSubmit, formState: {errors} } = useForm({
@@ -117,7 +120,7 @@ export default function FormularioConfirmarBuscado({ data } : Props) {
     }
 
     const nextStep = () => {
-        if (currentStep < 3) {
+        if (currentStep < 4) {
             setCurrentStep(currentStep + 1)
         }
     }
@@ -135,11 +138,13 @@ export default function FormularioConfirmarBuscado({ data } : Props) {
             case 2:
                 return <DatosAnimalStep control={control} setValue={setValue} watch={watch} />
             case 3:
+                return <FechaStep control={control} />
+            case 4:
                 return <ConfirmacionStep valores={watchedValues} />
             default:
                 return <UbicacionStep control={control} />
         }
-    }, [currentStep, control, setValue, watch, watchedValues])
+    }, [currentStep, control, setValue , watch, watchedValues])
 
     const renderNavigationButtons = () => (
         <View style={{ 
@@ -187,7 +192,7 @@ export default function FormularioConfirmarBuscado({ data } : Props) {
                 </Button>
             )}
             
-            {currentStep < 3 ? (
+            {currentStep < 4 ? (
                 <Button 
                     icon="arrow-right"
                     buttonColor={theme.colors.primary} 
@@ -230,7 +235,7 @@ export default function FormularioConfirmarBuscado({ data } : Props) {
     // Indicador de progreso
     const renderProgressIndicator = () => (
         <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginBottom: 20}}>
-            {[1, 2, 3].map((step, index) => (
+            {[1, 2, 3, 4].map((step, index) => (
                 <View key={step} style={{flexDirection: 'row', alignItems: 'center'}}>
                     {/* Círculo del paso animado */}
                     <Animated.View 
@@ -260,7 +265,7 @@ export default function FormularioConfirmarBuscado({ data } : Props) {
                     </Animated.View>
                     
                     {/* Línea conectora animada (no mostrar después del último paso) */}
-                    {index < 2 && (
+                    {index < 3 && (
                         <Animated.View 
                             style={{
                                 width: 40,
@@ -278,53 +283,41 @@ export default function FormularioConfirmarBuscado({ data } : Props) {
         </View>
     )
 
-    return(
-        <KeyboardAvoidingView 
-            style={{flex: 1}} 
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={100}
-        >
-            <ScrollView 
-                style={{flex: 1}} 
-                contentContainerStyle={{flexGrow: 1}}
-                keyboardShouldPersistTaps="handled"
-            >
-                <View style={{flex: 1, gap:20}}>
-                    <Portal>
-                        {successMensaje && (
-                            <BackdropSuccess
-                                texto="Nuevo extravío reportado con éxito"
-                                onTap={() => {
-                                    navigation.navigate("Home")
-                                }}
-                            />
-                        )}
-                    </Portal>
-                    <Portal>
-                        <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={{...styles.containerStyle,backgroundColor:theme.colors.surface}}>
-                            <Text variant="titleMedium" style={{textAlign: 'center'}}>Al reportar la nueva búsqueda compartirá sus datos de contacto con los demás usuarios.</Text>
-                            <View style={{ flexDirection: 'row', display: 'flex', width: '100%', justifyContent: 'space-between' }}>
-                                <Button buttonColor={theme.colors.error} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={() => setVisible(false)}>
-                                    <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Cancelar</Text>
-                                </Button>
-                                <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" loading={isPendingDeclararExtraviado} disabled={isPendingDeclararExtraviado} onPress={handleSubmit(onSubmit)}>
-                                    <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Confirmar</Text>
-                                </Button>
-                            </View>
-                        </Modal>
-                    </Portal>
-                    
-                    <View style={{flex: 1}}>
-                        {renderProgressIndicator()}
-                        {renderStep()}
+    return( 
+        <View style={{flex: 1, gap:20}}>
+            <Portal>
+                {successMensaje && (
+                    <BackdropSuccess
+                        texto="Nuevo extravío reportado con éxito"
+                        onTap={() => {
+                            navigation.navigate("Home")
+                        }}
+                    />
+                )}
+            </Portal>
+            <Portal>
+                <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={{...styles.containerStyle,backgroundColor:theme.colors.surface}}>
+                    <Text variant="titleMedium" style={{textAlign: 'center'}}>Al reportar la nueva búsqueda compartirá sus datos de contacto con los demás usuarios.</Text>
+                    <View style={{ flexDirection: 'column', display: 'flex', width: '100%', justifyContent: 'space-between' }}>
+                        <Button buttonColor={theme.colors.primary} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" loading={isPendingDeclararExtraviado} disabled={isPendingDeclararExtraviado} onPress={handleSubmit(onSubmit)}>
+                            <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Confirmar</Text>
+                        </Button>
+                        <Button buttonColor={theme.colors.error} style={{  marginVertical: 8,borderRadius:10}} uppercase mode="contained" onPress={() => setVisible(false)}>
+                            <Text variant='labelLarge' style={{color: theme.colors.onPrimary, marginLeft: "5%"}}>Cancelar</Text>
+                        </Button>
                     </View>
-                    
-                    <View style={styles.fixedButtonContainer}>
-                        {renderNavigationButtons()}
-                    </View>
-                </View>
-            </ScrollView>
-        </KeyboardAvoidingView>
+                </Modal>
+            </Portal>
+            
+            <View style={{flex: 1}}>
+                {renderProgressIndicator()}
+                {renderStep()}
+            </View>
+            
+            <View style={styles.fixedButtonContainer}>
+                {renderNavigationButtons()}
+            </View>
+        </View> 
     )
 }
 

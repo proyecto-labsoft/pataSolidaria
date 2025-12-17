@@ -17,11 +17,12 @@ import PetFriendlyHotelIcon from "../componentes/iconos/PetFriendlyHotelIcon";
 import FluentMegaphoneIcon from "../componentes/iconos/FluentMegaphoneIcon";
 import HomeHeartIcon from "../componentes/iconos/HomeHeartIcon"; 
 import BotonAdopciones from "../componentes/botones/BotonAdopciones";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function Home() {
   const theme = useTheme();
   const navigation = useNavigation();
-  const insets = useSafeAreaInsets();
+  const { isAdmin } = useAuth();
   const [index, setIndex] = useState(1);
   const [routes] = useState([
     { 
@@ -86,10 +87,12 @@ export default function Home() {
         showButton={shouldShowBotonCrearFamiliar} 
         onPress={(ruta: string) => navigation.navigate(ruta as never)}
       />
-      <BotonAdopciones
-        showButton={mostrarBotonAdopcion} 
-        onPress={(ruta: string, params?: any) => navigation.navigate(ruta as never, params as never)}
-      />
+      {isAdmin && (
+        <BotonAdopciones
+          showButton={mostrarBotonAdopcion} 
+          onPress={(ruta: string, params?: any) => navigation.navigate(ruta as never)}
+        />
+      )}
     </FondoGradiente>
   );
 }

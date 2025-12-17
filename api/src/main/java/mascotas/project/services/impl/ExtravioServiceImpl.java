@@ -113,8 +113,11 @@ public class ExtravioServiceImpl implements ExtravioService {
                 // Obtener la entidad Usuario completa por ID usando el repositorio
                 var usuarioEntity = usuarioRepository.findById(usuario.getId()).orElse(null);
                 
-                if (usuarioEntity != null && usuarioEntity.getPushToken() != null && 
-                    usuarioEntity.getNotificacionesHabilitadas()) {
+                if (usuarioEntity != null && 
+                    usuarioEntity.getNotificacionesHabilitadas() && 
+                    usuarioEntity.getPushToken() != null && 
+                    !usuarioEntity.getPushToken().trim().isEmpty() && 
+                    !"null".equalsIgnoreCase(usuarioEntity.getPushToken().trim())) {
                     
                     // Obtener la mascota completa (getMascota() retorna Long, no Mascota)
                     Mascota mascotaEntity = mascotaService.getMascotaEntityById(savedExtravio.getMascota());

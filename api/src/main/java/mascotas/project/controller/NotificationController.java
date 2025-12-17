@@ -62,7 +62,10 @@ public class NotificationController {
             String firebaseUid = (String) authentication.getPrincipal();
             Usuario usuario = usuarioService.findByFirebaseUid(firebaseUid);
 
-            if (usuario != null && usuario.getPushToken() != null) {
+            if (usuario != null && 
+                usuario.getPushToken() != null && 
+                !usuario.getPushToken().trim().isEmpty() && 
+                !"null".equalsIgnoreCase(usuario.getPushToken().trim())) {
                 boolean success = expoPushNotificationService.sendNotification(
                         usuario.getPushToken(),
                         "Notificación de prueba",
@@ -149,7 +152,9 @@ public class NotificationController {
             List<Usuario> usuarios = usuarioService.findAllWithNotificationsEnabled();
             List<String> tokens = usuarios.stream()
                     .map(Usuario::getPushToken)
-                    .filter(token -> token != null && !token.isEmpty())
+                    .filter(token -> token != null && 
+                            !token.trim().isEmpty() && 
+                            !"null".equalsIgnoreCase(token.trim()))
                     .collect(Collectors.toList());
 
             if (tokens.isEmpty()) {
@@ -293,9 +298,12 @@ public class NotificationController {
             // Obtener Usuario directamente por ID (UsuarioDTO no tiene firebaseUid)
             var usuario = usuarioService.findById(userId);
 
-            if (usuario == null || usuario.getPushToken() == null) {
+            if (usuario == null || 
+                usuario.getPushToken() == null || 
+                usuario.getPushToken().trim().isEmpty() || 
+                "null".equalsIgnoreCase(usuario.getPushToken().trim())) {
                 return ResponseEntity.badRequest().body(Map.of(
-                        "error", "Usuario no tiene token de notificaciones registrado"
+                        "error", "Usuario no tiene token de notificaciones válido"
                 ));
             }
 

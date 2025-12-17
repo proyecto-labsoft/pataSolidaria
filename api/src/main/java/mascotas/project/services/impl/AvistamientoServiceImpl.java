@@ -63,8 +63,11 @@ public class AvistamientoServiceImpl implements AvistamientoService {
             // Obtener la entidad Usuario completa del repositorio (UsuarioDTO no tiene firebaseUid ni pushToken)
             var duenioEntity = usuarioRepository.findById(duenio.getId()).orElse(null);
             
-            if (duenioEntity != null && duenioEntity.getPushToken() != null && 
-                duenioEntity.getNotificacionesHabilitadas()) {
+            if (duenioEntity != null && 
+                duenioEntity.getNotificacionesHabilitadas() && 
+                duenioEntity.getPushToken() != null && 
+                !duenioEntity.getPushToken().trim().isEmpty() && 
+                !"null".equalsIgnoreCase(duenioEntity.getPushToken().trim())) {
                 
                 // Obtener la mascota completa (getMascota() retorna Long, no Mascota)
                 Mascota mascotaEntity = mascotaService.getMascotaEntityById(extravioEntity.getMascota());

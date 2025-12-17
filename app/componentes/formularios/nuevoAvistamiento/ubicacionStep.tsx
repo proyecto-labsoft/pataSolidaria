@@ -6,6 +6,7 @@ import { Mapa } from '../../mapa'
 import CampoTexto from '../campos/campoTexto'  
 import LocationIcon from '../../iconos/LocationIcon'
 import PropTypes from 'prop-types'
+import CampoTextoArea from '../campos/campoTextoArea'
 
 export default function UbicacionStep({control}) {
     const theme = useTheme()
@@ -39,6 +40,11 @@ export default function UbicacionStep({control}) {
                 disabled
                 label='Ubicación'
                 nombre='ubicacion'
+                control={control}
+            />
+            <CampoTextoArea
+                label='Información adicional (opcional)'
+                nombre='comentario'
                 control={control}
             />
 

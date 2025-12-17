@@ -17,22 +17,20 @@ export default function VistaCasos() {
   const { usuarioId } = useUsuario();
   const { isAdmin } = useAuth();
 
-  const {data: extravios, isFetching, refetch: refetchExtravios } = useApiGetExtravios({params: { queryParams: {resueltos: false}}, enabled: true }) 
+  const {data: extravios, isFetching, refetch: refetchExtravios } = useApiGetExtravios({params: { queryParams: {resueltos: null}}, enabled: true }) 
   const {data: favoritos, isFetching: isFetchingFavoritos, refetch: refetchFavoritos } = useApiGetFavoritos({
     params: { id: usuarioId },
     enabled: !!usuarioId
   }); 
   const {data: emergencias, isFetching: isFetchingEmergencias, refetch: refetchEmergencias } = useApiGetEmergencias({
-    params: { queryParams: {atendidos: false} },
-    enabled: !!usuarioId && isAdmin
+    params: { queryParams: {atendidos: null} },
+    enabled: !!usuarioId
   }); 
   
   function refetchQueries() {
     refetchExtravios();
-    refetchFavoritos();
-    if (isAdmin) {
-      refetchEmergencias();
-    }
+    refetchFavoritos(); 
+    refetchEmergencias()  
   }
 
   const theme = useTheme();
@@ -84,13 +82,24 @@ export default function VistaCasos() {
     });
   }, [extravios, tipoCaso, usuarioId, favoritosIds]); 
 
-  // Agrupa emergencias de a dos por fila
-  // TODO. FILTRAR EMERGENCIAS SEGUN USUARIO. SI ES ADMIN TODAS, SI ES USUARIO COMUN SOLO LAS CREADAS POR EL.
-  const emergenciasPorFila = Array.isArray(emergencias)
-    ? Array.from({ length: Math.ceil(emergencias.length / 2) }, (_, idx) =>
-        emergencias.slice(idx * 2, idx * 2 + 2)
-      )
-    : [];
+  // Agrupa emergencias de a dos por fila 
+  const emergenciasPorFila = useMemo(() => {
+    if (!isAdmin) {
+      const emergenciasUsuario = Array.isArray(emergencias)
+        ? emergencias.filter(emergencia => emergencia.usuarioCreador?.id === usuarioId)
+        : [];
+      console.log("emergenciasUsuario",emergenciasUsuario)
+      return Array.from({ length: Math.ceil(emergenciasUsuario.length / 2) }, (_, idx) =>
+        emergenciasUsuario.slice(idx * 2, idx * 2 + 2)
+      );
+    } else {
+      return Array.isArray(emergencias)
+      ? Array.from({ length: Math.ceil(emergencias.length / 2) }, (_, idx) =>
+          emergencias.slice(idx * 2, idx * 2 + 2)
+        )
+      : []
+    }
+  }, [emergencias, isAdmin, usuarioId]);
 
   // Agrupa los datos de a dos por fila
   const extraviosPorFila = Array.isArray(extraviosFiltrados)
@@ -211,7 +220,7 @@ export default function VistaCasos() {
         refreshing={cargandoVista}
         onRefresh={refetchQueries}
         renderItem={({ item }) => {
-          if (item.type === 'emergencias' && isAdmin && emergenciasPorFila.length > 0) {
+          if (item.type === 'emergencias' && emergenciasPorFila.length > 0) {
             return (
               <View style={{ width: '100%', position: 'relative', marginBottom: 20 }}>
                 {/* Etiqueta/solapa superior */}

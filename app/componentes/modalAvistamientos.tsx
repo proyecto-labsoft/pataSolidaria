@@ -42,7 +42,7 @@ export default function ModalAvistamientos({
                     backgroundColor: theme.colors.surface,
                     margin: 20,
                     borderRadius: 8,
-                    maxHeight: '80%',
+                    height: '80%',
                 }}
             >
                 {!avistamientoSeleccionado ? (
@@ -145,18 +145,15 @@ export default function ModalAvistamientos({
                             </View>
 
                             {/* Imágenes (si existen) */}
-                            {imagenes && imagenes.length > 0 && (
+                            {/* {imagenes && imagenes.length > 0 && (
                                 <View style={{ marginBottom: 16 }}>
                                     <CarruselImagenes data={imagenes} />
                                 </View>
-                            )}
+                            )} */}
 
                             {/* Información */}
                             <Surface style={styles.infoSurface}>
-                                <ItemDato label='Fecha y hora' data={avistamientoSeleccionado?.hora} />
-                                {avistamientoSeleccionado?.zona && (
-                                    <ItemDato label='Zona' data={avistamientoSeleccionado.zona} />
-                                )}
+                                <ItemDato label='Fecha y hora' data={avistamientoSeleccionado?.hora} /> 
                                 {avistamientoSeleccionado?.comentario && (
                                     <ItemDato label='Observaciones' data={avistamientoSeleccionado.comentario} />
                                 )}

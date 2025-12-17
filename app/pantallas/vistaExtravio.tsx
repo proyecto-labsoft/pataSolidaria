@@ -1,6 +1,6 @@
 import { View, ScrollView, useWindowDimensions, StyleSheet } from 'react-native'
 import React, { useEffect, useMemo, useState} from 'react'
-import {Button, IconButton, Modal, Portal, Surface, Text, useTheme, List, TextInput, Card, Icon} from 'react-native-paper'
+import {Button, IconButton, Modal, Portal, Surface, Text, useTheme, List, TextInput, Card, Icon } from 'react-native-paper'
 import ItemDato from '../componentes/itemDato';
 import { ImageSlider } from '../testData/sliderData';
 import CarruselImagenes from '../componentes/carrusel/carruselImagenes';
@@ -12,8 +12,8 @@ import { calcularTiempoTranscurrido } from '../utiles/calcularTiempoTranscurrido
 import { useUsuario } from '../hooks/useUsuario';
 import FormularioEditarExtravio from '../componentes/formularios/formularioEditarExtravio';
 import BackdropSuccess from '../componentes/backdropSuccess';
-import { useApiDeleteFavorito, useApiGetAvistamientosPorExtravio, useApiGetEsFavorito, useApiPostFavorito, useApiPutActualizarExtravio } from '../api/hooks';
-import { obtenerValorSexo, obtenerValorTamanio } from '../utiles/obtenerValorEnum';
+import { useApiDeleteFavorito, useApiGetAvistamientosPorExtravio, useApiGetEsFavorito, useApiPostFavorito, useApiPutActualizarExtravio, useApiPutActualizarMascota } from '../api/hooks';
+import { obtenerValorSexo } from '../utiles/obtenerValorEnum';
 import ModalAvistamientos from '../componentes/modalAvistamientos';
 import BotonAccionesExtravioFAB from '../componentes/botones/BotonAccionesExtravioFAB';
 
@@ -35,8 +35,7 @@ export default function VistaExtravio({route}: any) {
     const [modoEdicion, setModoEdicion] = useState(false);
     const [successMensaje, setSuccessMensaje] = useState(false);
     const [expandedInfo, setExpandedInfo] = useState(false);
-    const [observacionResolver, setObservacionResolver] = useState('');
-    const [verUltimoAvistamiento, setVerUltimoAvistamiento] = useState(true);
+    const [observacionResolver, setObservacionResolver] = useState(''); 
     const [datosAnimal, setDatosAnimal] = useState<any>(null);
     const [datosExtravio, setDatosExtravio] = useState<any>(null);
     const [successResolver, setSuccessResolver] = useState(false);
@@ -56,8 +55,8 @@ export default function VistaExtravio({route}: any) {
         }
     },[route.params?.data])
 
-    const { mutateAsync: actualizarExtravio } = useApiPutActualizarExtravio({
-        params: { id: datosExtravio?.extravioId },
+    const { mutateAsync: actualizarDatoMascota, isPending: isPendingActualizarDatoMascota } = useApiPutActualizarMascota({
+        params: { id: datosExtravio?.mascotaId  },
         onSuccess: () => {
             setSuccessMensaje(true);
         }
@@ -66,26 +65,7 @@ export default function VistaExtravio({route}: any) {
     const { data: avistamientos, isFetching: isLoadingAvistamientos } = useApiGetAvistamientosPorExtravio({
         params: { id: datosExtravio?.extravioId },
         enabled: !!datosExtravio?.extravioId
-    })
-
-    // Calcular la hora a mostrar: último avistamiento o hora del extravío
-    // const obtenerUltimaHora = () => {
-    //     if (avistamientos && avistamientos.length > 0) {
-    //         // Ordenar avistamientos por fecha (más reciente primero)
-    //         const avistamientosOrdenados = [...avistamientos].sort((a, b) => {
-    //             // Parsear fecha en formato dd-MM-yyyy HH:mm:ss
-    //             const parseFecha = (fechaStr: string) => {
-    //                 const partes = fechaStr.split(' ');
-    //                 const [dia, mes, anio] = partes[0].split('-').map(Number);
-    //                 const [hora, minuto] = partes[1].split(':').map(Number);
-    //                 return new Date(anio, mes - 1, dia, hora, minuto).getTime();
-    //             };
-    //             return parseFecha(b.hora) - parseFecha(a.hora);
-    //         });
-    //         return avistamientosOrdenados[0].hora;
-    //     }
-    //     return datosExtravio?.hora;
-    // }; 
+    }) 
 
     const ultimoAvistamiento = useMemo(() => {
         if (avistamientos && avistamientos?.length > 0) {
@@ -95,31 +75,35 @@ export default function VistaExtravio({route}: any) {
         return datosExtravio;
     }, [avistamientos]);
 
-    const onSubmitEdicion = (data: any) => {
-        // Combinar fecha y hora en un solo campo
-        const fechaHora = `${data?.fecha} ${data?.hora}:00`;
-        
-        actualizarExtravio({
+    const onSubmitEdicion = (data: any) => { 
+        if (data?.sexo === 'Macho') {
+            data.sexo = 'M';
+        } else if (data?.sexo === 'Hembra') {
+            data.sexo = 'H';
+        } else if (data?.sexo === 'No lo sé') {
+            data.sexo = null;
+        }
+        if (data?.tamanio === 'Pequeño') {
+            data.tamanio = 'PEQUENIO';
+        } else if (data?.tamanio === 'Mediano') {
+            data.tamanio = 'MEDIANO';
+        } else if (data?.tamanio === 'Grande') {
+            data.tamanio = 'GRANDE';
+        } else if (data?.tamanio === 'Muy grande') {
+            data.tamanio = 'GIGANTE';
+        }
+        actualizarDatoMascota({
             data: {
-                datosExtravio: {
-                    creador: usuarioId,
-                    mascotaId: datosExtravio?.mascotaId,
-                    resuelto: datosExtravio?.resuelto || false,
-                    zona: data?.zona || '',
-                    direccion: data?.direccion || '',
-                    observacion: data?.observacion || '',
-                    hora: fechaHora,
-                    latitud: datosExtravio?.latitud,
-                    longitud: datosExtravio?.longitud,
-                },
-                datosMascota: {
-                    especie: data?.especie || null,
-                    raza: data?.raza || null,
-                    tamanio: obtenerValorTamanio(data?.tamanio) || null,
-                    color: data?.color || null,
-                    sexo: obtenerValorSexo(data?.sexo) || null,
-                    descripcion: data?.descripcion || null,
-                }
+                familiarId: null,
+                nombre: null,
+                esterilizado: null,
+                chipeado: null,
+                especie: data?.especie || null,
+                raza: data?.raza || null,
+                tamanio: data?.tamanio || null,
+                color: data?.color || null,
+                sexo: data?.sexo || null,
+                descripcion: data?.descripcion || null,
             }
         });
     };
@@ -189,8 +173,9 @@ export default function VistaExtravio({route}: any) {
             }})
         }
         
-    }
+    } 
 
+    console.log("Vista extravio",datosExtravio)
     return (
         <View style={{ height: height, width: width, backgroundColor: theme.colors.background, alignItems:'center'}}>      
             <Portal>
@@ -300,11 +285,23 @@ export default function VistaExtravio({route}: any) {
                 
                 {/* Información adicional - Dropdown - Tercera posición */}  
                 
+                {datosExtravio?.observacion && (
+                    <Card style={{...styles.ultimoAvistamientoContainer, margin: 16, backgroundColor: theme.colors.surfaceVariant }}>
+                        <View style={{...styles.headerAvistamiento, flexDirection:'column', alignItems:'flex-start' }}>
+                            <Text variant='titleLarge' style={{ color: theme.colors.onBackground }}>
+                                Información adicional
+                            </Text>
+                            <Text variant='titleMedium' style={{ color: theme.colors.onBackground }}>
+                                {datosExtravio?.observacion || 'Sin observaciones adicionales'}
+                            </Text>
+                        </View> 
+                    </Card>
+                )}
                 <Card style={{...styles.ultimoAvistamientoContainer,  marginHorizontal: 16,  backgroundColor: theme.colors.surface }}>
                 
                     
                     <List.Accordion
-                        title={<Text variant='titleMedium' style={{ color: theme.colors.onPrimaryContainer }}>Información adicional</Text>} 
+                        title={<Text variant='titleLarge' style={{ color: theme.colors.onPrimaryContainer }}>Descripción del animal</Text>} 
                         titleStyle={{fontWeight: 'bold'}}
                         expanded={expandedInfo}
                         onPress={() => {
@@ -321,10 +318,10 @@ export default function VistaExtravio({route}: any) {
                                     {datosAnimal?.nombre && <ItemDato label='Nombre' data={datosAnimal.nombre} />}
                                     {datosAnimal?.especie && <ItemDato label='Especie' data={datosAnimal.especie} />}
                                     {datosAnimal?.raza && <ItemDato label='Raza' data={datosAnimal.raza} />}
-                                    {datosAnimal?.tamanio && <ItemDato label='Tamaño' data={datosAnimal.tamanio} />}
+                                    {datosAnimal?.tamanio && <ItemDato label='Tamaño' data={(datosAnimal.tamanio)} />}
                                     {datosAnimal?.colores && <ItemDato label='Colores' data={datosAnimal.colores} />}
                                     {datosAnimal?.fechaNacimiento && <ItemDato label='Fecha de nacimiento' data={datosAnimal.fechaNacimiento} />}
-                                    {datosAnimal?.genero && <ItemDato label='Género' data={datosAnimal.genero} />}
+                                    {datosAnimal?.sexo && <ItemDato label='Sexo' data={obtenerValorSexo(datosAnimal.sexo)} />}
                                     {datosAnimal?.esterilizado !== undefined && esBuscado && <ItemDato label='¿Está esterilizado?' data={datosAnimal.esterilizado} />}
                                     {datosAnimal?.chipeado !== undefined && esBuscado && <ItemDato label='¿Está chipeado?' data={datosAnimal.chipeado} />}
                                     {datosAnimal?.domicilio && <ItemDato label='Domicilio' data={datosAnimal.domicilio} />}
@@ -334,6 +331,7 @@ export default function VistaExtravio({route}: any) {
                             : ( 
                                 <FormularioEditarExtravio 
                                     data={datosExtravio} 
+                                    submitting={isPendingActualizarDatoMascota}
                                     onCancel={() => setModoEdicion(false)} 
                                     onSubmit={onSubmitEdicion} 
                                 /> 
@@ -369,6 +367,7 @@ export default function VistaExtravio({route}: any) {
                                 )}
                             </>
                         )}
+                        <Button onPress={() => setModalAvistamientos(true)} mode='contained' >Ver avistamientos</Button>
                     </View>
                 </Card>
 

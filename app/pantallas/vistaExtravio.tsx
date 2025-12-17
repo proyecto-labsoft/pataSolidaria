@@ -18,6 +18,7 @@ import ModalAvistamientos from '../componentes/modalAvistamientos';
 import BotonAccionesExtravioFAB from '../componentes/botones/BotonAccionesExtravioFAB';
 import { useObtenerImagenes } from '../api/imagenes.hooks';
 import { ImageGallery } from '../componentes/imagenes';
+import { useAuth } from '../contexts/AuthContext';
 
 // Basandose en colores de la pagina de ARAF
 // primario: 0f7599 
@@ -32,7 +33,7 @@ export default function VistaExtravio({route}: any) {
     const navigation = useNavigation()
     const isFocused = useIsFocused();
     const {width,height} = useWindowDimensions()
-
+    const { isAdmin } = useAuth()
     const [visible,setVisible] = useState(false)
     const [modoEdicion, setModoEdicion] = useState(false);
     const [successMensaje, setSuccessMensaje] = useState(false);
@@ -360,7 +361,7 @@ export default function VistaExtravio({route}: any) {
                         <View style={{padding: 16, paddingTop: 32, position: 'relative', gap: 12, borderTopColor: theme.colors.outline, borderTopWidth: 0.5 }}>
                             {!modoEdicion ? (
                                 <>
-                                    <IconButton icon="pencil" size={18} containerColor={theme.colors.primary} style={{ position: 'absolute', top: 5, right: 10, zIndex: 10 }} iconColor={theme.colors.onPrimary} onPress={() => setModoEdicion(true)}/>
+                                    {(esCreadorDelExtravio || isAdmin) && <IconButton icon="pencil" size={18} containerColor={theme.colors.primary} style={{ position: 'absolute', top: 5, right: 10, zIndex: 10 }} iconColor={theme.colors.onPrimary} onPress={() => setModoEdicion(true)}/> }
                                     {datosAnimal?.nombre && <ItemDato label='Nombre' data={datosAnimal.nombre} />}
                                     {datosAnimal?.especie && <ItemDato label='Especie' data={datosAnimal.especie} />}
                                     {datosAnimal?.raza && <ItemDato label='Raza' data={datosAnimal.raza} />}
@@ -461,7 +462,7 @@ export default function VistaExtravio({route}: any) {
                 esFamiliar={esBuscado} 
                 onResolverCaso={() => setResolverCaso(true)} 
                 onViEsteAnimal={() => navigation.navigate('NuevoAvistamiento', {data: {extravioId: datosExtravio?.extravioId}})} 
-                showButton={!modoEdicion && isFocused}
+                showButton={!modoEdicion && isFocused && !modalAvistamientos}
             />
         </View>
 )}

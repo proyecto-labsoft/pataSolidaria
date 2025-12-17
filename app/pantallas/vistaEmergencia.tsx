@@ -9,6 +9,7 @@ import { useNavigation, useIsFocused } from "@react-navigation/native";
 import { Mapa } from '../componentes/mapa';
 import BannerEstadoExtravio from '../componentes/bannerEstadoExtravio';
 import { calcularTiempoTranscurrido } from '../utiles/calcularTiempoTranscurrido';
+import { formatearFechaHoraCompletaBuenosAires } from '../utiles/fechaHoraBuenosAires';
 import { useUsuario } from '../hooks/useUsuario';
 import BackdropSuccess from '../componentes/backdropSuccess';
 import { useAuth } from '../contexts/AuthContext';
@@ -36,8 +37,9 @@ export default function VistaEmergencia({ route }: any) {
     const esCreadorDeLaEmergencia = datosEmergencia?.usuarioCreador?.id === usuarioId;
     const tiempoTranscurrido = calcularTiempoTranscurrido(datosEmergencia?.hora)
 
-    const { mutateAsync: atenderEmergencia } = useApiPutEmergencia({
+    const { mutateAsync: atenderEmergencia, isPending: isLoadingAtenderEmergencia } = useApiPutEmergencia({
         params: {id: datosEmergencia?.id},
+        enabled: !!datosEmergencia?.id,
         onSuccess: () => {
             setSuccessResolver(true); 
             setResolverEmergencia(false);
@@ -46,6 +48,7 @@ export default function VistaEmergencia({ route }: any) {
 
     useEffect(() => {
         if (route.params?.data) {
+            console.log(route.params?.data)
             setDatosEmergencia(route.params?.data)
         }
     }, [route.params?.data])
@@ -53,6 +56,11 @@ export default function VistaEmergencia({ route }: any) {
     const handleResolverEmergencia = () => {
         
         atenderEmergencia({data: {
+            usuarioId: usuarioId,
+            zona: null,
+            hora: formatearFechaHoraCompletaBuenosAires(),
+            latitud: null,
+            longitud: null,
             atendido: true,
             observacion: observacionResolver
         }})
@@ -105,6 +113,8 @@ export default function VistaEmergencia({ route }: any) {
                             mode="outlined"
                             onPress={handleResolverEmergencia}
                             style={{ marginTop: 16 }}
+                            loading={isLoadingAtenderEmergencia}
+                            disabled={isLoadingAtenderEmergencia}
                         >
                             Confirmar
                         </Button>
@@ -238,7 +248,7 @@ export default function VistaEmergencia({ route }: any) {
                 isAdmin={isAdmin}
                 emergenciaAtendida={datosEmergencia?.atendido || false}
                 onMarcarAtendida={() => setResolverEmergencia(true)}
-                showButton={isFocused && !visible}
+                showButton={isFocused && !visible && !resolverEmergencia}
             />
         </View>
     )

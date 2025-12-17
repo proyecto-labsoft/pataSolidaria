@@ -1,10 +1,7 @@
 
-import { View,StyleSheet, Animated } from 'react-native'
-import {useState, useEffect, useRef} from 'react'
-import { Button, useTheme, Text, Portal, Modal } from 'react-native-paper'
-import { Mapa } from '../../mapa'
-import CampoTexto from '../campos/campoTexto' 
-import DescripcionVista from '../../descripcionVista' 
+import { View } from 'react-native' 
+import { Text } from 'react-native-paper' 
+import CampoTexto from '../campos/campoTexto'  
 import CampoSelectorModal from '../campos/campoSelectorModal'
 import CampoTextoArea from '../campos/campoTextoArea'
 

@@ -134,14 +134,21 @@ public class ExtravioServiceImpl implements ExtravioService {
                         genero = "a";
                     }
                     
-                    expoPushNotificationService.sendNotification(
+                    boolean enviado = expoPushNotificationService.sendNotification(
                         usuarioEntity.getPushToken(),
                         "🎉 ¡" + nombreMascota + " fue encontrad" + genero + "!",
                         "El caso de extravio ha sido marcado como resuelto. ¡Felicitaciones!",
                         data
                     );
                     
-                    log.info("🔔 Notificación Expo de extravio resuelto enviada al usuario: {}", usuarioEntity.getEmail());
+                    if (enviado) {
+                        log.info("🔔 Notificación Expo de extravio resuelto enviada al usuario: {}", usuarioEntity.getEmail());
+                    } else {
+                        log.warn("⚠️ No se pudo enviar notificación de extravio resuelto al usuario: {} (token inválido o error de servicio)", usuarioEntity.getEmail());
+                    }
+                } else {
+                    log.debug("ℹ️ No se envió notificación de extravio resuelto: usuario {} no cumple requisitos", 
+                             usuarioEntity != null ? usuarioEntity.getEmail() : "desconocido");
                 }
             } catch (Exception e) {
                 log.error("❌ Error al enviar notificación de extravio resuelto: {}", e.getMessage());

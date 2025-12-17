@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -151,6 +152,11 @@ public class ImagenService {
      */
     public List<ImagenDTO> obtenerImagenesMascota(Long mascotaId) {
         List<MascotaImagen> relaciones = mascotaImagenRepository.findByIdMascotaIdOrderByOrdenAsc(mascotaId);
+        
+        if (relaciones.isEmpty()) {
+            return Collections.singletonList(crearImagenPlaceholder());
+        }
+        
         return relaciones.stream()
                 .map(imagenMapper::toDTO)
                 .collect(Collectors.toList());
@@ -161,6 +167,11 @@ public class ImagenService {
      */
     public List<ImagenDTO> obtenerImagenesExtravio(Long extravioId) {
         List<ExtravioImagen> relaciones = extravioImagenRepository.findByIdExtravioIdOrderByOrdenAsc(extravioId);
+        
+        if (relaciones.isEmpty()) {
+            return Collections.singletonList(crearImagenPlaceholder());
+        }
+        
         return relaciones.stream()
                 .map(imagenMapper::toDTO)
                 .collect(Collectors.toList());
@@ -171,6 +182,11 @@ public class ImagenService {
      */
     public List<ImagenDTO> obtenerImagenesAvistamiento(Long avistamientoId) {
         List<AvistamientoImagen> relaciones = avistamientoImagenRepository.findByIdAvistamientoIdOrderByOrdenAsc(avistamientoId);
+        
+        if (relaciones.isEmpty()) {
+            return Collections.singletonList(crearImagenPlaceholder());
+        }
+        
         return relaciones.stream()
                 .map(imagenMapper::toDTO)
                 .collect(Collectors.toList());
@@ -219,6 +235,11 @@ public class ImagenService {
      */
     public List<ImagenDTO> obtenerImagenesAdopcion(Long adopcionId) {
         List<AdopcionImagen> relaciones = adopcionImagenRepository.findByIdAdopcionIdOrderByOrdenAsc(adopcionId);
+        
+        if (relaciones.isEmpty()) {
+            return Collections.singletonList(crearImagenPlaceholder());
+        }
+        
         return relaciones.stream()
                 .map(imagenMapper::toDTO)
                 .collect(Collectors.toList());
@@ -249,6 +270,18 @@ public class ImagenService {
     }
 
     // ========== MÉTODOS PRIVADOS ==========
+
+    /**
+     * Crea un ImagenDTO placeholder para cuando no hay imágenes
+     */
+    private ImagenDTO crearImagenPlaceholder() {
+        return ImagenDTO.builder()
+                .id(0L)
+                .urlPublica("https://firebasestorage.googleapis.com/v0/b/pata-solidaria-fb7d8.firebasestorage.app/o/pata-no-imagen-mediano.jpeg?alt=media&token=c119afdc-f9ba-436a-8448-da645dee7bdc")
+                .nombreArchivo("pata-no-imagen-mediano.jpeg")
+                .orden(0)
+                .build();
+    }
 
     private void validarArchivo(MultipartFile file) {
         if (!firebaseStorageService.esImagenValida(file)) {

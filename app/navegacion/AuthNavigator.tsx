@@ -26,6 +26,7 @@ import NuevaAdopcion from '../pantallas/nuevaAdopcion';
 import ConfirmarAdopcion from '../pantallas/confirmarAdopcion';
 import VistaAdopcion from '../pantallas/vistaAdopcion';
 import NuevaEmergencia from '../pantallas/nuevaEmergencia';
+import VistaEmergencia from '../pantallas/vistaEmergencia';
 
 const Stack = createNativeStackNavigator();
 
@@ -98,6 +99,7 @@ export default function AuthNavigator() {
             <Stack.Screen name="NuevaAdopcion" component={NuevaAdopcion} />
             <Stack.Screen name="ConfirmarAdopcion" component={ConfirmarAdopcion} />
             <Stack.Screen name="VistaAdopcion" component={VistaAdopcion} />
+            <Stack.Screen name="VistaEmergencia" component={VistaEmergencia} />
             <Stack.Screen name="NuevaEmergencia" component={NuevaEmergencia} />
           </>
         ) : (

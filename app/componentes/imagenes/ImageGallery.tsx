@@ -578,7 +578,7 @@ const styles = StyleSheet.create({
   fab: {
     position: 'absolute',
     right: 0,
-    top: 140,
+    top: 170,
     zIndex: 2,
   },
   fabButton: {

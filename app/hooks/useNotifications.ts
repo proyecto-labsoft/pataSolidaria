@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import * as Notifications from 'expo-notifications';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_URL } from '../api/api.rutas';
 import { useNavigation } from '@react-navigation/native';
 import {
@@ -11,10 +12,22 @@ import {
 } from '../services/notificationService';
 import { getCurrentUserToken } from '../services/authService';
 
+const NOTIFICATIONS_STORAGE_KEY = '@notifications_history';
+const MAX_NOTIFICATIONS = 100;
+
 export interface NotificationData {
   title?: string;
   body?: string;
   data?: any;
+}
+
+interface NotificationItem {
+  id: string;
+  title: string;
+  body: string;
+  date: string;
+  data?: any;
+  read: boolean;
 }
 
 export function useNotifications() {
@@ -25,6 +38,31 @@ export function useNotifications() {
   
   // Obtener la referencia de navegación si está disponible
   const navigation = useNavigation();
+
+  // Función para guardar notificación en AsyncStorage
+  const saveNotificationToStorage = async (notificationItem: NotificationItem) => {
+    try {
+      const stored = await AsyncStorage.getItem(NOTIFICATIONS_STORAGE_KEY);
+      let allNotifications: NotificationItem[] = stored ? JSON.parse(stored) : [];
+      
+      // Evitar duplicados
+      const exists = allNotifications.some(n => n.id === notificationItem.id);
+      if (exists) return;
+      
+      // Agregar la nueva notificación al inicio
+      allNotifications = [notificationItem, ...allNotifications];
+      
+      // Limitar el número de notificaciones guardadas
+      if (allNotifications.length > MAX_NOTIFICATIONS) {
+        allNotifications = allNotifications.slice(0, MAX_NOTIFICATIONS);
+      }
+      
+      // Guardar en AsyncStorage
+      await AsyncStorage.setItem(NOTIFICATIONS_STORAGE_KEY, JSON.stringify(allNotifications));
+    } catch (error) {
+      console.error('Error guardando notificación en storage:', error);
+    }
+  };
 
   useEffect(() => {
     // Registrar para notificaciones push
@@ -43,16 +81,44 @@ export function useNotifications() {
 
     // Listener para cuando se recibe una notificación (app en primer plano)
     notificationListener.current = addNotificationReceivedListener(notification => {
-      setNotification({
+      const notificationData = {
         title: notification.request.content.title,
         body: notification.request.content.body,
         data: notification.request.content.data
-      });
+      };
+      
+      setNotification(notificationData);
+      
+      // Guardar en AsyncStorage
+      const notificationItem: NotificationItem = {
+        id: notification.request.identifier,
+        title: notificationData.title || 'Notificación',
+        body: notificationData.body || '',
+        date: new Date().toISOString(),
+        data: notificationData.data,
+        read: false,
+      };
+      
+      saveNotificationToStorage(notificationItem);
     });
 
     // Listener para cuando el usuario toca una notificación
     responseListener.current = addNotificationResponseReceivedListener(response => {
-      const data = response.notification.request.content.data;
+      const notification = response.notification;
+      const data = notification.request.content.data;
+      
+      // Guardar la notificación si viene de segundo plano/cerrada
+      const notificationItem: NotificationItem = {
+        id: notification.request.identifier,
+        title: notification.request.content.title || 'Notificación',
+        body: notification.request.content.body || '',
+        date: new Date().toISOString(),
+        data: notification.request.content.data,
+        read: true, // Ya fue tocada
+      };
+      
+      saveNotificationToStorage(notificationItem);
+      
       handleNotificationResponse(data);
     });
 

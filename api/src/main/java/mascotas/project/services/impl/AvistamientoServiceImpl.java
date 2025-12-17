@@ -14,7 +14,7 @@ import mascotas.project.repositories.AvistamientoRepository;
 import mascotas.project.repositories.UsuarioRepository;
 import mascotas.project.services.interfaces.AvistamientoService;
 import mascotas.project.services.interfaces.ExtravioService;
-import mascotas.project.services.interfaces.FireBaseNotificationService;
+import mascotas.project.services.interfaces.ExpoPushNotificationService;
 import mascotas.project.services.interfaces.UsuarioService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +33,7 @@ public class AvistamientoServiceImpl implements AvistamientoService {
     private final ExtravioService extravioService;
     private final AvistamientoRepository avistamientoRepository;
     private final AvistamientoMapper avistamientoMapper;
-    private final FireBaseNotificationService notificationService;
+    private final ExpoPushNotificationService notificationService;
     private final UsuarioRepository usuarioRepository;
     private final mascotas.project.services.interfaces.MascotaService mascotaService;
 
@@ -63,8 +63,11 @@ public class AvistamientoServiceImpl implements AvistamientoService {
             // Obtener la entidad Usuario completa del repositorio (UsuarioDTO no tiene firebaseUid ni pushToken)
             var duenioEntity = usuarioRepository.findById(duenio.getId()).orElse(null);
             
-            if (duenioEntity != null && duenioEntity.getPushToken() != null && 
-                duenioEntity.getNotificacionesHabilitadas()) {
+            if (duenioEntity != null && 
+                duenioEntity.getNotificacionesHabilitadas() && 
+                duenioEntity.getPushToken() != null && 
+                !duenioEntity.getPushToken().trim().isEmpty() && 
+                !"null".equalsIgnoreCase(duenioEntity.getPushToken().trim())) {
                 
                 // Obtener la mascota completa (getMascota() retorna Long, no Mascota)
                 Mascota mascotaEntity = mascotaService.getMascotaEntityById(extravioEntity.getMascota());
@@ -75,14 +78,21 @@ public class AvistamientoServiceImpl implements AvistamientoService {
                 data.put("extravioId", extravioEntity.getId().toString());
                 data.put("avistamientoId", avist.getId().toString());
                 
-                notificationService.sendNotification(
+                boolean enviado = notificationService.sendNotification(
                     duenioEntity.getPushToken(),
                     "🐾 ¡Nuevo avistamiento de " + nombreMascota + "!",
                     "Alguien reportó haber visto a " + nombreMascota + ". Revisa los detalles.",
                     data
                 );
                 
-                log.info("🔔 Notificación de avistamiento enviada al usuario: {}", duenioEntity.getEmail());
+                if (enviado) {
+                    log.info("🔔 Notificación Expo de avistamiento enviada al usuario: {}", duenioEntity.getEmail());
+                } else {
+                    log.warn("⚠️ No se pudo enviar notificación Expo de avistamiento al usuario: {} (token inválido o error de servicio)", duenioEntity.getEmail());
+                }
+            } else {
+                log.debug("ℹ️ No se envió notificación de avistamiento: usuario {} no cumple requisitos (notificaciones habilitadas y token válido)", 
+                         duenioEntity != null ? duenioEntity.getEmail() : "desconocido");
             }
         } catch (Exception e) {
             log.error("❌ Error al enviar notificación de avistamiento: {}", e.getMessage());

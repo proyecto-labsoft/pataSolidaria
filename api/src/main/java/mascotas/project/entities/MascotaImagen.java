@@ -26,7 +26,7 @@ public class MascotaImagen {
     @JoinColumn(name = "mascota_id")
     private Mascota mascota;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("imagenId")
     @JoinColumn(name = "imagen_id")
     @OnDelete(action = OnDeleteAction.CASCADE)

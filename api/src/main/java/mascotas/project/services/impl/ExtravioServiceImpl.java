@@ -16,7 +16,7 @@ import mascotas.project.mapper.ExtravioMapper;
 import mascotas.project.repositories.ExtravioRepository;
 import mascotas.project.repositories.UsuarioRepository;
 import mascotas.project.services.interfaces.ExtravioService;
-import mascotas.project.services.interfaces.FireBaseNotificationService;
+import mascotas.project.services.interfaces.ExpoPushNotificationService;
 import mascotas.project.services.interfaces.MascotaService;
 import mascotas.project.services.interfaces.UsuarioService;
 import org.springframework.stereotype.Service;
@@ -37,7 +37,7 @@ public class ExtravioServiceImpl implements ExtravioService {
     private final MascotaService mascotaService;
     private final ExtravioMapper extravioMapper;
     private final ExtravioRepository extravioRepository;
-    private final FireBaseNotificationService fireBaseNotificationService;
+    private final ExpoPushNotificationService expoPushNotificationService;
     private final UsuarioRepository usuarioRepository;
 
     @Override
@@ -113,8 +113,11 @@ public class ExtravioServiceImpl implements ExtravioService {
                 // Obtener la entidad Usuario completa por ID usando el repositorio
                 var usuarioEntity = usuarioRepository.findById(usuario.getId()).orElse(null);
                 
-                if (usuarioEntity != null && usuarioEntity.getPushToken() != null && 
-                    usuarioEntity.getNotificacionesHabilitadas()) {
+                if (usuarioEntity != null && 
+                    usuarioEntity.getNotificacionesHabilitadas() && 
+                    usuarioEntity.getPushToken() != null && 
+                    !usuarioEntity.getPushToken().trim().isEmpty() && 
+                    !"null".equalsIgnoreCase(usuarioEntity.getPushToken().trim())) {
                     
                     // Obtener la mascota completa (getMascota() retorna Long, no Mascota)
                     Mascota mascotaEntity = mascotaService.getMascotaEntityById(savedExtravio.getMascota());
@@ -131,14 +134,21 @@ public class ExtravioServiceImpl implements ExtravioService {
                         genero = "a";
                     }
                     
-                    fireBaseNotificationService.sendNotification(
+                    boolean enviado = expoPushNotificationService.sendNotification(
                         usuarioEntity.getPushToken(),
                         "🎉 ¡" + nombreMascota + " fue encontrad" + genero + "!",
                         "El caso de extravio ha sido marcado como resuelto. ¡Felicitaciones!",
                         data
                     );
                     
-                    log.info("🔔 Notificación de extravio resuelto enviada al usuario: {}", usuarioEntity.getEmail());
+                    if (enviado) {
+                        log.info("🔔 Notificación Expo de extravio resuelto enviada al usuario: {}", usuarioEntity.getEmail());
+                    } else {
+                        log.warn("⚠️ No se pudo enviar notificación de extravio resuelto al usuario: {} (token inválido o error de servicio)", usuarioEntity.getEmail());
+                    }
+                } else {
+                    log.debug("ℹ️ No se envió notificación de extravio resuelto: usuario {} no cumple requisitos", 
+                             usuarioEntity != null ? usuarioEntity.getEmail() : "desconocido");
                 }
             } catch (Exception e) {
                 log.error("❌ Error al enviar notificación de extravio resuelto: {}", e.getMessage());

@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mascotas.project.entities.Usuario;
+import mascotas.project.services.interfaces.ExpoPushNotificationService;
 import mascotas.project.services.interfaces.FireBaseNotificationService;
 import mascotas.project.services.interfaces.UsuarioService;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 public class NotificationController {
 
     private final FireBaseNotificationService fireBaseNotificationService;
+    private final ExpoPushNotificationService expoPushNotificationService;
     private final UsuarioService usuarioService;
 
     /**
@@ -60,18 +62,20 @@ public class NotificationController {
             String firebaseUid = (String) authentication.getPrincipal();
             Usuario usuario = usuarioService.findByFirebaseUid(firebaseUid);
 
-            if (usuario != null && usuario.getPushToken() != null) {
-                String response = fireBaseNotificationService.sendNotification(
+            if (usuario != null && 
+                usuario.getPushToken() != null && 
+                !usuario.getPushToken().trim().isEmpty() && 
+                !"null".equalsIgnoreCase(usuario.getPushToken().trim())) {
+                boolean success = expoPushNotificationService.sendNotification(
                         usuario.getPushToken(),
                         "Notificación de prueba",
                         "Esta es una notificación de prueba de Pata Solidaria",
                         Map.of("type", "test")
                 );
 
-                if (response != null) {
+                if (success) {
                     return ResponseEntity.ok(Map.of(
-                            "message", "Notificación enviada",
-                            "response", response
+                            "message", "Notificación enviada exitosamente"
                     ));
                 } else {
                     return ResponseEntity.badRequest().body(Map.of("error", "Error al enviar notificación"));
@@ -148,7 +152,9 @@ public class NotificationController {
             List<Usuario> usuarios = usuarioService.findAllWithNotificationsEnabled();
             List<String> tokens = usuarios.stream()
                     .map(Usuario::getPushToken)
-                    .filter(token -> token != null && !token.isEmpty())
+                    .filter(token -> token != null && 
+                            !token.trim().isEmpty() && 
+                            !"null".equalsIgnoreCase(token.trim()))
                     .collect(Collectors.toList());
 
             if (tokens.isEmpty()) {
@@ -165,19 +171,22 @@ public class NotificationController {
                 data.put("customData", request.get("data"));
             }
 
-            // Enviar notificación multicast
-            var response = fireBaseNotificationService.sendMulticastNotification(tokens, title, body, data);
+            // Enviar notificación multicast usando Expo Push
+            var response = expoPushNotificationService.sendMulticastNotification(tokens, title, body, data);
 
             if (response != null) {
-                log.info("📢 Notificación broadcast enviada a {} usuarios. Exitosas: {}, Fallidas: {}",
-                        tokens.size(), response.getSuccessCount(), response.getFailureCount());
+                int successCount = (int) response.getOrDefault("successCount", 0);
+                int failureCount = (int) response.getOrDefault("failureCount", 0);
+                
+                log.info("📢 Notificación broadcast Expo enviada a {} usuarios. Exitosas: {}, Fallidas: {}",
+                        tokens.size(), successCount, failureCount);
 
                 return ResponseEntity.ok(Map.of(
                         "message", "Notificación broadcast enviada",
                         "totalUsers", usuarios.size(),
                         "tokensSent", tokens.size(),
-                        "successCount", response.getSuccessCount(),
-                        "failureCount", response.getFailureCount()
+                        "successCount", successCount,
+                        "failureCount", failureCount
                 ));
             } else {
                 return ResponseEntity.internalServerError().body(Map.of(
@@ -289,9 +298,12 @@ public class NotificationController {
             // Obtener Usuario directamente por ID (UsuarioDTO no tiene firebaseUid)
             var usuario = usuarioService.findById(userId);
 
-            if (usuario == null || usuario.getPushToken() == null) {
+            if (usuario == null || 
+                usuario.getPushToken() == null || 
+                usuario.getPushToken().trim().isEmpty() || 
+                "null".equalsIgnoreCase(usuario.getPushToken().trim())) {
                 return ResponseEntity.badRequest().body(Map.of(
-                        "error", "Usuario no tiene token de notificaciones registrado"
+                        "error", "Usuario no tiene token de notificaciones válido"
                 ));
             }
 
@@ -309,21 +321,20 @@ public class NotificationController {
                 data.put("customData", request.get("data"));
             }
 
-            // Enviar notificación
-            String response = fireBaseNotificationService.sendNotification(
+            // Enviar notificación usando Expo Push
+            boolean success = expoPushNotificationService.sendNotification(
                     usuario.getPushToken(),
                     title,
                     body,
                     data
             );
 
-            if (response != null) {
-                log.info("📧 Notificación enviada al usuario {} ({})", usuario.getEmail(), userId);
+            if (success) {
+                log.info("📧 Notificación Expo enviada al usuario {} ({})", usuario.getEmail(), userId);
                 return ResponseEntity.ok(Map.of(
                         "message", "Notificación enviada exitosamente",
                         "userId", userId,
-                        "userEmail", usuario.getEmail(),
-                        "response", response
+                        "userEmail", usuario.getEmail()
                 ));
             } else {
                 return ResponseEntity.internalServerError().body(Map.of(

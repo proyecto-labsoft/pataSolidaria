@@ -26,7 +26,7 @@ public class AvistamientoImagen {
     @JoinColumn(name = "avistamiento_id")
     private Avistamiento avistamiento;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("imagenId")
     @JoinColumn(name = "imagen_id")
     @OnDelete(action = OnDeleteAction.CASCADE)

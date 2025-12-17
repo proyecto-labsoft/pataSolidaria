@@ -13,14 +13,16 @@ import mascotas.project.exceptions.NoContentException;
 import mascotas.project.mapper.AdopcionMapper;
 import mascotas.project.repositories.AdopocionRepository;
 import mascotas.project.services.interfaces.AdopcionService;
-import mascotas.project.services.interfaces.FireBaseNotificationService;
+import mascotas.project.services.interfaces.ExpoPushNotificationService;
 import mascotas.project.services.interfaces.MascotaService;
+import mascotas.project.services.interfaces.UsuarioService;
 import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -30,7 +32,8 @@ public class AdopcionServiceImpl implements AdopcionService {
     private AdopocionRepository adopcionRepository;
     private AdopcionMapper adopcionMapper;
     private MascotaService mascotaService;
-    private FireBaseNotificationService notificationService;
+    private ExpoPushNotificationService notificationService;
+    private UsuarioService usuarioService;
 
     @Override
     @Transactional
@@ -53,23 +56,41 @@ public class AdopcionServiceImpl implements AdopcionService {
                     )
                     .map(adopcionRepository::save)
                     .map(adopcion -> {
-                        // Enviar notificación al topic de adopciones
+                        // Enviar notificación broadcast a todos los usuarios con notificaciones habilitadas
                         try {
                             Mascota mascota = mascotaService.getMascotaEntityById(adopcion.getMascota().getId());
                             
-                            Map<String, String> data = new HashMap<>();
-                            data.put("type", "adopcion");
-                            data.put("adopcionId", adopcion.getId().toString());
-                            data.put("mascotaId", adopcion.getMascota().toString());
+                            // Obtener todos los usuarios con notificaciones habilitadas
+                            var usuarios = usuarioService.findAllWithNotificationsEnabled();
+                            List<String> tokens = usuarios.stream()
+                                    .map(u -> u.getPushToken())
+                                    .filter(token -> token != null && 
+                                            !token.trim().isEmpty() && 
+                                            !"null".equalsIgnoreCase(token.trim()))
+                                    .collect(Collectors.toList());
                             
-                            notificationService.sendToTopic(
-                                "adopciones",
-                                "🐶 Nueva mascota en adopción",
-                                mascota.getNombre() + " está buscando un hogar. ¿Te interesa adoptarlo?",
-                                data
-                            );
-                            
-                            log.info("🔔 Notificación de nueva adopción enviada al topic 'adopciones'");
+                            if (!tokens.isEmpty()) {
+                                Map<String, String> data = new HashMap<>();
+                                data.put("type", "adopcion");
+                                data.put("adopcionId", adopcion.getId().toString());
+                                data.put("mascotaId", adopcion.getMascota().toString());
+                                
+                                var result = notificationService.sendMulticastNotification(
+                                    tokens,
+                                    "🐶 Nueva mascota en adopción",
+                                    mascota.getNombre() + " está buscando un hogar. ¿Te interesa adoptarlo?",
+                                    data
+                                );
+                                
+                                if (result != null) {
+                                    int successCount = (int) result.getOrDefault("successCount", 0);
+                                    log.info("🔔 Notificación Expo de nueva adopción enviada a {} usuarios", successCount);
+                                } else {
+                                    log.warn("⚠️ No se pudo enviar notificación de nueva adopción");
+                                }
+                            } else {
+                                log.debug("ℹ️ No hay usuarios con tokens válidos para notificar sobre nueva adopción");
+                            }
                         } catch (Exception e) {
                             log.error("❌ Error al enviar notificación de nueva adopción: {}", e.getMessage());
                         }

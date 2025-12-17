@@ -26,7 +26,7 @@ public class ExtravioImagen {
     @JoinColumn(name = "extravio_id")
     private Extravio extravio;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("imagenId")
     @JoinColumn(name = "imagen_id")
     @OnDelete(action = OnDeleteAction.CASCADE)

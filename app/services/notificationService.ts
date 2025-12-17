@@ -10,6 +10,7 @@ Notifications.setNotificationHandler({
     shouldShowAlert: true,
     shouldPlaySound: true,
     shouldSetBadge: true,
+    shouldDismiss: false, // Mantener las notificaciones después de tocarlas
   }),
 });
 

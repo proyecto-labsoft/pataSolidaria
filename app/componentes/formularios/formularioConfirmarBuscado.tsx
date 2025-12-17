@@ -48,7 +48,7 @@ export default function FormularioConfirmarBuscado({ data } : Props) {
     ]).current
 
     const { control, setValue, watch, handleSubmit, formState: {errors} } = useForm({
-        defaultValues: data || {}
+        defaultValues: {...data, sexo: data?.sexo === "M" ? "Macho" : data?.sexo === "H" ? "Hembra" : "No lo sé"} || {}
     });
     
     const watchedValues = watch(); // Para mostrar valores en confirmación

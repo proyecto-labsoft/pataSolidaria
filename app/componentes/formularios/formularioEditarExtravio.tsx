@@ -56,7 +56,7 @@ export default function FormularioEditarExtravio({data, onCancel, onSubmit} : Pr
             raza: data.mascotaDetalle?.raza || '',
             tamanio: data.mascotaDetalle?.tamanio || '',
             color: data.mascotaDetalle?.colores || '',
-            sexo: data.mascotaDetalle?.sexo || '',
+            sexo: data.mascotaDetalle?.sexo === "M" ? "Macho" : data.mascotaDetalle?.sexo === "H" ? "Hembra" : "No lo sé",
             descripcion: data.mascotaDetalle?.descripcion || '',
         };
     }, [data]);

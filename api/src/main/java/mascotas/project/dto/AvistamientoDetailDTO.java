@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class AvistamientoDetailDTO {
 
+    private Long id;
     //  private Long extravioId;
     private Long usuarioAvistador;
     private String zona;

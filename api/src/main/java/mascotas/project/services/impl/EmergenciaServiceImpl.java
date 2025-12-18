@@ -19,6 +19,7 @@ import mascotas.project.exceptions.NoContentException;
 import mascotas.project.mapper.EmergenciaMapper;
 import mascotas.project.repositories.EmergenciaRepository;
 import mascotas.project.services.interfaces.EmergenciaService;
+import mascotas.project.services.interfaces.ExpoPushNotificationService;
 import mascotas.project.services.interfaces.MascotaService;
 import mascotas.project.services.interfaces.UsuarioService;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,7 @@ public class EmergenciaServiceImpl implements EmergenciaService {
     private final EmergenciaMapper mapper;
     private final EmergenciaRepository repository;
     private final EmergenciaMapper emergenciaMapper;
-    private final mascotas.project.services.interfaces.ExpoPushNotificationService expoPushNotificationService;
+    private final ExpoPushNotificationService expoPushNotificationService;
 
     @Transactional
     public EmergenciaDetailDTO saveEmergenciaAnimalAnonimo(EmergenciaAnimalAnonimoDTO request){
@@ -182,7 +183,7 @@ public class EmergenciaServiceImpl implements EmergenciaService {
 
             String title = "🚨 Nueva Emergencia";
             String body = "Se reportó una nueva emergencia de un " + 
-                         (emergencia.getMascota() != null ? emergencia.getMascota().getTipo() : "animal");
+                         (emergencia.getMascota() != null ? emergencia.getMascota().getEspecie() : "animal");
             
             java.util.Map<String, String> data = new java.util.HashMap<>();
             data.put("type", "nueva_emergencia");

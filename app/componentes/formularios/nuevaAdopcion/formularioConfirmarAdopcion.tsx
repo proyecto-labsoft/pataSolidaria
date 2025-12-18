@@ -10,6 +10,9 @@ import CampoTexto from '../campos/campoTexto'
 import CampoTextoArea from '../campos/campoTextoArea'
 import DescripcionVista from '../../descripcionVista'
 import CampoSelectorModal from '../campos/campoSelectorModal'
+import { useObtenerImagenes } from '@/app/api/imagenes.hooks'
+import { api } from '@/app/api/api'
+import { API_URL } from '@/app/api/api.rutas'
 
 interface Props {
     data: {
@@ -37,6 +40,10 @@ export default function FormularioConfirmarAdopcion({ data }: Props) {
     const esTransito = data?.esTransito || false;
 
     const [successMensaje, setSuccessMensaje] = useState(false)
+    const [copiandoImagenes, setCopiandoImagenes] = useState(false)
+
+    // Obtener imágenes de la mascota
+    const { data: imagenesMascota } = useObtenerImagenes('mascotas', data?.id);
 
     const { control, setValue, watch, handleSubmit } = useForm({
         defaultValues: {
@@ -46,7 +53,71 @@ export default function FormularioConfirmarAdopcion({ data }: Props) {
     })
 
     const { mutateAsync: crearAdopcion, isPending } = useApiPostCrearAdopcion({
-        onSuccess: () => { setSuccessMensaje(true) }
+        onSuccess: async (response) => {
+            console.log('✅ Adopción creada, respuesta completa:', JSON.stringify(response, null, 2));
+            
+            // Intentar obtener el ID de la adopción
+            let adopcionId = response?.id || response?.adopcionId || response?.data?.id;
+            console.log('🎯 ID de adopción:', adopcionId);
+            console.log('📸 Imágenes disponibles:', imagenesMascota);
+            console.log('📸 Cantidad de imágenes:', imagenesMascota?.length);
+            
+            // Copiar imágenes de la mascota a la adopción
+            if (imagenesMascota && imagenesMascota.length > 0 && adopcionId) {
+                console.log(`📸 Copiando ${imagenesMascota.length} imágenes a la adopción ${adopcionId}`);
+                setCopiandoImagenes(true);
+                try {
+                    // Copiar cada imagen a la adopción
+                    for (const imagen of imagenesMascota) {
+                        try {
+                            const imageUrl = imagen.url || imagen.urlPublica;
+                            console.log('📤 Copiando imagen desde:', imageUrl);
+                            
+                            // Crear FormData para React Native
+                            const formData = new FormData();
+                            
+                            // En React Native, agregamos el archivo con URI
+                            formData.append('file', {
+                                uri: imageUrl,
+                                type: imagen.tipoMime || 'image/jpeg',
+                                name: imagen.nombreArchivo || `imagen-${Date.now()}-${imagen.id || Math.random()}.jpg`,
+                            } as any);
+                            formData.append('orden', imagen.orden?.toString() || '0');
+                            
+                            // Subir a la adopción
+                            const uploadResponse = await api.post(
+                                `${API_URL}/imagenes/adopcion/${adopcionId}`,
+                                formData,
+                                {
+                                    headers: {
+                                        'Content-Type': 'multipart/form-data',
+                                    },
+                                }
+                            );
+                            console.log('✅ Imagen copiada exitosamente:', uploadResponse.data);
+                        } catch (error) {
+                            console.error('❌ Error copiando imagen individual:', error);
+                            if (error.response) {
+                                console.error('   Response status:', error.response.status);
+                                console.error('   Response data:', error.response.data);
+                            }
+                            // Continuar con las demás imágenes aunque una falle
+                        }
+                    }
+                } catch (error) {
+                    console.error('❌ Error general copiando imágenes:', error);
+                } finally {
+                    setCopiandoImagenes(false);
+                }
+            } else {
+                console.log('ℹ️ Razones por las que no se copian imágenes:');
+                console.log('  - Hay imágenes?', !!imagenesMascota);
+                console.log('  - Cantidad:', imagenesMascota?.length);
+                console.log('  - Hay ID de adopción?', !!adopcionId);
+            }
+            
+            setSuccessMensaje(true);
+        }
     })
 
     const onSubmit = (formData: any) => {
@@ -210,11 +281,11 @@ export default function FormularioConfirmarAdopcion({ data }: Props) {
                     uppercase
                     mode="contained"
                     onPress={handleSubmit(onSubmit)}
-                    loading={isPending}
-                    disabled={isPending}
+                    loading={isPending || copiandoImagenes}
+                    disabled={isPending || copiandoImagenes}
                 >
                     <Text variant='labelLarge' style={{ color: theme.colors.onPrimary }}>
-                        Publicar
+                        {copiandoImagenes ? 'Copiando imágenes...' : 'Publicar'}
                     </Text>
                 </Button>
             </View>

@@ -10,6 +10,9 @@ import { useUsuario } from '../hooks/useUsuario';
 import BackdropSuccess from '../componentes/backdropSuccess';
 import { obtenerValorSexo } from '../utiles/obtenerValorEnum';
 import BotonAccionesAdopcionFAB from '../componentes/botones/BotonAccionesAdopcionFAB';
+import { useObtenerImagenes } from '../api/imagenes.hooks';
+import { ImageGallery } from '../componentes/imagenes';
+import { useAuth } from '../contexts/AuthContext';
 
 const imagenes = ImageSlider[0].imagenes
 
@@ -19,6 +22,7 @@ export default function VistaAdopcion({ route }: any) {
     const navigation = useNavigation()
     const isFocused = useIsFocused();
     const { width, height } = useWindowDimensions()
+    const { isAdmin } = useAuth()
 
     const [modoEdicion, setModoEdicion] = useState(false);
     const [successMensaje, setSuccessMensaje] = useState(false);
@@ -31,6 +35,12 @@ export default function VistaAdopcion({ route }: any) {
 
     const esCreadorDeLaAdopcion = datosAdopcion?.publicador?.id === usuarioId;
     const esTransito = datosAdopcion?.transito;
+
+    // Obtener imágenes de la adopción
+    const { data: imagenesAdopcion, isLoading: isLoadingImagenes } = useObtenerImagenes(
+        'adopciones',
+        datosAdopcion?.id
+    );
 
     useEffect(() => {
         if (route.params?.data) {
@@ -181,10 +191,27 @@ export default function VistaAdopcion({ route }: any) {
             <AppbarNav titulo={esTransito ? 'TRÁNSITO' : 'ADOPCIÓN'} />
 
             <ScrollView style={{ width: '100%', height: '100%' }}>
-                {/* Carrusel de imágenes */}
-                <View style={{ position: 'relative', margin: 0, marginBottom: 24, padding: 0, backgroundColor: theme.colors.background }} >
-                    <CarruselImagenes data={imagenes} />
-                </View>
+                {/* Galería de imágenes */}
+                {(esCreadorDeLaAdopcion || isAdmin) ? (
+                    // Si es el creador o administrador, mostrar galería editable
+                    <View style={{ marginBottom: 24 }}>
+                        <ImageGallery
+                            entityType="adopciones"
+                            entityId={datosAdopcion?.id}
+                            editable={true}
+                            maxImages={5}
+                        />
+                    </View>
+                ) : (
+                    // Si no es el creador ni administrador, mostrar carrusel solo lectura
+                    <View style={{ position: 'relative', margin: 0, marginBottom: 24, padding: 0, backgroundColor: theme.colors.background }} >
+                        <CarruselImagenes 
+                            data={imagenes}
+                            imagenesReales={imagenesAdopcion}
+                            isLoading={isLoadingImagenes}
+                        />
+                    </View>
+                )}
 
                 {/* Información adicional - Dropdown */}
                 <Card style={{ ...styles.ultimoAvistamientoContainer, marginHorizontal: 16, backgroundColor: theme.colors.surface }}>

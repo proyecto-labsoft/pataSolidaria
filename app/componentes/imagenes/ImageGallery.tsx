@@ -7,6 +7,7 @@ import {
   Alert,
   Image,
   Platform,
+  TouchableOpacity,
 } from 'react-native';
 import { IconButton, ActivityIndicator, Text, useTheme, FAB } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
@@ -119,7 +120,7 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
 
   // Seleccionar imagen de la galería
   const pickImage = async () => {
-    const currentCount = imagenes?.length || 0;
+    const currentCount = imagenes?.filter(img => img.id !== 0).length || 0;
     
     // Verificar límite de imágenes
     if (currentCount >= maxImages) {
@@ -155,7 +156,7 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
 
   // Tomar foto con la cámara
   const takePhoto = async () => {
-    const currentCount = imagenes?.length || 0;
+    const currentCount = imagenes?.filter(img => img.id !== 0).length || 0;
     
     // Verificar límite de imágenes
     if (currentCount >= maxImages) {
@@ -207,7 +208,7 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
         name: `image-${Date.now()}.jpg`,
       };
 
-      const currentCount = imagenes?.length || 0;
+      const currentCount = imagenes?.filter(img => img.id !== 0).length || 0;
 
       await subirImagen.mutateAsync({
         entityId,
@@ -235,7 +236,10 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
     }
 
     const currentImage = imagenes[currentIndex];
-    if (!currentImage) return;
+    if (!currentImage || currentImage.id === 0) {
+      Alert.alert('No se puede eliminar', 'Esta es la imagen por defecto');
+      return;
+    }
 
     Alert.alert(
       'Eliminar imagen',
@@ -363,28 +367,43 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
           <Text style={styles.emptyText}>No hay imágenes</Text>
         </View>
         {editable && (
-          <FAB.Group
-            open={fabOpen}
-            visible={!isUploading}
-            icon={fabOpen ? 'close' : 'camera-plus'}
-            color="white"
-            backdropColor="transparent"
-            actions={[
-              {
-                icon: 'camera',
-                label: 'Cámara',
-                onPress: takePhoto,
-              },
-              {
-                icon: 'image',
-                label: 'Galería',
-                onPress: pickImage,
-              },
-            ]}
-            onStateChange={({ open }) => setFabOpen(open)}
-            style={styles.fab}
-            fabStyle={{...styles.fabButton, backgroundColor: fabOpen ? theme.colors.inversePrimary : theme.colors.primary }}
-          />
+          <View style={styles.fabContainer}>
+            {fabOpen && (
+              <>
+                <Animated.View style={[styles.fabAction, styles.fabActionLeft]}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      pickImage();
+                      setFabOpen(false);
+                    }}
+                    style={[styles.fabActionButton, { backgroundColor: theme.colors.secondary }]}
+                  >
+                    <IconButton icon="image" iconColor="white" size={24} />
+                  </TouchableOpacity>
+                  <Text style={styles.fabActionLabel}>Galería</Text>
+                </Animated.View>
+                <Animated.View style={[styles.fabAction, styles.fabActionRight]}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      takePhoto();
+                      setFabOpen(false);
+                    }}
+                    style={[styles.fabActionButton, { backgroundColor: theme.colors.secondary }]}
+                  >
+                    <IconButton icon="camera" iconColor="white" size={24} />
+                  </TouchableOpacity>
+                  <Text style={styles.fabActionLabel}>Cámara</Text>
+                </Animated.View>
+              </>
+            )}
+            <FAB
+              icon={fabOpen ? 'close' : 'camera-plus'}
+              color="white"
+              style={[styles.fabButton, { backgroundColor: fabOpen ? theme.colors.inversePrimary : theme.colors.primary }]}
+              onPress={() => setFabOpen(!fabOpen)}
+              visible={!isUploading}
+            />
+          </View>
         )}
         {isUploading && (
           <View style={styles.uploadingOverlay}>
@@ -395,6 +414,10 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
       </View>
     );
   }
+
+  // Filtrar la imagen placeholder (id: 0) para determinar si hay imágenes reales
+  const imagenesReales = imagenes.filter(img => img.id !== 0);
+  const hayImagenesReales = imagenesReales.length > 0;
 
   // Calcular el índice actual basado en el scroll
   const handleScroll = Animated.event(
@@ -430,36 +453,74 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
 
       {/* FAB con opciones */}
       {editable && (
-        <FAB.Group
-          open={fabOpen}
-          visible={!isUploading}
-          icon={fabOpen ? 'close' : 'camera-plus'}
-          color="white"
-          backdropColor="transparent"
-          actions={[
-            ...(imagenes && imagenes[currentIndex]?.id !== 0 ? [{
-              icon: 'delete',
-              label: 'Eliminar',
-              onPress: handleDeleteCurrent,
-              small: false,
-            }] : []),
-            {
-              icon: 'camera',
-              label: 'Cámara',
-              onPress: takePhoto,
-              disabled: (imagenes?.length || 0) >= maxImages,
-            },
-            {
-              icon: 'image',
-              label: 'Galería',
-              onPress: pickImage,
-              disabled: (imagenes?.length || 0) >= maxImages,
-            },
-          ]}
-          onStateChange={({ open }) => setFabOpen(open)}
-          style={styles.fab}
-          fabStyle={{...styles.fabButton, backgroundColor: fabOpen ? theme.colors.inversePrimary : theme.colors.primary }}
-        />
+        <View style={styles.fabContainer}>
+          {fabOpen && (
+            <>
+              <Animated.View style={[styles.fabAction, styles.fabActionLeft]}>
+                <TouchableOpacity
+                  onPress={() => {
+                    if (!((imagenes?.filter(img => img.id !== 0).length || 0) >= maxImages)) {
+                      pickImage();
+                      setFabOpen(false);
+                    }
+                  }}
+                  style={[styles.fabActionButton, { 
+                    backgroundColor: (imagenes?.filter(img => img.id !== 0).length || 0) >= maxImages 
+                      ? theme.colors.surfaceDisabled 
+                      : theme.colors.secondary 
+                  }]}
+                  disabled={(imagenes?.filter(img => img.id !== 0).length || 0) >= maxImages}
+                >
+                  <IconButton icon="image" iconColor="white" size={24} />
+                </TouchableOpacity>
+                <Text style={styles.fabActionLabel}>Galería</Text>
+              </Animated.View>
+              <Animated.View style={[
+                styles.fabAction, 
+                imagenes && imagenes[currentIndex]?.id !== 0 ? styles.fabActionMiddle : styles.fabActionTop
+              ]}>
+                <TouchableOpacity
+                  onPress={() => {
+                    if (!((imagenes?.filter(img => img.id !== 0).length || 0) >= maxImages)) {
+                      takePhoto();
+                      setFabOpen(false);
+                    }
+                  }}
+                  style={[styles.fabActionButton, { 
+                    backgroundColor: (imagenes?.filter(img => img.id !== 0).length || 0) >= maxImages 
+                      ? theme.colors.surfaceDisabled 
+                      : theme.colors.secondary 
+                  }]}
+                  disabled={(imagenes?.filter(img => img.id !== 0).length || 0) >= maxImages}
+                >
+                  <IconButton icon="camera" iconColor="white" size={24} />
+                </TouchableOpacity>
+                <Text style={styles.fabActionLabel}>Cámara</Text>
+              </Animated.View>
+              {imagenes && imagenes[currentIndex]?.id !== 0 && (
+                <Animated.View style={[styles.fabAction, styles.fabActionRight]}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      handleDeleteCurrent();
+                      setFabOpen(false);
+                    }}
+                    style={[styles.fabActionButton, { backgroundColor: theme.colors.error }]}
+                  >
+                    <IconButton icon="delete" iconColor="white" size={24} />
+                  </TouchableOpacity>
+                  <Text style={styles.fabActionLabel}>Eliminar</Text>
+                </Animated.View>
+              )}
+            </>
+          )}
+          <FAB
+            icon={fabOpen ? 'close' : 'camera-plus'}
+            color="white"
+            style={[styles.fabButton, { backgroundColor: fabOpen ? theme.colors.inversePrimary : theme.colors.primary }]}
+            onPress={() => setFabOpen(!fabOpen)}
+            visible={!isUploading}
+          />
+        </View>
       )}
 
       {/* Overlay de carga cuando se está subiendo */}
@@ -581,8 +642,55 @@ const styles = StyleSheet.create({
     top: 170,
     zIndex: 2,
   },
+  fabContainer: {
+    position: 'absolute',
+    right: 16,
+    top: 170,
+    zIndex: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   fabButton: {
     borderRadius: 50,
+  },
+  fabAction: {
+    position: 'absolute',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  fabActionTop: {
+    bottom: 90,
+    right: 0,
+  },
+  fabActionLeft: {
+    right: 90,
+    top: 0,
+  },
+  fabActionMiddle: {
+    bottom: 70,
+    right: 75,
+  },
+  fabActionRight: {
+    bottom: 90,
+    right: 0,
+  },
+  fabActionButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  fabActionLabel: {
+    fontSize: 12,
+    marginTop: 4,
+    color: '#666',
+    fontWeight: '600',
   },
   fabBackdrop: {
     ...StyleSheet.absoluteFillObject,

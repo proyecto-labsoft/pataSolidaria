@@ -2,6 +2,7 @@ import { StyleSheet, Pressable, View } from "react-native";
 import { Card, useTheme, Text } from 'react-native-paper';
 import { useNavigation } from "@react-navigation/native";
 import { ImageSlider } from '../../testData/sliderData';
+import { useObtenerImagenes } from '../../api/imagenes.hooks';
 
 interface Props {
     data: {
@@ -35,7 +36,12 @@ interface Props {
 export default function CardAdopcion({ data, navigateTo }: Props) {
     const theme = useTheme();
     const navigation = useNavigation();
+    const { data: imagenes, isLoading: imagenesLoading } = useObtenerImagenes('mascotas', data.mascotaDetalle.id);
+    
     const randomImage = ImageSlider[0].imagenes[Math.floor(Math.random() * ImageSlider[0].imagenes.length)];
+    const imageSource = imagenes && imagenes.length > 0 
+        ? { uri: imagenes[0].urlPublica } 
+        : randomImage;
     
     const esTransito = data.transito;
 
@@ -67,7 +73,7 @@ export default function CardAdopcion({ data, navigateTo }: Props) {
                     },
                 ]}
             >
-                <Card.Cover style={styles.fotoAnimal} source={randomImage} />
+                <Card.Cover style={styles.fotoAnimal} source={imageSource} />
                 
                 <Card.Title
                     title={`${data.mascotaDetalle.nombre} - ${data.mascotaDetalle.especie}`}

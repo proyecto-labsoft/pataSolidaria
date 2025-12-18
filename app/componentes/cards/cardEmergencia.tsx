@@ -5,9 +5,11 @@ import { ImageSlider } from '../../testData/sliderData';
 import { calcularTiempoTranscurrido } from "@/app/utiles/calcularTiempoTranscurrido";
 import BannerCoverOverlay from './bannerCoverOverlay';
 import { useUsuario } from "@/app/hooks/useUsuario";
+import { useObtenerImagenes } from '@/app/api/imagenes.hooks';
 
 interface Props {
     data: {
+        id: number,
         usuarioCreador: {
             id: number | null,
             nombre: string,
@@ -45,7 +47,12 @@ export default function CardEmergencia({ data, navigateTo }: Props) {
     const theme = useTheme(); 
     const creadorPorMi = data?.usuarioCreador?.id === usuarioId;
     const navigation = useNavigation();
+    const { data: imagenes, isLoading: imagenesLoading } = useObtenerImagenes('emergencias', data.id);
+    
     const randomImage = ImageSlider[0].imagenes[Math.floor(Math.random() * ImageSlider[0].imagenes.length)];
+    const imageSource = imagenes && imagenes.length > 0 
+        ? { uri: imagenes[0].urlPublica } 
+        : randomImage;
 
     return (
         <Card style={{ margin: 12, flex: 1, backgroundColor: theme.colors.primary, borderColor: theme.colors.error, borderWidth: 2, borderRadius: 10, position: 'relative' }}>
@@ -85,7 +92,7 @@ export default function CardEmergencia({ data, navigateTo }: Props) {
                 ]}
             >
                 <View style={{ position: 'relative'}}>
-                    <Card.Cover style={styles.fotoAnimal} source={randomImage} />
+                    <Card.Cover style={styles.fotoAnimal} source={imageSource} />
                     {creadorPorMi && (
                         <BannerCoverOverlay texto="Creado por ti" />
                     )}

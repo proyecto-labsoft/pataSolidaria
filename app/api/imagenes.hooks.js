@@ -8,7 +8,8 @@ const entityTypeMap = {
   'mascotas': 'mascota',
   'extravios': 'extravio',
   'avistamientos': 'avistamiento',
-  'adopciones': 'adopcion'
+  'adopciones': 'adopcion',
+  'emergencias': 'emergencia'
 };
 
 /**

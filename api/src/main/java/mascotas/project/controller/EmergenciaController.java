@@ -40,11 +40,11 @@ public class EmergenciaController {
             summary = "Persiste un nuevo emergencia",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Datos para el nuevo emergencia")
     )
-    public ResponseEntity<Object> publicarEmergencia (@RequestBody EmergenciaAnimalAnonimoDTO request){
+    public ResponseEntity<EmergenciaDetailDTO> publicarEmergencia (@RequestBody EmergenciaAnimalAnonimoDTO request){
 
-        emergenciaService.saveEmergenciaAnimalAnonimo(request);
+        EmergenciaDetailDTO emergenciaCreada = emergenciaService.saveEmergenciaAnimalAnonimo(request);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(null);
+        return ResponseEntity.status(HttpStatus.CREATED).body(emergenciaCreada);
     }
 
     @GetMapping

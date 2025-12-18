@@ -13,7 +13,7 @@ public interface EmergenciaService {
 
     //void saveEmergencia(EmergenciaRequestDTO request);
 
-    void saveEmergenciaAnimalAnonimo(EmergenciaAnimalAnonimoDTO request);
+    EmergenciaDetailDTO saveEmergenciaAnimalAnonimo(EmergenciaAnimalAnonimoDTO request);
 
     List<EmergenciaDetailDTO> getAllEmergencias(Boolean atendidos);
 

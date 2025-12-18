@@ -69,11 +69,6 @@ export default function VistaCasos() {
     if (!Array.isArray(extravios)) return [];
     
     return extravios.filter(extravio => {
-      // Restricción: usuarios no admin no pueden ver casos resueltos que no crearon
-      if (!isAdmin && extravio.resuelto && extravio.creadorId !== usuarioId) {
-        return false;
-      }
-
       // Filtro de tipo: Emergencias - no mostrar extravíos
       if (tipoCaso === 'emergencias') {
         return false;
@@ -82,6 +77,12 @@ export default function VistaCasos() {
       // Filtro: Favoritos
       if (tipoCaso === 'favoritos') {
         return favoritosIds.has(extravio.extravioId);
+      }
+      
+      // Restricción: usuarios no admin no pueden ver casos resueltos que no crearon
+      // EXCEPTO si es un favorito (ya fue filtrado arriba)
+      if (!isAdmin && extravio.resuelto && extravio.creadorId !== usuarioId) {
+        return false;
       }
       
       // Filtro: Solo mis casos creados
@@ -190,7 +191,10 @@ export default function VistaCasos() {
                 selected={tipoCaso === 'favoritos'} 
                 mode="outlined" 
                 style={styles.chip}
-                onPress={() => setTipoCaso('favoritos')}
+                onPress={() => {
+                  setTipoCaso('favoritos');
+                  setEstadoCaso('todos');
+                }}
               >
                 Mis favoritos
               </Chip>

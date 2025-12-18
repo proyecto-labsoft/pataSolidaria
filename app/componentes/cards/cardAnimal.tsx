@@ -61,6 +61,10 @@ export default function CardAnimal({ data, navigateTo }: Props) {
             },
         })
     const handleGuardarCaso = () => { 
+        console.log("handle guardar ", {
+                usuarioId: usuarioId,
+                extravioId: data?.extravioId
+            } )
         // Aquí podrías implementar la lógica para guardar el caso, como agregarlo a una lista de favoritos
         if (esFavorito) {
             borrarFavorito()
@@ -84,6 +88,17 @@ export default function CardAnimal({ data, navigateTo }: Props) {
                     {esBuscado ? 'BUSCADO' : 'AVISTADO'}
                 </Text>
             </View>
+
+            {/* Badge RESUELTO */}
+            {data?.resuelto && (
+                <View style={[styles.badgeResuelto, {
+                    backgroundColor: '#4CAF50'
+                }]}>
+                    <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 12}}>
+                        RESUELTO
+                    </Text>
+                </View>
+            )}
             
             <View style={{ position: 'absolute' , top: 150, right: -5, zIndex: 10 }}>
                 <IconButton icon={esFavorito ? "heart" : "heart-outline"} iconColor={theme.colors.secondary} style={{ width: 32, height: 32 }} onPress={handleGuardarCaso} />
@@ -136,6 +151,24 @@ const styles = StyleSheet.create({
     badge: {
         position: 'absolute',
         top: -12,
+        left: 12,
+        minWidth: 80,
+        paddingVertical: 4,
+        paddingHorizontal: 16,
+        borderRadius: 16, 
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 10,
+        elevation: 4,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.15,
+        shadowRadius: 2,
+    },
+    badgeResuelto: {
+        position: 'absolute',
+        top: -12,
+        left: 100,
         minWidth: 80,
         paddingVertical: 4,
         paddingHorizontal: 16,

@@ -58,7 +58,7 @@ export default function VistaAdopciones() {
 const styles = StyleSheet.create({
   logoBackground: {
     position: 'absolute',
-    top: '25%',
+    top: '50%',
     left: '50%',
     transform: [{ translateX: -200 }, { translateY: -260 }],
     opacity: 0.05,

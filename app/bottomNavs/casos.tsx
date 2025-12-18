@@ -8,6 +8,7 @@ import { useState, useMemo } from "react";
 import { useUsuario } from "../hooks/useUsuario"; 
 import { useAuth } from "../contexts/AuthContext";
 import LogoPataIcon from "../componentes/iconos/LogoPataIcon";
+
 type TipoCaso = 'todos' | 'buscados' | 'extraviados' | 'favoritos' | 'misCasos' | 'emergencias';
 type EstadoCaso = 'noResueltos' | 'resueltos' | 'todos';
 type OrdenCaso = 'recientes' | 'antiguos';
@@ -359,7 +360,7 @@ export default function VistaCasos() {
 const styles = StyleSheet.create({
   logoBackground: {
     position: 'absolute',
-    top: '25%',
+    top: '50%',
     left: '50%',
     transform: [{ translateX: -200 }, { translateY: -260 }],
     opacity: 0.05,

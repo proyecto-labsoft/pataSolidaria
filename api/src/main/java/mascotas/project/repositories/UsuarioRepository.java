@@ -20,4 +20,10 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
      */
     @Query("SELECT u FROM Usuario u WHERE u.notificacionesHabilitadas = true AND u.pushToken IS NOT NULL")
     List<Usuario> findAllWithNotificationsEnabled();
+
+    /**
+     * Obtiene todos los administradores que tienen notificaciones habilitadas y pushToken registrado
+     */
+    @Query("SELECT u FROM Usuario u WHERE u.administrador = true AND u.notificacionesHabilitadas = true AND u.pushToken IS NOT NULL")
+    List<Usuario> findAllAdminsWithNotificationsEnabled();
 }

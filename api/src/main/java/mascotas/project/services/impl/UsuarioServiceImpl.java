@@ -244,6 +244,11 @@ public class UsuarioServiceImpl implements UsuarioService {
         return usuarioRepository.findAllWithNotificationsEnabled();
     }
 
+    @Override
+    public List<Usuario> findAllAdminsWithNotificationsEnabled() {
+        return usuarioRepository.findAllAdminsWithNotificationsEnabled();
+    }
+
     /**
      * Verifica si un usuario es administrador
      */

@@ -38,4 +38,6 @@ public interface UsuarioService {
     void setAdminRole(String firebaseUid, boolean isAdmin);
 
     List<Usuario> findAllWithNotificationsEnabled();
+
+    List<Usuario> findAllAdminsWithNotificationsEnabled();
 }

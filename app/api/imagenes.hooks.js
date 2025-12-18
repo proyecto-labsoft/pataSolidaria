@@ -50,9 +50,19 @@ export const useSubirImagen = (entityType) => {
       // Invalidar las queries de imágenes de esta entidad
       invalidateAndRefetch([`imagenes-${entityType}`, variables.entityId]);
       
-      // También invalidar el hook useApiGetImagenesMascota que usa el listado
+      // Invalidar los listados principales según el tipo de entidad
       if (entityType === 'mascotas') {
         invalidateAndRefetch(['useApiGetImagenesMascota', { mascotaId: variables.entityId }]);
+        invalidateAndRefetch(['useApiGetMascotasPorUsuario']);
+      } else if (entityType === 'emergencias') {
+        invalidateAndRefetch(['useApiGetEmergencias']);
+      } else if (entityType === 'extravios') {
+        invalidateAndRefetch(['useApiGetExtravios']);
+        invalidateAndRefetch(['useApiGetExtraviosPorUsuario']);
+      } else if (entityType === 'adopciones') {
+        invalidateAndRefetch(['useApiGetAdopciones']);
+      } else if (entityType === 'avistamientos') {
+        invalidateAndRefetch(['useApiGetAvistamientos']);
       }
     },
   });
@@ -119,9 +129,19 @@ export const useEliminarImagen = (entityType, entityId) => {
       // Invalidar todas las queries de imágenes de este tipo
       invalidateAndRefetch([`imagenes-${entityType}`]);
       
-      // También invalidar el hook useApiGetImagenesMascota que usa el listado
+      // Invalidar los listados principales según el tipo de entidad
       if (entityType === 'mascotas' && entityId) {
         invalidateAndRefetch(['useApiGetImagenesMascota', { mascotaId: entityId }]);
+        invalidateAndRefetch(['useApiGetMascotasPorUsuario']);
+      } else if (entityType === 'emergencias') {
+        invalidateAndRefetch(['useApiGetEmergencias']);
+      } else if (entityType === 'extravios') {
+        invalidateAndRefetch(['useApiGetExtravios']);
+        invalidateAndRefetch(['useApiGetExtraviosPorUsuario']);
+      } else if (entityType === 'adopciones') {
+        invalidateAndRefetch(['useApiGetAdopciones']);
+      } else if (entityType === 'avistamientos') {
+        invalidateAndRefetch(['useApiGetAvistamientos']);
       }
     },
   });

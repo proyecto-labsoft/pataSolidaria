@@ -69,6 +69,9 @@ export const rutas = {
   
   emergencias: `${URL_API}/emergencias`, 
   emergenciaPorId: `${URL_API}/emergencias/{id}`, 
+
+  posibleTutor: `${URL_API}/posible-tutor`, 
+  posiblesTutoresPorExtravio: `${URL_API}/posible-tutor/extravio/{extravioId}`, 
   // novedadesPorLicenciaCumplidas: `${URL_API}/novedades/{tipo}/{agencia}/{nroLicencia}?cumplidas=true`,
   // novedadesPorLicenciaNoCumplidas: `${URL_API}/novedades/{tipo}/{agencia}/{nroLicencia}?cumplidas=false`,
   // reporteNovedades: `${URL_API}/novedades/reporte`, // Query Params: desde={desde}, hasta={hasta} , tipo=${tipo} y licencia=${licencia}

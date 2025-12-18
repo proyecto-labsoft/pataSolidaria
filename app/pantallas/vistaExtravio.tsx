@@ -12,13 +12,15 @@ import { calcularTiempoTranscurrido } from '../utiles/calcularTiempoTranscurrido
 import { useUsuario } from '../hooks/useUsuario';
 import FormularioEditarExtravio from '../componentes/formularios/formularioEditarExtravio';
 import BackdropSuccess from '../componentes/backdropSuccess';
-import { useApiDeleteFavorito, useApiGetAvistamientosPorExtravio, useApiGetEsFavorito, useApiPostFavorito, useApiPutActualizarExtravio, useApiPutActualizarMascota } from '../api/hooks';
+import { useApiDeleteFavorito, useApiGetAvistamientosPorExtravio, useApiGetEsFavorito, useApiPostFavorito, useApiPutActualizarExtravio, useApiPutActualizarMascota, useApiGetPosiblesTutores, useApiPostPosibleTutor } from '../api/hooks';
 import { obtenerValorSexo } from '../utiles/obtenerValorEnum';
 import ModalAvistamientos from '../componentes/modalAvistamientos';
+import ModalPosiblesTutores from '../componentes/modalPosiblesTutores';
 import BotonAccionesExtravioFAB from '../componentes/botones/BotonAccionesExtravioFAB';
 import { useObtenerImagenes } from '../api/imagenes.hooks';
 import { ImageGallery } from '../componentes/imagenes';
 import { useAuth } from '../contexts/AuthContext';
+import { formatearFechaHoraCompletaBuenosAires } from '../utiles/fechaHoraBuenosAires';
 
 // Basandose en colores de la pagina de ARAF
 // primario: 0f7599 
@@ -44,6 +46,9 @@ export default function VistaExtravio({route}: any) {
     const [successResolver, setSuccessResolver] = useState(false);
     const [modalAvistamientos, setModalAvistamientos] = useState(false);
     const [avistamientoSeleccionado, setAvistamientoSeleccionado] = useState<any>(null);
+    const [modalPosiblesTutores, setModalPosiblesTutores] = useState(false);
+    const [modalPostularseComoTutor, setModalPostularseComoTutor] = useState(false);
+    const [comentarioPostulacion, setComentarioPostulacion] = useState('');
     
     const esBuscado = datosExtravio?.creadoByFamiliar;
     const esCreadorDelExtravio = datosExtravio?.creadorId === usuarioId;
@@ -68,7 +73,25 @@ export default function VistaExtravio({route}: any) {
     const { data: avistamientos, isFetching: isLoadingAvistamientos } = useApiGetAvistamientosPorExtravio({
         params: { id: datosExtravio?.extravioId },
         enabled: !!datosExtravio?.extravioId
-    }) 
+    })
+
+    // Obtener posibles tutores
+    const { data: posiblesTutores, isFetching: isLoadingPosiblesTutores } = useApiGetPosiblesTutores({
+        params: { extravioId: datosExtravio?.extravioId },
+        enabled: !!datosExtravio?.extravioId && !esBuscado
+    });
+
+    const hayPosiblesTutores = Array.isArray(posiblesTutores) && posiblesTutores.length > 0;
+
+    // Mutation para crear posible tutor
+    const { mutateAsync: crearPosibleTutor, isPending: isPendingPostulacion } = useApiPostPosibleTutor({
+        params: {extravioId: datosExtravio?.extravioId},
+        enabled: !!datosExtravio?.extravioId,
+        onSuccess: () => {
+            setModalPostularseComoTutor(false);
+            setComentarioPostulacion('');
+        }
+    }); 
 
     // Obtener imágenes del extravío
     const { data: imagenesExtravio, isLoading: isLoadingImagenes } = useObtenerImagenes(
@@ -77,9 +100,9 @@ export default function VistaExtravio({route}: any) {
     );
 
     // Obtener imágenes del último avistamiento
-    const primerAvistamiento = avistamientos?.[0];
+    const primerAvistamiento = Array.isArray(avistamientos) ? avistamientos?.[0] : null;
     const ultimoAvistamientoId = primerAvistamiento?.id;
-    const hayAvistamientos = avistamientos && avistamientos.length > 0;
+    const hayAvistamientos = Array.isArray(avistamientos) && avistamientos.length > 0;
     
     console.log('🔍 Hay avistamientos?:', hayAvistamientos);
     console.log('🔍 Primer avistamiento completo:', primerAvistamiento);
@@ -88,14 +111,13 @@ export default function VistaExtravio({route}: any) {
     // Solo consultar imágenes si hay avistamientos
     const { data: imagenesUltimoAvistamiento, isLoading: isLoadingImagenesAvistamiento } = useObtenerImagenes(
         'avistamientos',
-        ultimoAvistamientoId,
-        { enabled: hayAvistamientos && !!ultimoAvistamientoId }
+        hayAvistamientos ? ultimoAvistamientoId : undefined
     );
     
     console.log('📸 Imágenes del último avistamiento:', imagenesUltimoAvistamiento);
 
     const ultimoAvistamiento = useMemo(() => {
-        if (avistamientos && avistamientos?.length > 0) {
+        if (Array.isArray(avistamientos) && avistamientos?.length > 0) {
             // Ordenar avistamientos por fecha (más reciente primero)
             const ultimo = avistamientos[0];
             console.log('📍 Último avistamiento seleccionado:', ultimo);
@@ -199,7 +221,7 @@ export default function VistaExtravio({route}: any) {
     const handleGuardarCaso = () => { 
         // Aquí podrías implementar la lógica para guardar el caso, como agregarlo a una lista de favoritos
         if (esFavorito) {
-            borrarFavorito()
+            borrarFavorito({})
         } else {
             guardarCaso({data: {
                 usuarioId: usuarioId,
@@ -207,7 +229,18 @@ export default function VistaExtravio({route}: any) {
             }})
         }
         
-    } 
+    }
+
+    const handlePostularseComoTutor = () => {
+        crearPosibleTutor({
+            data: {
+                usuarioId: usuarioId,
+                extravioId: datosExtravio?.extravioId,
+                observacion: comentarioPostulacion.trim() || null,
+                hora: formatearFechaHoraCompletaBuenosAires()
+            }
+        });
+    }; 
 
     console.log("Vista extravio",datosExtravio)
     return (
@@ -256,6 +289,61 @@ export default function VistaExtravio({route}: any) {
                     >
                         Confirmar
                     </Button>
+                    </View>
+                </Modal>
+            </Portal>
+            <Portal>
+                <Modal
+                    visible={modalPostularseComoTutor}
+                    onDismiss={() => {
+                        setModalPostularseComoTutor(false);
+                        setComentarioPostulacion('');
+                    }}
+                    contentContainerStyle={{
+                        backgroundColor: theme.colors.surface,
+                        margin: 20,
+                        borderRadius: 8,
+                        padding: 20,
+                        maxHeight: '70%',
+                    }}
+                >
+                    <Text variant="titleLarge" style={{ textAlign: 'center', marginBottom: 16 }}>
+                        Postularme como tutor
+                    </Text>
+                    <Text variant="bodyMedium" style={{ marginBottom: 16, color: theme.colors.onSurfaceVariant }}>
+                        ¿Quieres postularte como posible tutor de este animal? Agrega un comentario para que el creador del extravío pueda contactarte.
+                    </Text>
+                    <TextInput
+                        mode='outlined'
+                        label="Comentario (opcional)"
+                        multiline
+                        numberOfLines={4}
+                        style={{ 
+                            width: '100%',
+                            backgroundColor: 'transparent',
+                            marginBottom: 16
+                        }}
+                        value={comentarioPostulacion}
+                        onChangeText={setComentarioPostulacion}
+                    />
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between', gap: 10}}>
+                        <Button 
+                            mode="outlined"
+                            onPress={() => {
+                                setModalPostularseComoTutor(false);
+                                setComentarioPostulacion('');
+                            }}
+                        >
+                            Cancelar
+                        </Button>
+                        <Button 
+                            mode="contained"
+                            onPress={handlePostularseComoTutor}
+                            disabled={isPendingPostulacion}
+                            loading={isPendingPostulacion}
+                        >
+                            Confirmar
+                        </Button>
                     </View>
                 </Modal>
             </Portal>
@@ -337,6 +425,20 @@ export default function VistaExtravio({route}: any) {
                     </Surface>
                 )} 
                 
+                {/* Botón para ver posibles tutores (solo para creador cuando hay tutores) */}
+                {esCreadorDelExtravio && !esBuscado && hayPosiblesTutores && (
+                    <View style={{ marginHorizontal: 16, marginBottom: 8 }}>
+                        <Button 
+                            mode="contained"
+                            icon="account-heart"
+                            onPress={() => setModalPosiblesTutores(true)}
+                            style={{ backgroundColor: theme.colors.primary }}
+                        >
+                            Ver posibles tutores ({Array.isArray(posiblesTutores) ? posiblesTutores.length : 0})
+                        </Button>
+                    </View>
+                )}
+                
                 {/* Información adicional - Dropdown - Tercera posición */}  
                 
                 {datosExtravio?.observacion && (
@@ -375,7 +477,7 @@ export default function VistaExtravio({route}: any) {
                                     {datosAnimal?.tamanio && <ItemDato label='Tamaño' data={(datosAnimal.tamanio)} />}
                                     {datosAnimal?.colores && <ItemDato label='Colores' data={datosAnimal.colores} />}
                                     {datosAnimal?.fechaNacimiento && <ItemDato label='Fecha de nacimiento' data={datosAnimal.fechaNacimiento} />}
-                                    {datosAnimal?.sexo && <ItemDato label='Sexo' data={obtenerValorSexo(datosAnimal.sexo)} />}
+                                    {datosAnimal?.sexo && <ItemDato label='Sexo' data={obtenerValorSexo(datosAnimal.sexo) || ''} />}
                                     {datosAnimal?.esterilizado !== undefined && esBuscado && <ItemDato label='¿Está esterilizado?' data={datosAnimal.esterilizado} />}
                                     {datosAnimal?.chipeado !== undefined && esBuscado && <ItemDato label='¿Está chipeado?' data={datosAnimal.chipeado} />}
                                     {datosAnimal?.domicilio && <ItemDato label='Domicilio' data={datosAnimal.domicilio} />}
@@ -418,7 +520,8 @@ export default function VistaExtravio({route}: any) {
                         // Si hay avistamientos, mostrar imágenes del último avistamiento
                         imagenesUltimoAvistamiento && imagenesUltimoAvistamiento.length > 0 && (
                             <View style={{ marginVertical: 8 }}>
-                                <CarruselImagenes 
+                                <CarruselImagenes
+                                    data={imagenes}
                                     imagenesReales={imagenesUltimoAvistamiento}
                                     isLoading={isLoadingImagenesAvistamiento}
                                 />
@@ -428,7 +531,8 @@ export default function VistaExtravio({route}: any) {
                         // Si no hay avistamientos, mostrar imágenes del extravío
                         imagenesExtravio && imagenesExtravio.length > 0 && (
                             <View style={{ marginVertical: 8 }}>
-                                <CarruselImagenes 
+                                <CarruselImagenes
+                                    data={imagenes}
                                     imagenesReales={imagenesExtravio}
                                     isLoading={isLoadingImagenes}
                                 />
@@ -456,10 +560,17 @@ export default function VistaExtravio({route}: any) {
                         setModalAvistamientos(false);
                         setAvistamientoSeleccionado(null);
                     }}
-                    avistamientos={avistamientos || []}
+                    avistamientos={Array.isArray(avistamientos) ? avistamientos : []}
                     datosExtravio={datosExtravio}
                     avistamientoSeleccionado={avistamientoSeleccionado}
                     setAvistamientoSeleccionado={setAvistamientoSeleccionado}
+                />
+
+                {/* Modal de lista de posibles tutores */}
+                <ModalPosiblesTutores
+                    visible={modalPosiblesTutores}
+                    onDismiss={() => setModalPosiblesTutores(false)}
+                    posiblesTutores={Array.isArray(posiblesTutores) ? posiblesTutores : []}
                 /> 
             </ScrollView>
 
@@ -468,8 +579,9 @@ export default function VistaExtravio({route}: any) {
                 esCreadorDelExtravio={esCreadorDelExtravio}
                 esFamiliar={esBuscado} 
                 onResolverCaso={() => setResolverCaso(true)} 
-                onViEsteAnimal={() => navigation.navigate('NuevoAvistamiento', {data: {extravioId: datosExtravio?.extravioId}})} 
-                showButton={!modoEdicion && isFocused && !modalAvistamientos}
+                onViEsteAnimal={() => navigation.navigate('NuevoAvistamiento', {data: {extravioId: datosExtravio?.extravioId}})}
+                onPostularseComoTutor={!esBuscado && !esCreadorDelExtravio ? () => setModalPostularseComoTutor(true) : undefined}
+                showButton={!modoEdicion && isFocused && !modalAvistamientos && !modalPosiblesTutores}
             />
         </View>
 )}

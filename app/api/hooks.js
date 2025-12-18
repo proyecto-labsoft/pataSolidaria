@@ -157,19 +157,27 @@ export function useApiPutActualizarExtravio({ params, ...opciones }) {
 }
 
 // Postulaciones
-export function useApiGetPostulacionPorId({ ...opciones }) {
+export function useApiGetPostulacionPorExtravio({ params,...opciones }) {
     return useGet({
-        nombreHook: "useApiGetPostulacionPorId",
-        url: rutas.listarPostulaciones,
+        nombreHook: "useApiGetPostulacionPorExtravio",
+        params,
+        url: rutas.postulacionesPorAdopcion,
         configuracion: { ...opciones }
     });
 }
 
-export function useApiPostCrearPostulacion({ body, ...opciones }) {
+export function useApiGetPostulacionPorUsuario({ ...opciones }) {
+    return useGet({
+        nombreHook: "useApiGetPostulacionPorUsuario",
+        url: rutas.postulacionesPorUsuario,
+        configuracion: { ...opciones }
+    });
+}
+
+export function useApiPostCrearPostulacion({ ...opciones }) {
     return usePost({
         nombreHook: "useApiPostCrearPostulacion",
         url: rutas.crearPostulacion,
-        body,
         configuracion: { ...opciones }
     });
 }

@@ -11,6 +11,15 @@ export default function VistaAdopciones() {
   const theme = useTheme();
   const {data: adopciones, isFetching } = useApiGetAdopciones({enabled: true }) 
 
+  console.log('📋 VistaAdopciones - Adopciones recibidas:', {
+    count: adopciones?.length || 0,
+    primeraAdopcion: adopciones?.[0] ? {
+      mascotaId: adopciones[0]?.mascotaDetalle?.id,
+      mascotaNombre: adopciones[0]?.mascotaDetalle?.nombre,
+      publicadorId: adopciones[0]?.publicador?.id
+    } : null
+  });
+
   // Agrupa los datos de a dos por fila
   const adopcionesPorFila = Array.isArray(adopciones)
     ? Array.from({ length: Math.ceil(adopciones.length / 2) }, (_, idx) =>

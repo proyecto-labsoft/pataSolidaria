@@ -2,8 +2,7 @@ import { View, ScrollView, useWindowDimensions, StyleSheet } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Button, IconButton, Modal, Portal, Surface, Text, useTheme, List, TextInput, Card, Icon } from 'react-native-paper'
 import ItemDato from '../componentes/itemDato';
-import { ImageSlider } from '../testData/sliderData';
-import CarruselImagenes from '../componentes/carrusel/carruselImagenes';
+import { ImageGallery } from '../componentes/imagenes/ImageGallery';
 import AppbarNav from '../componentes/navegacion/appbarNav';
 import { useNavigation, useIsFocused } from "@react-navigation/native";
 import { Mapa } from '../componentes/mapa';
@@ -15,8 +14,6 @@ import BackdropSuccess from '../componentes/backdropSuccess';
 import { useAuth } from '../contexts/AuthContext';
 import BotonAccionesEmergenciaFAB from '../componentes/botones/BotonAccionesEmergenciaFAB';
 import { useApiPutEmergencia } from '../api/hooks';
-
-const imagenes = ImageSlider[0].imagenes
 
 export default function VistaEmergencia({ route }: any) {
 
@@ -153,10 +150,16 @@ export default function VistaEmergencia({ route }: any) {
                     <BannerEstadoExtravio titulo={tiempoTranscurrido} tipo={!datosEmergencia?.atendido} />
                 </View>
 
-                {/* Carrusel de imágenes */}
-                <View style={{ position: 'relative', margin: 0, marginBottom: 24, padding: 0, backgroundColor: theme.colors.background }} >
-                    <CarruselImagenes data={imagenes} />
-                </View>
+                {/* Galería de imágenes */}
+                {datosEmergencia?.id && (
+                    <View style={{ position: 'relative', margin: 10, marginBottom: 24, padding: 0, backgroundColor: theme.colors.background }} >
+                        <ImageGallery 
+                            entityType="emergencias"
+                            entityId={datosEmergencia.id}
+                            editable={false}
+                        />
+                    </View>
+                )}
 
                 {/* Mensaje indicador de estado y creador */}
                 <Surface style={{ 

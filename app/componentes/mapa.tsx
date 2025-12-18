@@ -21,14 +21,20 @@ export const Mapa: FC<MapProps> = ({ localizar = false, puntoModificable = true,
   const mapRef = useRef<MapView>();
   const [status, requestPermissionLocation] = useForegroundPermissions();
   const [loading, setLoading] = useState(true);
+  
+  // Coordenadas por defecto (Ushuaia, Argentina)
+  const DEFAULT_LATITUDE = -54.8019;
+  const DEFAULT_LONGITUDE = -68.3029;
+  
   const [location, setLocation] = useState({
-    latitude: latitude,
-    longitude: longitude,
+    latitude: latitude ?? DEFAULT_LATITUDE,
+    longitude: longitude ?? DEFAULT_LONGITUDE,
   });
+  
   const INITIAL_CAMERA = {
     center: {
-      latitude: location.latitude ?? -54.8019,
-      longitude: location.longitude ?? -68.3029
+      latitude: location.latitude,
+      longitude: location.longitude
     },
     zoom: 14,
     heading: 0,
@@ -37,9 +43,12 @@ export const Mapa: FC<MapProps> = ({ localizar = false, puntoModificable = true,
 
   // Efecto para sincronizar las props latitude y longitude con el estado interno
   useEffect(() => {
-    if (latitude !== null && longitude !== null && !localizar) {
+    if (!localizar) {
       console.log('🗺️ Mapa: Sincronizando ubicación desde props:', { latitude, longitude });
-      setLocation({ latitude, longitude });
+      setLocation({ 
+        latitude: latitude ?? DEFAULT_LATITUDE, 
+        longitude: longitude ?? DEFAULT_LONGITUDE 
+      });
       setLoading(false);
     }
   }, [latitude, longitude, localizar]);

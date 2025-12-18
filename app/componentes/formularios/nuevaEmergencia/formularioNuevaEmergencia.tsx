@@ -13,6 +13,9 @@ import { obtenerValorSexo, obtenerValorTamanio } from '@/app/utiles/obtenerValor
 import { useUsuario } from '@/app/hooks/useUsuario'
 import { CameraModal } from '../../CameraModal'
 import { formatearFechaBuenosAires, formatearHoraBuenosAires } from '@/app/utiles/fechaHoraBuenosAires'
+import { useSubirImagen } from '@/app/api/imagenes.hooks'
+import { api } from '@/app/api/api'
+import { API_URL } from '@/app/api/api.rutas'
 
 export default function FormularioNuevaEmergencia() {
     const theme = useTheme() 
@@ -37,8 +40,62 @@ export default function FormularioNuevaEmergencia() {
         new Animated.Value(0), // Línea 3-4
     ]).current
 
+    const subirImagenMutation = useSubirImagen('emergencias');
+
     const { mutateAsync: declararEmergencia, isPending: isPendingDeclararEmergencia } = useApiPostEmergencia({ 
-        onSuccess: () => {setSuccessMensaje(true);setVisible(false)},
+        onSuccess: async (response) => {
+            console.log('✅ Emergencia creada, respuesta completa:', JSON.stringify(response, null, 2));
+            
+            let emergenciaId = response?.id || response?.emergenciaId || response?.data?.id;
+            console.log('🔍 Response del POST:', response);
+            
+            // Si no tenemos el ID en la respuesta, obtener la emergencia más reciente del usuario
+            if (!emergenciaId) {
+                console.log('⏳ ID no encontrado en respuesta, consultando emergencias del usuario...');
+                try {
+                    const emergenciasResponse = await api.get(`${API_URL}/emergencias/user/${usuarioId}`);
+                    const emergencias = emergenciasResponse?.data;
+                    console.log('📋 Todas las emergencias del usuario:', emergencias);
+                    
+                    if (emergencias && emergencias.length > 0) {
+                        const emergenciasOrdenadas = [...emergencias].sort((a, b) => {
+                            const idA = a.emergenciaId || a.id;
+                            const idB = b.emergenciaId || b.id;
+                            return idB - idA;
+                        });
+                        
+                        emergenciaId = emergenciasOrdenadas[0]?.emergenciaId || emergenciasOrdenadas[0]?.id;
+                        console.log('🎯 ID obtenido de la emergencia más reciente:', emergenciaId);
+                    }
+                } catch (error) {
+                    console.error('❌ Error obteniendo emergencias del usuario:', error);
+                }
+            }
+            
+            console.log('🎯 ID final a usar:', emergenciaId);
+            
+            // Si hay foto capturada, subirla automáticamente
+            if (capturedPhoto && emergenciaId) {
+                try {
+                    console.log('📤 Subiendo foto capturada a la emergencia:', emergenciaId);
+                    await subirImagenMutation.mutateAsync({
+                        entityId: emergenciaId,
+                        file: {
+                            uri: capturedPhoto,
+                            type: 'image/jpeg',
+                            name: `emergencia-captured-${Date.now()}.jpg`
+                        },
+                        orden: 0
+                    });
+                    console.log('✅ Foto capturada subida exitosamente');
+                } catch (error) {
+                    console.error('❌ Error subiendo foto capturada:', error);
+                }
+            }
+            
+            setSuccessMensaje(true);
+            setVisible(false);
+        },
     });
     
     // Obtener fecha y hora actual de Buenos Aires para valores por defecto
@@ -98,6 +155,7 @@ export default function FormularioNuevaEmergencia() {
         } else if (formData?.tamanio === 'Muy grande') {
             formData.tamanio = 'GIGANTE';
         }
+        
         declararEmergencia({ data: {
             datosEmergencia: { 
                 atendido: false, 
@@ -123,8 +181,7 @@ export default function FormularioNuevaEmergencia() {
                 sexo: formData?.sexo || null,
                 tamanio: formData?.tamanio || null,
             } 
-        }
-        })
+        }});
     }
 
     const nextStep = () => {

@@ -1,5 +1,6 @@
 package mascotas.project.services.interfaces;
 
+import mascotas.project.dto.PostulacionDetailDTO;
 import mascotas.project.dto.PostulacionRequestDTO;
 import mascotas.project.entities.Postulacion;
 import org.springframework.stereotype.Service;
@@ -11,7 +12,7 @@ public interface PostulacionService {
 
     Postulacion savePostulacion(PostulacionRequestDTO postulacion);
 
-    List<PostulacionRequestDTO> getAllPostulacionesByUsuario(Long  usuarioId);
+    List<PostulacionDetailDTO> getAllPostulacionesByUsuario(Long  usuarioId);
 
-    List<PostulacionRequestDTO> getAllPostulacionesByAdopcion(Long  adopcionId);
+    List<PostulacionDetailDTO> getAllPostulacionesByAdopcion(Long  adopcionId);
 }

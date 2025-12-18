@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mascotas.project.dto.PostulacionDetailDTO;
 import mascotas.project.dto.PostulacionRequestDTO;
 import mascotas.project.entities.Postulacion;
 import mascotas.project.services.interfaces.PostulacionService;
@@ -47,7 +48,7 @@ public class PostulacionController {
     )
     public ResponseEntity<Object> postualcionesByUsuario(@PathVariable(name = "id", required = true) Long idUsuario){
 
-        List<PostulacionRequestDTO> postulaciones = postulacionService.getAllPostulacionesByUsuario(idUsuario);
+        List<PostulacionDetailDTO> postulaciones = postulacionService.getAllPostulacionesByUsuario(idUsuario);
 
         return  ResponseEntity.ok().body(postulaciones);
     }
@@ -61,7 +62,7 @@ public class PostulacionController {
     )
     public ResponseEntity<Object> postualcionesByAdopcion(@PathVariable(name = "id", required = true) Long adopcionId){
 
-        List<PostulacionRequestDTO> postulaciones = postulacionService.getAllPostulacionesByAdopcion(adopcionId);
+        List<PostulacionDetailDTO> postulaciones = postulacionService.getAllPostulacionesByAdopcion(adopcionId);
 
         return  ResponseEntity.ok().body(postulaciones);
     }

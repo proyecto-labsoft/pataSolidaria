@@ -1,5 +1,6 @@
 package mascotas.project.mapper;
 
+import mascotas.project.dto.PostulacionDetailDTO;
 import mascotas.project.dto.PostulacionRequestDTO;
 import mascotas.project.entities.Postulacion;
 import org.mapstruct.IterableMapping;
@@ -7,13 +8,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring",  uses = {UsuarioMapper.class})
 public interface PostulacionMapper {
-
-    @Mapping(target="usuarioId", source="postulacion.usuario.id")
-    @Mapping(target="adopcionId", source="postulacion.adopcion.id")
-    @Mapping(target="fecha", source="postulacion.fecha")
-    PostulacionRequestDTO toPostulacionDTO(Postulacion postulacion);
 
 
     @Mapping(target="usuario.id", source="usuarioId")
@@ -21,6 +17,13 @@ public interface PostulacionMapper {
     @Mapping(target="fecha", source= "fecha")
     Postulacion toPostulacionEntity(PostulacionRequestDTO postulacion);
 
-    @IterableMapping(elementTargetType = PostulacionRequestDTO.class)
-    List<PostulacionRequestDTO> toPostulacionDTOList(List<Postulacion> postulaciones);
+
+    @Mapping(target="id", source="postulacion.id")
+    @Mapping(target="adopcionId", source="postulacion.adopcion.id")
+    @Mapping(target="fecha", source="postulacion.fecha")
+    @Mapping(target = "usuarioPostulante", source = "usuario", qualifiedByName = "toUsuarioDtoDetail")
+    PostulacionDetailDTO toPostulacionDTO(Postulacion postulacion);
+
+    //@IterableMapping(elementTargetType = PostulacionRequestDTO.class)
+    List<PostulacionDetailDTO> toPostulacionDTOList(List<Postulacion> postulaciones);
 }

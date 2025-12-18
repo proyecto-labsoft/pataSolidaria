@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native'
 import BackdropSuccess from '../backdropSuccess'
 import { useApiPostExtravioFamiliar } from '@/app/api/hooks'
 import { useUsuario } from '@/app/hooks/useUsuario'
-import { formatearFechaHoraCompletaBuenosAires } from '@/app/utiles/fechaHoraBuenosAires'
+import { formatearFechaBuenosAires, formatearFechaHoraCompletaBuenosAires } from '@/app/utiles/fechaHoraBuenosAires'
 import UbicacionStep from './confirmarBuscado/ubicacionStep'
 import DatosAnimalStep from './confirmarBuscado/datosAnimalStep'
 import ConfirmacionStep from './confirmarBuscado/confirmacionStep'
@@ -41,10 +41,7 @@ export default function FormularioConfirmarBuscado({ data } : Props) {
     const [copiandoImagenes, setCopiandoImagenes] = useState(false)
 
     // Obtener imágenes de la mascota
-    const { data: imagenesMascota } = useObtenerImagenes('mascotas', data?.id);
-    
-    console.log('🔍 Imágenes mascota obtenidas:', imagenesMascota);
-    console.log('🔍 ID de mascota:', data?.id);
+    const { data: imagenesMascota } = useObtenerImagenes('mascotas', data?.id); 
 
     // Valores animados para cada paso y línea
     const stepAnimations = useRef([
@@ -60,8 +57,9 @@ export default function FormularioConfirmarBuscado({ data } : Props) {
         new Animated.Value(0), // Línea 3-4
     ]).current
 
+    console.log("Buscado",data)
     const { control, setValue, watch, handleSubmit, formState: {errors} } = useForm({
-        defaultValues: {...data, sexo: data?.sexo === "M" ? "Macho" : data?.sexo === "H" ? "Hembra" : "No lo sé"} || {}
+        defaultValues: {...data,fecha: formatearFechaBuenosAires(new Date()), sexo: data?.sexo === "M" ? "Macho" : data?.sexo === "H" ? "Hembra" : "No lo sé"} || {}
     });
     
     const watchedValues = watch(); // Para mostrar valores en confirmación
@@ -70,6 +68,7 @@ export default function FormularioConfirmarBuscado({ data } : Props) {
         params: {id: data?.id},
         queriesToInvalidate: ['useApiGetExtraviosPorUsuario','useApiGetExtravios', 'useApiGetExtravioPorMascota'],
         onSuccess: async (response) => {
+            setVisible(false)
             console.log('✅ Extravío creado, respuesta completa:', JSON.stringify(response, null, 2));
             
             // Intentar obtener el ID de diferentes maneras
@@ -173,7 +172,7 @@ export default function FormularioConfirmarBuscado({ data } : Props) {
     }, [currentStep, stepAnimations, lineAnimations])
 
     const onSubmit = (formData: any) => {
-        setVisible(false)
+        
         if (formData?.sexo === 'Macho') {
             formData.sexo = 'M';
         } else if (formData?.sexo === 'Hembra') {

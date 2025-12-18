@@ -45,10 +45,23 @@ export const Mapa: FC<MapProps> = ({ localizar = false, puntoModificable = true,
   useEffect(() => {
     if (!localizar) {
       console.log('🗺️ Mapa: Sincronizando ubicación desde props:', { latitude, longitude });
+      const newLatitude = latitude ?? DEFAULT_LATITUDE;
+      const newLongitude = longitude ?? DEFAULT_LONGITUDE;
+      
       setLocation({ 
-        latitude: latitude ?? DEFAULT_LATITUDE, 
-        longitude: longitude ?? DEFAULT_LONGITUDE 
+        latitude: newLatitude, 
+        longitude: newLongitude 
       });
+      
+      // Animar la cámara hacia las nuevas coordenadas
+      mapRef.current?.animateCamera({
+        center: { latitude: newLatitude, longitude: newLongitude },
+        pitch: 0,
+        heading: 0,
+        zoom: 15,
+        altitude: 0,
+      });
+      
       setLoading(false);
     }
   }, [latitude, longitude, localizar]);

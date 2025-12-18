@@ -6,6 +6,8 @@ import { useObtenerImagenes } from '../../api/imagenes.hooks';
 
 interface Props {
     data: {
+        id?: number,
+        adopcionId?: number,
         publicador: {
             id: number | null,
             nombre: string,
@@ -36,7 +38,25 @@ interface Props {
 export default function CardAdopcion({ data, navigateTo }: Props) {
     const theme = useTheme();
     const navigation = useNavigation();
-    const { data: imagenes, isLoading: imagenesLoading } = useObtenerImagenes('mascotas', data.mascotaDetalle.id);
+    
+    // Usar el ID de la adopción para obtener las imágenes
+    const adopcionId = data?.id || data?.adopcionId;
+    
+    console.log('🔍 CardAdopcion - Datos recibidos:', {
+        adopcionId: adopcionId,
+        mascotaId: data?.mascotaDetalle?.id,
+        mascotaNombre: data?.mascotaDetalle?.nombre,
+        adopcionCompleta: !!data
+    });
+    
+    const { data: imagenes, isLoading: imagenesLoading } = useObtenerImagenes('adopciones', adopcionId);
+    
+    console.log('📸 CardAdopcion - Imágenes:', {
+        adopcionId: adopcionId,
+        imagenesCount: imagenes?.length || 0,
+        primeraImagen: imagenes?.[0]?.urlPublica,
+        isLoading: imagenesLoading
+    });
     
     const randomImage = ImageSlider[0].imagenes[Math.floor(Math.random() * ImageSlider[0].imagenes.length)];
     const imageSource = imagenes && imagenes.length > 0 

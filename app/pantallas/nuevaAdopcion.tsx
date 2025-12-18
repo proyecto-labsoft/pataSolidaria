@@ -3,11 +3,27 @@ import { FlatList, View } from "react-native";
 import CardFamiliar from "../componentes/cards/cardFamiliar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AppbarNav from "../componentes/navegacion/appbarNav";
-import { useApiGetMascotasPorUsuario } from "../api/hooks"; 
+import { useApiGetMascotasPorUsuario, useApiGetImagenesMascota } from "../api/hooks"; 
 import { Button, Text, useTheme } from "react-native-paper";
 import { useUsuario } from "../hooks/useUsuario";
 import PetFriendlyHotelIcon from "../componentes/iconos/PetFriendlyHotelIcon";
 import { useNavigation } from "@react-navigation/native";
+
+// Componente wrapper para cargar imágenes de cada mascota
+const CardFamiliarWithImages = ({ item, navigateTo, esTransito }: { item: any, navigateTo: string, esTransito: boolean }) => {
+    const { data: imagenes } = useApiGetImagenesMascota({ 
+        parametros: { mascotaId: item.id },
+        enabled: !!item.id 
+    });
+
+    return (
+        <CardFamiliar 
+            navigateTo={navigateTo}
+            data={{ ...item, imagenes, esTransito }}
+            estaExtraviado={false}
+        />
+    );
+};
 
 export default function NuevaAdopcion({ route }: any) {
     const { usuarioId } = useUsuario();
@@ -16,7 +32,8 @@ export default function NuevaAdopcion({ route }: any) {
     const esTransito = route?.params?.esTransito || false;
     
     const {data: familiares, isFetching} = useApiGetMascotasPorUsuario({ 
-        parametros: {idUsuario: usuarioId}
+        parametros: {idUsuario: usuarioId},
+        enabled: !!usuarioId
     });
     
     return (
@@ -47,14 +64,22 @@ export default function NuevaAdopcion({ route }: any) {
                         keyExtractor={(item, idx) => item.id?.toString() || idx.toString()}
                         contentContainerStyle={{ alignItems: "center", gap: 40, padding: 20, width: '100%' }}
                         renderItem={({ item }) => (
-                            <CardFamiliar 
-                                navigateTo="ConfirmarAdopcion" 
-                                data={{ ...item, esTransito }} 
+                            <CardFamiliarWithImages 
+                                item={item}
+                                navigateTo="ConfirmarAdopcion"
+                                esTransito={esTransito}
                             />
                         )}
                         ListEmptyComponent={
-                            !isFetching && (
-                                <Text style={{ alignSelf: 'center', marginTop: 20 }}>
+                            isFetching ? (
+                                <View style={{ alignItems: 'center', marginTop: 20 }}>
+                                    <PetFriendlyHotelIcon width={150} height={150} color={theme.colors.primary} />
+                                    <Text style={{ textAlign: 'center', color: theme.colors.primary, marginTop: 10 }}>
+                                        Cargando familiares...
+                                    </Text>
+                                </View>
+                            ) : (
+                                <Text style={{ alignSelf: 'center', marginTop: 20, color: theme.colors.primary }}>
                                     No hay familiares registrados
                                 </Text>
                             )

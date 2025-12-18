@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mascotas.project.Enums.ErrorsEnums;
+import mascotas.project.dto.PostulacionDetailDTO;
 import mascotas.project.dto.PostulacionRequestDTO;
 import mascotas.project.entities.Postulacion;
 import mascotas.project.exceptions.NoContentException;
@@ -52,14 +53,14 @@ public class PostulacionServiceImpl implements PostulacionService {
     }
 
     @Override
-    public List<PostulacionRequestDTO> getAllPostulacionesByUsuario(Long  usuarioId){
+    public List<PostulacionDetailDTO> getAllPostulacionesByUsuario(Long  usuarioId){
 
        return Optional.of(usuarioId)
                 .map(usuario ->{
 
                     usuarioService.getUsuarioById(usuario);
 
-                   return postulacionRepository.findPostulacionesByUsuarioId(usuarioId)
+                   return postulacionRepository.findAllByUsuarioIdOrderByFechaDesc(usuarioId)
                             .orElseThrow( () -> new NoContentException(ErrorsEnums.NO_CONTENT_ERROR.getDescription()) );
 
                 })
@@ -69,14 +70,14 @@ public class PostulacionServiceImpl implements PostulacionService {
     }
 
     @Override
-    public List<PostulacionRequestDTO> getAllPostulacionesByAdopcion(Long  adopcionId){
+    public List<PostulacionDetailDTO> getAllPostulacionesByAdopcion(Long  adopcionId){
 
         return Optional.of(adopcionId)
                 .map(adopcion ->{
 
                     adopcionService.getAdopcionById(adopcion);
 
-                    return postulacionRepository.findPostulacionesByAdopcionIdOrderByFechaDesc(adopcion)
+                    return postulacionRepository.findAllByAdopcionIdOrderByFechaDesc(adopcion)
                             .orElseThrow( () -> new NoContentException(ErrorsEnums.NO_CONTENT_ERROR.getDescription()) );
 
                 })

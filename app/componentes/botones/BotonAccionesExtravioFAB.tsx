@@ -5,7 +5,8 @@ import { FAB, Portal, useTheme } from 'react-native-paper';
 interface Props {
     esCreadorDelExtravio: boolean;
     onResolverCaso: () => void; 
-    onViEsteAnimal: () => void; 
+    onViEsteAnimal: () => void;
+    onPostularseComoTutor?: () => void;
     showButton?: boolean;
     esFamiliar?: boolean; 
 }
@@ -14,7 +15,8 @@ export default function BotonAccionesExtravioFAB({
     esCreadorDelExtravio,
     esFamiliar, 
     onResolverCaso,  
-    onViEsteAnimal, 
+    onViEsteAnimal,
+    onPostularseComoTutor,
     showButton = true 
 }: Props) {
 
@@ -43,6 +45,15 @@ export default function BotonAccionesExtravioFAB({
         onPress: onViEsteAnimal,
     };
 
+    const botonPostularseComoTutor = {
+        icon: 'hand-heart',
+        style: { ...styles.fabItem, backgroundColor: theme.colors.secondary },
+        label: 'Postularme como tutor',
+        labelStyle: { ...styles.labelFab },
+        color: theme.colors.onSecondary,
+        onPress: onPostularseComoTutor,
+    };
+
     // Determinar acciones según las condiciones
     let acciones = [];
 
@@ -52,8 +63,13 @@ export default function BotonAccionesExtravioFAB({
     } else if (!esFamiliar && esCreadorDelExtravio) {
         // Si NO es familiar Y es creador del caso
         acciones = [botonResolverCaso, botonViEsteAnimal];
-    } else {
+    } else if (!esFamiliar && !esCreadorDelExtravio) {
         // Si NO es familiar Y NO es creador del caso
+        acciones = onPostularseComoTutor 
+            ? [botonViEsteAnimal, botonPostularseComoTutor]
+            : [botonViEsteAnimal];
+    } else {
+        // Caso por defecto
         acciones = [botonViEsteAnimal];
     }
 

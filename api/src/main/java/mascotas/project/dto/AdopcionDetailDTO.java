@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class AdopcionDetailDTO {
 
+    private Long id;
     private UsuarioDTO publicador;
     private String requisitos;
     private Boolean transito;

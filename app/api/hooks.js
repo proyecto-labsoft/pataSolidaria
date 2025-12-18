@@ -257,6 +257,25 @@ export function useApiGetEmergencias({ params, ...opciones }) {
         configuracion: { ...opciones }
     });
 }
+
+// Posibles tutores
+
+export function useApiPostPosibleTutor({ ...opciones }) {
+    const { token } = useUsuario() 
+    return usePost({
+        nombreHook: "useApiPostPosibleTutor",
+        url: rutas.posibleTutor,
+        configuracion: { ...opciones, token: token, queriesToInvalidate:['useApiGetPosiblesTutores'] }
+    });
+}
+export function useApiGetPosiblesTutores({ params, ...opciones }) {
+    return useGet({
+        nombreHook: "useApiGetPosiblesTutores",
+        params,
+        url: rutas.posiblesTutoresPorExtravio,
+        configuracion: { ...opciones }
+    });
+}
 // export function useApiGetTransporteLicenciaPorDominio({ parametros, ...opciones }) {
 //   return (useGet(
 //       {

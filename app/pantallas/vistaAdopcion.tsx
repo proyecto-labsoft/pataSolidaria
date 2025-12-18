@@ -1,6 +1,6 @@
 import { View, ScrollView, useWindowDimensions, StyleSheet } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { Button, IconButton, Modal, Portal, Surface, Text, useTheme, List, TextInput, Card } from 'react-native-paper'
+import { Button, IconButton, Modal, Portal, Text, useTheme, List, TextInput, Card } from 'react-native-paper'
 import ItemDato from '../componentes/itemDato';
 import { ImageSlider } from '../testData/sliderData';
 import CarruselImagenes from '../componentes/carrusel/carruselImagenes';
@@ -8,7 +8,7 @@ import AppbarNav from '../componentes/navegacion/appbarNav';
 import { useNavigation, useIsFocused } from "@react-navigation/native";
 import { useUsuario } from '../hooks/useUsuario';
 import BackdropSuccess from '../componentes/backdropSuccess';
-import { obtenerValorSexo, obtenerValorTamanio } from '../utiles/obtenerValorEnum';
+import { obtenerValorSexo } from '../utiles/obtenerValorEnum';
 import BotonAccionesAdopcionFAB from '../componentes/botones/BotonAccionesAdopcionFAB';
 
 const imagenes = ImageSlider[0].imagenes

@@ -6,6 +6,7 @@ import { useApiGetExtraviosPorUsuario, useApiGetMascotasPorUsuario, useApiGetIma
 import { useUsuario } from "../hooks/useUsuario";
 import DogHouseIcon from "../componentes/iconos/DogHouseIcon";
 import VisitVetIcon from "../componentes/iconos/VisitVetIcon";
+import LogoPataIcon from "../componentes/iconos/LogoPataIcon";
 
 // Componente wrapper para cargar imágenes de cada mascota
 const CardFamiliarWithImages = ({ item, navigateTo, estaExtraviado }) => {
@@ -44,7 +45,12 @@ export default function VistaFamilia() {
   }, [extravios]);
 
   return (
-    <View style={{ flex: 1, marginTop: 20 }}>
+    <View style={{ flex: 1, marginTop: 20, position: 'relative' }}>
+      {/* Logo de fondo */}
+      <View style={styles.logoBackground}>
+        <LogoPataIcon width={400} height={520} />
+      </View>
+      
       <FlatList
         data={Array.isArray(familiares) ? familiares : []}
         keyExtractor={(item, idx) => item.id?.toString() || idx.toString()}
@@ -80,6 +86,14 @@ export default function VistaFamilia() {
 }
 
 const styles = StyleSheet.create({
+  logoBackground: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: [{ translateX: -200 }, { translateY: -260 }],
+    opacity: 0.05,
+    zIndex: -1,
+  },
   loadingOverlay: {
     position: 'absolute',
     top: 0,

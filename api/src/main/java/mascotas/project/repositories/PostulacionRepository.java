@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface PostulacionRepository extends JpaRepository<Postulacion, Long> {
 
-    Optional<List<Postulacion>> findPostulacionesByUsuarioId (Long usuarioId);
+    Optional<List<Postulacion>> findAllByUsuarioIdOrderByFechaDesc (Long usuarioId);
 
-    Optional<List<Postulacion>> findPostulacionesByAdopcionIdOrderByFechaDesc (Long adopcionId);
+    Optional<List<Postulacion>> findAllByAdopcionIdOrderByFechaDesc (Long adopcionId);
 }

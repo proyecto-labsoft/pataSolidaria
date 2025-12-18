@@ -39,9 +39,9 @@ public class EmergenciaServiceImpl implements EmergenciaService {
     private final EmergenciaMapper emergenciaMapper;
 
     @Transactional
-    public void saveEmergenciaAnimalAnonimo(EmergenciaAnimalAnonimoDTO request){
+    public EmergenciaDetailDTO saveEmergenciaAnimalAnonimo(EmergenciaAnimalAnonimoDTO request){
 
-        Optional.of(request)
+        return Optional.of(request)
                 .map(
                         requestDTO -> {
                             //persisto la mascota anonima
@@ -58,10 +58,10 @@ public class EmergenciaServiceImpl implements EmergenciaService {
                             emergenciaEntity = repository.save( emergenciaEntity );
 
                             log.info("SAVE_EMERGENCIA : publicador ID:{} ; mascota persistida ID: {} ; hora :{} ; atendido :{}" , emergenciaEntity.getCreador().getId(), mascotaSaved.getId() , emergenciaEntity.getHora(), emergenciaEntity.getAtendido() );
-                            return request.getDatosMascota();
+                            return mapper.toDetailDto(emergenciaEntity);
                         }
 
-                );
+                ).orElseThrow();
     }
 
 

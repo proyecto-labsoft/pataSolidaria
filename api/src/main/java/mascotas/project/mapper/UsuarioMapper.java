@@ -17,7 +17,7 @@ public interface UsuarioMapper {
 
 
     @Named("toUsuarioDtoDetail")
-    @Mapping(target = "id" , ignore = true)
+    @Mapping(target = "id" , source = "entity.id")
     @Mapping(target = "direccion" , ignore = true)
     @Mapping(target = "administrador" , ignore = true)
     UsuarioDTO toUsuarioDtoDetail(Usuario entity);

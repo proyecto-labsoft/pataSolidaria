@@ -80,12 +80,11 @@ public class ExtravioServiceImpl implements ExtravioService {
     @Override
     public List<ExtravioDetailDTO> getAllExtravios(Boolean resueltos) {
 
-        List<ExtravioDetailDTO> extraviosDtos = Optional.of(resueltos)
+        List<ExtravioDetailDTO> extraviosDtos = Optional.ofNullable(resueltos)
                                                .map(extravioRepository::findAllByResuelto)
-                                                .orElseThrow(
-                                                        ()-> new NoContentException(ErrorsEnums.NO_CONTENT_ERROR.getDescription())
-                                                );
+                                               .orElseGet(extravioRepository::findAllExtravio);
 
+        if ( extraviosDtos.isEmpty() ){ throw new NoContentException(ErrorsEnums.NO_CONTENT_ERROR.getDescription());}
 
         return setMascotaDetailToExtravioDtoList(extraviosDtos);
     }

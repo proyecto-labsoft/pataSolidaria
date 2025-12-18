@@ -13,6 +13,7 @@ import mascotas.project.dto.MascotaDTOSaveSucces;
 import mascotas.project.dto.UsuarioDTO;
 import mascotas.project.entities.Emergencia;
 import mascotas.project.entities.Mascota;
+import mascotas.project.entities.Usuario;
 import mascotas.project.exceptions.ForbiddenException;
 import mascotas.project.exceptions.NoContentException;
 import mascotas.project.mapper.EmergenciaMapper;
@@ -99,11 +100,14 @@ public class EmergenciaServiceImpl implements EmergenciaService {
 
 
         Emergencia emergencia = this.getEmergenciaEntityById(idEmergencia);
+
         UsuarioDTO usuario = usuarioService.getUsuarioById(request.getUsuarioId());
 
-
-        if (!isCreador(emergencia, usuario.getId())) {
-            throw new ForbiddenException(ErrorsEnums.EMERGENCIA_FORBIDDEN_ERROR.getDescription() + emergencia.getId());
+        if (Boolean.FALSE.equals( usuario.getAdministrador())){
+            //si no es admin, verifica si es el creador
+            if (!isCreador(emergencia, usuario.getId())) {
+                throw new ForbiddenException(ErrorsEnums.EMERGENCIA_FORBIDDEN_ERROR.getDescription() + emergencia.getId());
+            }
         }
 
         emergencia = mapper.putToEntity(request, idEmergencia );
@@ -117,10 +121,14 @@ public class EmergenciaServiceImpl implements EmergenciaService {
     public void deleteEmergencia( Long emergenciaId, Long usuarioId){
 
         Emergencia emergencia = this.getEmergenciaEntityById(emergenciaId);
-        usuarioService.getUsuarioById(usuarioId);
 
-        if (!isCreador(emergencia, usuarioId)) {
-            throw new ForbiddenException(ErrorsEnums.EMERGENCIA_FORBIDDEN_ERROR.getDescription() + emergencia.getId());
+        UsuarioDTO usuario = usuarioService.getUsuarioById(usuarioId);
+
+        if (Boolean.FALSE.equals( usuario.getAdministrador())){
+            //si no es admin, verifica si es el creador
+            if (!isCreador(emergencia, usuario.getId())) {
+                throw new ForbiddenException(ErrorsEnums.EMERGENCIA_FORBIDDEN_ERROR.getDescription() + emergencia.getId());
+            }
         }
         repository.delete(emergencia);
     }

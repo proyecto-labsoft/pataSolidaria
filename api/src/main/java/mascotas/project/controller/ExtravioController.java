@@ -84,9 +84,9 @@ public class ExtravioController {
     @Operation(
             operationId = "getExtravios",
             summary = "Listado de Extravios filtrados",
-            parameters = {@Parameter(name="resueltos", description = "Extravios resueltos o no, si no llega es false", required = false)}
+            parameters = {@Parameter(name="resueltos", description = "Extravios resueltos o no, si no llega trae todo", required = false)}
     )
-    public ResponseEntity<List<ExtravioDetailDTO>> getExtravios( @RequestParam(name = "resueltos", required = true) Boolean resueltos) {
+    public ResponseEntity<List<ExtravioDetailDTO>> getExtravios( @RequestParam(name = "resueltos", required = false) Boolean resueltos) {
 
         List<ExtravioDetailDTO> extravios = extravioService.getAllExtravios(resueltos);
         return ResponseEntity.status(HttpStatus.OK).body(extravios);

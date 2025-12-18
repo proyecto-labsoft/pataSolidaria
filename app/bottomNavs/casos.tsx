@@ -1,28 +1,36 @@
 import { FlatList, View, RefreshControl, useWindowDimensions, StyleSheet } from "react-native";
-import CardAnimal from "../componentes/cards/cardAnimal"; 
-import { useApiGetExtravios, useApiGetFavoritos } from "../api/hooks";
+import CardAnimal from "../componentes/cards/cardAnimal";
+import CardEmergencia from "../componentes/cards/cardEmergencia"; 
+import { useApiGetEmergencias, useApiGetExtravios, useApiGetFavoritos } from "../api/hooks";
 import { Button, Text, useTheme, Portal, Modal, Surface, IconButton, Chip, ActivityIndicator } from "react-native-paper";
 import VisitVetIcon from "../componentes/iconos/VisitVetIcon"; 
 import { useState, useMemo } from "react";
 import { useUsuario } from "../hooks/useUsuario";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import BotonAlerta from "../componentes/botones/botonAlerta"; 
+import { useAuth } from "../contexts/AuthContext";
 type TipoCaso = 'todos' | 'buscados' | 'extraviados' | 'favoritos' | 'misCasos';
 type OrdenCaso = 'recientes' | 'antiguos';
 
 export default function VistaCasos() {
 
   const { usuarioId } = useUsuario();
-  const {data: extravios, isFetching, refetch: refetchExtravios } = useApiGetExtravios({params: { queryParams: {resueltos: false}}, enabled: true }) 
+  const { isAdmin } = useAuth();
+
+  const {data: extravios, isFetching, refetch: refetchExtravios } = useApiGetExtravios({params: { queryParams: {resueltos: null}}, enabled: true }) 
   const {data: favoritos, isFetching: isFetchingFavoritos, refetch: refetchFavoritos } = useApiGetFavoritos({
     params: { id: usuarioId },
     enabled: !!usuarioId
   }); 
-  const navigation = useNavigation();
+  const {data: emergencias, isFetching: isFetchingEmergencias, refetch: refetchEmergencias } = useApiGetEmergencias({
+    params: { queryParams: {atendidos: null} },
+    enabled: !!usuarioId
+  }); 
   
   function refetchQueries() {
     refetchExtravios();
-    refetchFavoritos();
+    refetchFavoritos(); 
+    refetchEmergencias()  
   }
 
   const theme = useTheme();
@@ -73,6 +81,25 @@ export default function VistaCasos() {
       return true;
     });
   }, [extravios, tipoCaso, usuarioId, favoritosIds]); 
+
+  // Agrupa emergencias de a dos por fila 
+  const emergenciasPorFila = useMemo(() => {
+    if (!isAdmin) {
+      const emergenciasUsuario = Array.isArray(emergencias)
+        ? emergencias.filter(emergencia => emergencia.usuarioCreador?.id === usuarioId)
+        : [];
+      console.log("emergenciasUsuario",emergenciasUsuario)
+      return Array.from({ length: Math.ceil(emergenciasUsuario.length / 2) }, (_, idx) =>
+        emergenciasUsuario.slice(idx * 2, idx * 2 + 2)
+      );
+    } else {
+      return Array.isArray(emergencias)
+      ? Array.from({ length: Math.ceil(emergencias.length / 2) }, (_, idx) =>
+          emergencias.slice(idx * 2, idx * 2 + 2)
+        )
+      : []
+    }
+  }, [emergencias, isAdmin, usuarioId]);
 
   // Agrupa los datos de a dos por fila
   const extraviosPorFila = Array.isArray(extraviosFiltrados)
@@ -187,31 +214,67 @@ export default function VistaCasos() {
       </Portal>
 
       <FlatList
-        data={extraviosPorFila}
-        keyExtractor={(_, idx) => idx.toString()}
-        contentContainerStyle={{ justifyContent: 'center', alignItems: "center", paddingVertical: 10, gap: 5 }}
+        data={[{ type: 'emergencias' }, { type: 'extravios' }]}
+        keyExtractor={(item) => item.type}
+        contentContainerStyle={{ justifyContent: 'center', alignItems: "center", paddingVertical: 10 }}
         refreshing={cargandoVista}
         onRefresh={refetchQueries}
-        renderItem={({ item }) => (
-          <View style={{ flexDirection: 'row', width: '100%' }}>
-            <CardAnimal navigateTo="VistaExtravio" data={item[0]} />
-            {item[1] ? (
-              <CardAnimal navigateTo="VistaExtravio" data={item[1]} />
-            ) : (
-              <View style={{ flex: 1 }} />
-            )}
-          </View>
-        )}
-        ListEmptyComponent={
-          <>
-          {!cargandoVista && (
-            <View style={{alignItems: 'center', marginVertical: 50}}>
-                <VisitVetIcon width={250} height={250} color={theme.colors.primary} />
-                <Text variant="headlineMedium" style={{textAlign: 'center', color: theme.colors.primary}}>No hay casos de extravío</Text>
-            </View>
-            )}
-          </>
-        }
+        renderItem={({ item }) => {
+          if (item.type === 'emergencias' && emergenciasPorFila.length > 0) {
+            return (
+              <View style={{ width: '100%', position: 'relative', marginBottom: 20 }}>
+                {/* Etiqueta/solapa superior */}
+                {/* <View style={[
+                  styles.emergenciaTag,
+                  { backgroundColor: theme.colors.error }
+                ]}>
+                  <Text style={{ color: theme.colors.onError, fontWeight: 'bold', fontSize: 14 }}>
+                    EMERGENCIAS
+                  </Text>
+                </View> */}
+                
+                {emergenciasPorFila.map((fila, idx) => (
+                  <View key={`emergencia-row-${idx}`} style={{ flexDirection: 'row', width: '100%' }}>
+                    <CardEmergencia navigateTo="VistaEmergencia" data={fila[0]} />
+                    {fila[1] ? (
+                      <CardEmergencia navigateTo="VistaEmergencia" data={fila[1]} />
+                    ) : (
+                      <View style={{ flex: 1 }} />
+                    )}
+                  </View>
+                ))}
+              </View>
+            );
+          }
+          
+          if (item.type === 'extravios') {
+            return (
+              <View style={{ width: '100%' }}>
+                {extraviosPorFila.length > 0 ? (
+                  extraviosPorFila.map((fila, idx) => (
+                    <View key={`extravio-row-${idx}`} style={{ flexDirection: 'row', width: '100%' }}>
+                      <CardAnimal navigateTo="VistaExtravio" data={fila[0]} />
+                      {fila[1] ? (
+                        <CardAnimal navigateTo="VistaExtravio" data={fila[1]} />
+                      ) : (
+                        <View style={{ flex: 1 }} />
+                      )}
+                    </View>
+                  ))
+                ) : (
+                  !cargandoVista && (
+                    <View style={{alignItems: 'center', marginVertical: 50}}>
+                      <VisitVetIcon width={250} height={250} color={theme.colors.primary} />
+                      <Text variant="headlineMedium" style={{textAlign: 'center', color: theme.colors.primary}}>No hay casos de extravío</Text>
+                    </View>
+                  )
+                )}
+              </View>
+            );
+          }
+          
+          return null;
+        }}
       />
       {/* Overlay de carga */}
       {cargandoVista && (
@@ -289,5 +352,19 @@ const styles = StyleSheet.create({
     gap: 10,
     padding: 20,
     paddingTop: 12,
+  },
+  emergenciaTag: {
+    position: 'absolute',
+    top: -12,
+    left: 20,
+    paddingVertical: 4,
+    paddingHorizontal: 16,
+    borderRadius: 16,
+    zIndex: 10,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 2,
   },
 });

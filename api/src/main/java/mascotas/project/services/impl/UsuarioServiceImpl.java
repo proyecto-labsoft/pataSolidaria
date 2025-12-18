@@ -15,7 +15,6 @@ import mascotas.project.mapper.UsuarioMapper;
 import mascotas.project.repositories.UsuarioRepository;
 import mascotas.project.services.interfaces.UsuarioService;
 import org.springframework.stereotype.Service;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -252,7 +251,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public boolean isAdmin(String firebaseUid) {
         Usuario usuario = usuarioRepository.findByFirebaseUid(firebaseUid)
-                .orElseThrow(() -> new NotFoundException("Usuario no encontrado con firebaseUid: " + firebaseUid));
+                .orElseThrow(() -> new NoContentException("Usuario no encontrado con firebaseUid: " + firebaseUid));
         
         return usuario.getAdministrador() != null && usuario.getAdministrador();
     }

@@ -12,6 +12,7 @@ import java.util.Optional;
 
 public interface ExtravioRepository extends JpaRepository<Extravio, Long> {
 
+    //TODO: eliminar la creacion de dto en query
 
     @Query("""
     SELECT new mascotas.project.dto.ExtravioDetailDTO(
@@ -82,6 +83,27 @@ public interface ExtravioRepository extends JpaRepository<Extravio, Long> {
     ORDER BY e.ultimoAvistamiento DESC
     """)
     List<ExtravioDetailDTO> findAllByResuelto(@Param("resueltos") Boolean resueltos);
+
+    @Query("""
+    SELECT new mascotas.project.dto.ExtravioDetailDTO(
+        e.id,
+        e.creador,
+        e.mascota,
+        e.zona,
+        e.hora,
+        e.ultimoAvistamiento,
+        e.observacion,
+        e.resuelto,
+        e.creadoByFamiliar,
+        null,
+        e.latitud,
+        e.longitud,
+        e.direccion
+    )
+    FROM Extravio e
+    ORDER BY e.ultimoAvistamiento DESC
+    """)
+    List<ExtravioDetailDTO> findAllExtravio();
 
 
     Optional<Extravio> findByMascotaAndResueltoIsFalse(Long mascota);

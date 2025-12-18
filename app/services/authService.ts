@@ -40,6 +40,13 @@ export const registerUser = async (
     // Sincronizar usuario con el backend
     await syncUserWithBackend(userCredential.user, token);
     
+    // CRÍTICO: Forzar refresh del token para obtener los custom claims
+    // que el backend acaba de establecer
+    console.log('🔄 Refrescando token para obtener custom claims...');
+    const newToken = await userCredential.user.getIdToken(true); // true = force refresh
+    await AsyncStorage.setItem('userToken', newToken);
+    console.log('✅ Token refrescado con custom claims');
+    
     return {
       success: true,
       user: userCredential.user
@@ -73,6 +80,12 @@ export const loginUser = async (
     // NO es necesario sincronizar en login - los custom claims ya están establecidos desde el registro
     // Solo se sincroniza en el registro para crear el usuario en BD y establecer claims
     await syncUserWithBackend(userCredential.user, token);
+    
+    // Refrescar token para asegurar que tenemos los custom claims más recientes
+    console.log('🔄 Refrescando token para obtener custom claims actualizados...');
+    const newToken = await userCredential.user.getIdToken(true); // true = force refresh
+    await AsyncStorage.setItem('userToken', newToken);
+    console.log('✅ Token refrescado');
     
     return {
       success: true,

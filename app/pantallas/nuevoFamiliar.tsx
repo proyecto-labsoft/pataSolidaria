@@ -1,9 +1,7 @@
-import React,{ useState} from "react"
-import { StyleSheet, ScrollView, View } from "react-native";
-import CardFamiliar from "../componentes/cards/cardFamiliar";
+import React from "react"
+import { StyleSheet, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AppbarNav from "../componentes/navegacion/appbarNav";
-import DescripcionVista from "../componentes/descripcionVista";
 import FormularioNuevoFamiliar from "../componentes/formularios/formularioNuevoFamiliar";
 
 export default function NuevoFamiliar() {

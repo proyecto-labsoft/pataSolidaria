@@ -61,7 +61,8 @@ export const rutas = {
   listarAdopciones: `${URL_API}/adopciones`,
   crearAdopcion: `${URL_API}/adopciones`,
 
-  listarPostulaciones: `${URL_API}/postulaciones`,
+  postulacionesPorAdopcion: `${URL_API}/postulaciones/adopcion/{id}`,
+  postulacionesPorUsuario: `${URL_API}/postulaciones/user/{id}`,
   crearPostulacion: `${URL_API}/postulaciones`,
 
   avistamientos: `${URL_API}/avistamientos`, 

@@ -13,6 +13,9 @@ import BotonAccionesAdopcionFAB from '../componentes/botones/BotonAccionesAdopci
 import { useObtenerImagenes } from '../api/imagenes.hooks';
 import { ImageGallery } from '../componentes/imagenes';
 import { useAuth } from '../contexts/AuthContext';
+import ModalPostulaciones from '../componentes/modalPostulaciones';
+import { useApiGetPostulacionPorExtravio, useApiPostCrearPostulacion } from '../api/hooks';
+import { formatearFechaHoraCompletaBuenosAires } from '../utiles/fechaHoraBuenosAires';
 
 const imagenes = ImageSlider[0].imagenes
 
@@ -24,12 +27,14 @@ export default function VistaAdopcion({ route }: any) {
     const { width, height } = useWindowDimensions()
     const { isAdmin } = useAuth()
 
+
     const [modoEdicion, setModoEdicion] = useState(false);
     const [successMensaje, setSuccessMensaje] = useState(false);
     const [expandedInfo, setExpandedInfo] = useState(false);
     const [datosAdopcion, setDatosAdopcion] = useState<any>(null);
     const [modalPostularse, setModalPostularse] = useState(false);
     const [modalCerrarAdopcion, setModalCerrarAdopcion] = useState(false);
+    const [modalPostulaciones, setModalPostulaciones] = useState(false);
     const [motivoPostulacion, setMotivoPostulacion] = useState('');
     const [motivoCierre, setMotivoCierre] = useState('');
 
@@ -41,6 +46,21 @@ export default function VistaAdopcion({ route }: any) {
         'adopciones',
         datosAdopcion?.id
     );
+    // Obtener postulaciones (solo para admin)
+    const { data: postulaciones } = useApiGetPostulacionPorExtravio({
+        params: {id: datosAdopcion?.id},
+        enabled: isAdmin && !!datosAdopcion?.id
+    });
+
+    const hayPostulaciones = Array.isArray(postulaciones) && postulaciones.length > 0;
+
+    // Mutation para crear postulación
+    const { mutateAsync: crearPostulacion, isPending: isPendingPostulacion } = useApiPostCrearPostulacion({
+    onSuccess: () => {
+        setModalPostularse(false);
+        setMotivoPostulacion('');
+    }
+    });
 
     useEffect(() => {
         if (route.params?.data) {
@@ -49,24 +69,21 @@ export default function VistaAdopcion({ route }: any) {
     }, [route.params?.data])
 
     const handlePostularse = () => {
-        // TODO: Implementar lógica de postulación
-        console.log("Postulándose con motivo:", motivoPostulacion);
-        setMotivoPostulacion('');
-        setModalPostularse(false);
-        // Aquí iría la llamada a la API
+        console.log("fecha datosAdopcion", datosAdopcion)
+        crearPostulacion({
+            data: {
+                usuarioId: usuarioId,
+                adopcionId: datosAdopcion?.id,
+                fecha: formatearFechaHoraCompletaBuenosAires(),
+            }
+        });
     };
 
     const handleCerrarAdopcion = () => {
-        // TODO: Implementar lógica de cierre de adopción
-        console.log("Cerrando adopción con motivo:", motivoCierre);
         setMotivoCierre('');
         setModalCerrarAdopcion(false);
         // Aquí iría la llamada a la API
     };
-
-    const [state, setState] = useState({ open: false });
-    const onStateChange = ({ open }: any) => setState({ open });
-    const { open } = state;
 
     return (
         <View style={{ height: height, width: width, backgroundColor: theme.colors.background, alignItems: 'center' }}>
@@ -113,9 +130,11 @@ export default function VistaAdopcion({ route }: any) {
                             Cancelar
                         </Button>
                         <Button
-                            mode="outlined"
+                            mode="contained"
                             onPress={handlePostularse}
                             style={{ marginTop: 16 }}
+                            disabled={isPendingPostulacion}
+                            loading={isPendingPostulacion}
                         >
                             Confirmar
                         </Button>
@@ -212,7 +231,19 @@ export default function VistaAdopcion({ route }: any) {
                         />
                     </View>
                 )}
-
+                {/* Botón para ver postulaciones (solo para admin cuando hay postulaciones) */}
+                {isAdmin && hayPostulaciones && (
+                    <View style={{ marginHorizontal: 16, marginBottom: 8 }}>
+                        <Button 
+                            mode="contained"
+                            icon="account-multiple"
+                            onPress={() => setModalPostulaciones(true)}
+                            style={{ backgroundColor: theme.colors.primary }}
+                        >
+                            Ver postulaciones ({Array.isArray(postulaciones) ? postulaciones.length : 0})
+                        </Button>
+                    </View>
+                )}
                 {/* Información adicional - Dropdown */}
                 <Card style={{ ...styles.ultimoAvistamientoContainer, marginHorizontal: 16, backgroundColor: theme.colors.surface }}>
                     <List.Accordion
@@ -246,7 +277,7 @@ export default function VistaAdopcion({ route }: any) {
                                     {datosAdopcion?.mascotaDetalle?.tamanio && <ItemDato label='Tamaño' data={datosAdopcion.mascotaDetalle.tamanio} />}
                                     {datosAdopcion?.mascotaDetalle?.color && <ItemDato label='Colores' data={datosAdopcion.mascotaDetalle.color} />}
                                     {datosAdopcion?.mascotaDetalle?.fechaNacimiento && <ItemDato label='Fecha de nacimiento' data={datosAdopcion.mascotaDetalle.fechaNacimiento} />}
-                                    {datosAdopcion?.mascotaDetalle?.sexo && <ItemDato label='Sexo' data={obtenerValorSexo(datosAdopcion.mascotaDetalle.sexo)} />}
+                                    {datosAdopcion?.mascotaDetalle?.sexo && <ItemDato label='Sexo' data={obtenerValorSexo(datosAdopcion.mascotaDetalle.sexo) || ''} />}
                                     {datosAdopcion?.mascotaDetalle?.esterilizado !== undefined && <ItemDato label='¿Está esterilizado?' data={datosAdopcion.mascotaDetalle.esterilizado ? 'Sí' : 'No'} />}
                                     {datosAdopcion?.mascotaDetalle?.chipeado !== undefined && datosAdopcion?.mascotaDetalle?.chipeado !== null && <ItemDato label='¿Está chipeado?' data={datosAdopcion.mascotaDetalle.chipeado ? 'Sí' : 'No'} />}
                                     {datosAdopcion?.mascotaDetalle?.descripcion && <ItemDato label='Descripción' data={datosAdopcion.mascotaDetalle.descripcion} />}
@@ -280,12 +311,18 @@ export default function VistaAdopcion({ route }: any) {
                 </Card>
             </ScrollView>
 
+            {/* Modal de postulaciones */}
+            <ModalPostulaciones
+                visible={modalPostulaciones}
+                onDismiss={() => setModalPostulaciones(false)}
+                postulaciones={Array.isArray(postulaciones) ? postulaciones : []}
+            />
             {/* FAB de acciones */}
             <BotonAccionesAdopcionFAB
                 esCreadorDeLaAdopcion={esCreadorDeLaAdopcion}
                 onPostularse={() => setModalPostularse(true)}
                 onCerrarAdopcion={() => setModalCerrarAdopcion(true)}
-                showButton={!modoEdicion && isFocused}
+                showButton={!modoEdicion && isFocused && !modalPostulaciones}
             />
         </View>
     )

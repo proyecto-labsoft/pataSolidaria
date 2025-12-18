@@ -1,15 +1,15 @@
-import { FlatList, View, RefreshControl, useWindowDimensions, StyleSheet } from "react-native";
+import { FlatList, View, useWindowDimensions, StyleSheet } from "react-native";
 import CardAnimal from "../componentes/cards/cardAnimal";
 import CardEmergencia from "../componentes/cards/cardEmergencia"; 
 import { useApiGetEmergencias, useApiGetExtravios, useApiGetFavoritos } from "../api/hooks";
-import { Button, Text, useTheme, Portal, Modal, Surface, IconButton, Chip, ActivityIndicator } from "react-native-paper";
+import { Button, Text, useTheme, Portal, Modal, Surface, IconButton, Chip } from "react-native-paper";
 import VisitVetIcon from "../componentes/iconos/VisitVetIcon"; 
 import { useState, useMemo } from "react";
-import { useUsuario } from "../hooks/useUsuario";
-import { useIsFocused, useNavigation } from "@react-navigation/native";
-import BotonAlerta from "../componentes/botones/botonAlerta"; 
+import { useUsuario } from "../hooks/useUsuario"; 
 import { useAuth } from "../contexts/AuthContext";
-type TipoCaso = 'todos' | 'buscados' | 'extraviados' | 'favoritos' | 'misCasos';
+import LogoPataIcon from "../componentes/iconos/LogoPataIcon";
+type TipoCaso = 'todos' | 'buscados' | 'extraviados' | 'favoritos' | 'misCasos' | 'emergencias';
+type EstadoCaso = 'noResueltos' | 'resueltos' | 'todos';
 type OrdenCaso = 'recientes' | 'antiguos';
 
 export default function VistaCasos() {
@@ -17,13 +17,27 @@ export default function VistaCasos() {
   const { usuarioId } = useUsuario();
   const { isAdmin } = useAuth();
 
-  const {data: extravios, isFetching, refetch: refetchExtravios } = useApiGetExtravios({params: { queryParams: {resueltos: null}}, enabled: true }) 
+  const [tipoCaso, setTipoCaso] = useState<TipoCaso>('todos');
+  const [estadoCaso, setEstadoCaso] = useState<EstadoCaso>('noResueltos');
+  const [ordenCaso, setOrdenCaso] = useState<OrdenCaso>('recientes');
+  const [filtroVisible, setFiltroVisible] = useState(false);
+
+  // Determinar parámetros de query según el estado seleccionado
+  const resueltoParam = estadoCaso === 'noResueltos' ? false : estadoCaso === 'resueltos' ? true : null;
+  const atendidoParam = estadoCaso === 'noResueltos' ? false : estadoCaso === 'resueltos' ? true : null;
+
+  const {data: extravios, isFetching, refetch: refetchExtravios } = useApiGetExtravios({
+    params: { queryParams: {resueltos: resueltoParam}}, 
+    enabled: true 
+  });
+  
   const {data: favoritos, isFetching: isFetchingFavoritos, refetch: refetchFavoritos } = useApiGetFavoritos({
     params: { id: usuarioId },
     enabled: !!usuarioId
   }); 
+  
   const {data: emergencias, isFetching: isFetchingEmergencias, refetch: refetchEmergencias } = useApiGetEmergencias({
-    params: { queryParams: {atendidos: null} },
+    params: { queryParams: {atendidos: atendidoParam} },
     enabled: !!usuarioId
   }); 
   
@@ -33,11 +47,8 @@ export default function VistaCasos() {
     refetchEmergencias()  
   }
 
-  const theme = useTheme();
-  const { height } = useWindowDimensions(); 
-  const [filtroVisible, setFiltroVisible] = useState(false);
-  const [tipoCaso, setTipoCaso] = useState<TipoCaso>('todos');
-  const [ordenCaso, setOrdenCaso] = useState<OrdenCaso>('recientes');
+  const theme = useTheme(); 
+  const { height } = useWindowDimensions();
 
   const cargandoVista = isFetching || isFetchingEmergencias
 
@@ -57,6 +68,16 @@ export default function VistaCasos() {
     if (!Array.isArray(extravios)) return [];
     
     return extravios.filter(extravio => {
+      // Restricción: usuarios no admin no pueden ver casos resueltos que no crearon
+      if (!isAdmin && extravio.resuelto && extravio.creadorId !== usuarioId) {
+        return false;
+      }
+
+      // Filtro de tipo: Emergencias - no mostrar extravíos
+      if (tipoCaso === 'emergencias') {
+        return false;
+      }
+      
       // Filtro: Favoritos
       if (tipoCaso === 'favoritos') {
         return favoritosIds.has(extravio.extravioId);
@@ -80,26 +101,38 @@ export default function VistaCasos() {
       // Todos
       return true;
     });
-  }, [extravios, tipoCaso, usuarioId, favoritosIds]); 
+  }, [extravios, tipoCaso, usuarioId, favoritosIds, isAdmin]); 
 
-  // Agrupa emergencias de a dos por fila 
-  const emergenciasPorFila = useMemo(() => {
-    if (!isAdmin) {
-      const emergenciasUsuario = Array.isArray(emergencias)
-        ? emergencias.filter(emergencia => emergencia.usuarioCreador?.id === usuarioId)
-        : [];
-      console.log("emergenciasUsuario",emergenciasUsuario)
-      return Array.from({ length: Math.ceil(emergenciasUsuario.length / 2) }, (_, idx) =>
-        emergenciasUsuario.slice(idx * 2, idx * 2 + 2)
-      );
-    } else {
-      return Array.isArray(emergencias)
-      ? Array.from({ length: Math.ceil(emergencias.length / 2) }, (_, idx) =>
-          emergencias.slice(idx * 2, idx * 2 + 2)
-        )
-      : []
+  // Filtrar emergencias según tipo y rol
+  const emergenciasFiltradas = useMemo(() => {
+    if (!Array.isArray(emergencias)) return [];
+
+    // Si el filtro de tipo NO es 'emergencias' y NO es 'todos' y NO es 'misCasos', no mostrar emergencias
+    if (tipoCaso !== 'emergencias' && tipoCaso !== 'todos' && tipoCaso !== 'misCasos') {
+      return [];
     }
-  }, [emergencias, isAdmin, usuarioId]);
+
+    return emergencias.filter(emergencia => {
+      // Restricción: usuarios no admin solo ven sus propias emergencias
+      if (!isAdmin && emergencia.usuarioCreador?.id !== usuarioId) {
+        return false;
+      }
+
+      // Filtro: Solo mis casos creados
+      if (tipoCaso === 'misCasos') {
+        return emergencia.usuarioCreador?.id === usuarioId;
+      }
+
+      return true;
+    });
+  }, [emergencias, tipoCaso, isAdmin, usuarioId]);
+
+  // Agrupa emergencias de a dos por fila
+  const emergenciasPorFila = useMemo(() => {
+    return Array.from({ length: Math.ceil(emergenciasFiltradas.length / 2) }, (_, idx) =>
+      emergenciasFiltradas.slice(idx * 2, idx * 2 + 2)
+    );
+  }, [emergenciasFiltradas]);
 
   // Agrupa los datos de a dos por fila
   const extraviosPorFila = Array.isArray(extraviosFiltrados)
@@ -109,7 +142,12 @@ export default function VistaCasos() {
     : [];
 
   return ( 
-    <View style={{height: '100%', marginVertical: 10}}> 
+    <View style={{height: '100%', marginVertical: 10, position: 'relative'}}>
+      {/* Logo de fondo */}
+      <View style={styles.logoBackground}>
+        <LogoPataIcon width={400} height={520} />
+      </View>
+      
       <Button 
         mode="outlined" 
         icon="filter" 
@@ -164,6 +202,14 @@ export default function VistaCasos() {
                 Creados por mí
               </Chip>
               <Chip 
+                selected={tipoCaso === 'emergencias'} 
+                mode="outlined" 
+                style={styles.chip}
+                onPress={() => setTipoCaso('emergencias')}
+              >
+                Emergencias
+              </Chip>
+              <Chip 
                 selected={tipoCaso === 'buscados'} 
                 mode="outlined" 
                 style={styles.chip}
@@ -188,7 +234,34 @@ export default function VistaCasos() {
                 Todos
               </Chip>
             </View>
- 
+
+            <Text variant="titleMedium" style={{ marginTop: 24, marginBottom: 8 }}>Estado</Text>
+            <View style={styles.chipContainer}>
+              <Chip 
+                selected={estadoCaso === 'noResueltos'} 
+                mode="outlined" 
+                style={styles.chip}
+                onPress={() => setEstadoCaso('noResueltos')}
+              >
+                No resueltos
+              </Chip>
+              <Chip 
+                selected={estadoCaso === 'resueltos'} 
+                mode="outlined" 
+                style={styles.chip}
+                onPress={() => setEstadoCaso('resueltos')}
+              >
+                Resueltos
+              </Chip>
+              <Chip 
+                selected={estadoCaso === 'todos'} 
+                mode="outlined" 
+                style={styles.chip}
+                onPress={() => setEstadoCaso('todos')}
+              >
+                Todos
+              </Chip>
+            </View>
           </View>
 
           <View style={styles.buttonContainer}>
@@ -196,6 +269,7 @@ export default function VistaCasos() {
               mode="outlined" 
               onPress={() => { 
                 setTipoCaso('todos');
+                setEstadoCaso('noResueltos');
                 setOrdenCaso('recientes');
               }}
               style={{ flex: 1 }}
@@ -223,15 +297,6 @@ export default function VistaCasos() {
           if (item.type === 'emergencias' && emergenciasPorFila.length > 0) {
             return (
               <View style={{ width: '100%', position: 'relative', marginBottom: 20 }}>
-                {/* Etiqueta/solapa superior */}
-                {/* <View style={[
-                  styles.emergenciaTag,
-                  { backgroundColor: theme.colors.error }
-                ]}>
-                  <Text style={{ color: theme.colors.onError, fontWeight: 'bold', fontSize: 14 }}>
-                    EMERGENCIAS
-                  </Text>
-                </View> */}
                 
                 {emergenciasPorFila.map((fila, idx) => (
                   <View key={`emergencia-row-${idx}`} style={{ flexDirection: 'row', width: '100%' }}>
@@ -250,8 +315,7 @@ export default function VistaCasos() {
           if (item.type === 'extravios') {
             return (
               <View style={{ width: '100%' }}>
-                {extraviosPorFila.length > 0 ? (
-                  extraviosPorFila.map((fila, idx) => (
+                {extraviosPorFila.map((fila, idx) => (
                     <View key={`extravio-row-${idx}`} style={{ flexDirection: 'row', width: '100%' }}>
                       <CardAnimal navigateTo="VistaExtravio" data={fila[0]} />
                       {fila[1] ? (
@@ -260,21 +324,24 @@ export default function VistaCasos() {
                         <View style={{ flex: 1 }} />
                       )}
                     </View>
-                  ))
-                ) : (
-                  !cargandoVista && (
-                    <View style={{alignItems: 'center', marginVertical: 50}}>
-                      <VisitVetIcon width={250} height={250} color={theme.colors.primary} />
-                      <Text variant="headlineMedium" style={{textAlign: 'center', color: theme.colors.primary}}>No hay casos de extravío</Text>
-                    </View>
-                  )
-                )}
+                ))}
               </View>
             );
           }
           
           return null;
         }}
+        ListEmptyComponent={
+          <>
+          {(!cargandoVista && emergenciasPorFila?.length === 0 && extraviosPorFila?.length === 0 && (
+              <View style={{alignItems: 'center', marginVertical: 50}}>
+                <VisitVetIcon width={250} height={250} color={theme.colors.primary} />
+                <Text variant="headlineMedium" style={{textAlign: 'center', color: theme.colors.primary}}>No hay casos de extravío</Text>
+              </View>
+            )
+          )}
+          </>
+        }
       />
       {/* Overlay de carga */}
       {cargandoVista && (
@@ -290,6 +357,14 @@ export default function VistaCasos() {
 }
 
 const styles = StyleSheet.create({
+  logoBackground: {
+    position: 'absolute',
+    top: '25%',
+    left: '50%',
+    transform: [{ translateX: -200 }, { translateY: -260 }],
+    opacity: 0.05,
+    zIndex: -1,
+  },
   loadingOverlay: {
     position: 'absolute',
     top: 0,

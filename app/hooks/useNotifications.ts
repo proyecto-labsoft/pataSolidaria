@@ -13,7 +13,7 @@ import {
 import { getCurrentUserToken } from '../services/authService';
 
 const NOTIFICATIONS_STORAGE_KEY = '@notifications_history';
-const MAX_NOTIFICATIONS = 100;
+const MAX_NOTIFICATIONS = 50;
 
 export interface NotificationData {
   title?: string;

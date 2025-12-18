@@ -38,6 +38,7 @@ export const Mapa: FC<MapProps> = ({ localizar = false, puntoModificable = true,
   // Efecto para sincronizar las props latitude y longitude con el estado interno
   useEffect(() => {
     if (latitude !== null && longitude !== null && !localizar) {
+      console.log('🗺️ Mapa: Sincronizando ubicación desde props:', { latitude, longitude });
       setLocation({ latitude, longitude });
       setLoading(false);
     }
@@ -120,7 +121,7 @@ export const Mapa: FC<MapProps> = ({ localizar = false, puntoModificable = true,
         mapType='standard' // Cambiar a 'standard' para usar el mapa base de Google Maps
         onPress={ puntoModificable ? handleMarkerPoint : () => {} } // PAra no poder moficiar la ubicacion
       >
-        {location.latitude && location.longitude && 
+        {location.latitude !== null && location.longitude !== null && 
           <>
             <Marker
               coordinate={{ 

@@ -54,32 +54,28 @@ export default function FormularioNuevoAvistamiento({extravioId}: {extravioId: n
         onSuccess: async (response) => {
             console.log('✅ Avistamiento creado, respuesta completa:', JSON.stringify(response, null, 2));
             
-            // Obtener el ID del avistamiento de la respuesta
-            let avistamientoId = response?.id || response?.data?.id;
+            // El backend devuelve el Avistamiento en response.data
+            // La estructura es: { data: { id: X, usuarioId: Y, ... } }
+            let avistamientoId = response?.data?.id || response?.id;
             console.log('🔍 Response del POST:', response);
+            console.log('🎯 ID extraído directamente:', avistamientoId);
             
-            // Si no tenemos el ID en la respuesta, obtener el avistamiento más reciente del usuario
+            // Si no tenemos el ID en la respuesta, obtener el último avistamiento del extravío
             if (!avistamientoId) {
-                console.log('⏳ ID no encontrado en respuesta, consultando avistamientos del usuario...');
+                console.log('⏳ ID no encontrado en respuesta, consultando avistamientos del extravío...');
                 try {
-                    const avistamientosResponse = await api.get(`${API_URL}/avistamientos/usuario/${usuarioId}`);
+                    const avistamientosResponse = await api.get(`${API_URL}/avistamientos/extravio/${extravioId}`);
                     const avistamientos = avistamientosResponse?.data;
-                    console.log('📋 Todos los avistamientos del usuario:', avistamientos);
+                    console.log('📋 Avistamientos del extravío:', avistamientos);
                     
                     if (avistamientos && avistamientos.length > 0) {
-                        // Ordenar por ID descendente (el más reciente tendrá el ID más alto)
-                        const avistamientosOrdenados = [...avistamientos].sort((a, b) => {
-                            const idA = a.id;
-                            const idB = b.id;
-                            return idB - idA;
-                        });
-                        
-                        avistamientoId = avistamientosOrdenados[0]?.id;
-                        console.log('🎯 ID obtenido del avistamiento más reciente (ID más alto):', avistamientoId);
-                        console.log('📊 Avistamiento seleccionado:', avistamientosOrdenados[0]);
+                        // El endpoint ya devuelve ordenado por hora DESC, así que el primero es el más reciente
+                        avistamientoId = avistamientos[0]?.id;
+                        console.log('🎯 ID obtenido del último avistamiento:', avistamientoId);
+                        console.log('📊 Avistamiento seleccionado:', avistamientos[0]);
                     }
                 } catch (error) {
-                    console.error('❌ Error obteniendo avistamientos del usuario:', error);
+                    console.error('❌ Error obteniendo avistamientos del extravío:', error);
                 }
             }
             

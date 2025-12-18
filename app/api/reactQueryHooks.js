@@ -53,6 +53,10 @@ export const fetcher = async ({ params, url, configAxios = {} }) => {
     }); 
     return response.data;
   } catch (error) {
+    // Si el servidor devuelve 204 (No Content), retornar array vacío
+    if (error.response?.status === 204) {
+      return [];
+    }
     throw new Error(error.response?.data ?? "Algo salió mal.");
   }
 };

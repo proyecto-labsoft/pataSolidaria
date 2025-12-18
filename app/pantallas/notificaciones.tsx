@@ -1,7 +1,7 @@
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { StyleSheet, View, FlatList, TouchableOpacity } from "react-native";
 import { useTheme, Text as TextPaper, Divider, Card, IconButton, FAB } from "react-native-paper";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import AppbarNav from "../componentes/navegacion/appbarNav";
 import * as Notifications from 'expo-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -9,7 +9,7 @@ import { calcularTiempoTranscurrido } from "../utiles/calcularTiempoTranscurrido
 import { useAuth } from "../contexts/AuthContext";
 
 const NOTIFICATIONS_STORAGE_KEY = '@notifications_history';
-const MAX_NOTIFICATIONS = 100; // Límite de notificaciones guardadas
+const MAX_NOTIFICATIONS = 50; // Límite de notificaciones guardadas
 
 interface NotificationItem {
   id: string;
@@ -25,6 +25,13 @@ export default function Notificaciones() {
   const navigation = useNavigation();
   const { isAdmin } = useAuth();
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+
+  // Recargar notificaciones cuando la pantalla se enfoca
+  useFocusEffect(
+    useCallback(() => {
+      loadNotifications();
+    }, [])
+  );
 
   useEffect(() => {
     // Cargar notificaciones previas
@@ -54,9 +61,14 @@ export default function Notificaciones() {
   const loadNotifications = async () => {
     try {
       const stored = await AsyncStorage.getItem(NOTIFICATIONS_STORAGE_KEY);
+      console.log('📱 [DEBUG] Contenido de AsyncStorage:', stored);
       if (stored) {
         const parsed: NotificationItem[] = JSON.parse(stored);
+        console.log('📱 [DEBUG] Notificaciones parseadas:', parsed.length, 'notificaciones');
+        console.log('📱 [DEBUG] Primeras notificaciones:', parsed.slice(0, 3));
         setNotifications(parsed);
+      } else {
+        console.log('📱 [DEBUG] No hay notificaciones guardadas en AsyncStorage');
       }
     } catch (error) {
       console.error('Error cargando notificaciones:', error);

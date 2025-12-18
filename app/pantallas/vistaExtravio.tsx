@@ -97,10 +97,17 @@ export default function VistaExtravio({route}: any) {
     const ultimoAvistamiento = useMemo(() => {
         if (avistamientos && avistamientos?.length > 0) {
             // Ordenar avistamientos por fecha (más reciente primero)
-            return avistamientos[0]
+            const ultimo = avistamientos[0];
+            console.log('📍 Último avistamiento seleccionado:', ultimo);
+            console.log('📍 Latitud del último avistamiento:', ultimo?.latitud);
+            console.log('📍 Longitud del último avistamiento:', ultimo?.longitud);
+            return ultimo;
         }
+        console.log('📍 No hay avistamientos, usando datos del extravío:', datosExtravio);
+        console.log('📍 Latitud del extravío:', datosExtravio?.latitud);
+        console.log('📍 Longitud del extravío:', datosExtravio?.longitud);
         return datosExtravio;
-    }, [avistamientos]);
+    }, [avistamientos, datosExtravio]);
 
     const onSubmitEdicion = (data: any) => { 
         if (data?.sexo === 'Macho') {

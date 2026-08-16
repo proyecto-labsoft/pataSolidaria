@@ -2,6 +2,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useInvalidateAndRefetch } from './useInvalidateAndRefetch';
 import { api } from './api';
 import { API_URL } from './api.rutas';
+import { MOCK_MODE } from './mockConfig';
 
 // Mapeo de plural a singular para endpoints del backend
 const entityTypeMap = {
@@ -87,6 +88,10 @@ export const useObtenerImagenes = (entityType, entityId) => {
   return useQuery({
     queryKey: [`imagenes-${entityType}`, entityId],
     queryFn: async () => {
+      if (MOCK_MODE) {
+        return [];
+      }
+
       const url = `${API_URL}/imagenes/${backendEntityType}/${entityId}`;
       console.log('🔍 Intentando obtener imágenes desde:', url);
       

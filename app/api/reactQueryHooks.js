@@ -8,6 +8,8 @@ import {
 import { useInvalidateAndRefetch } from './useInvalidateAndRefetch';
 import { generarQueryKey } from './generarQueryKey'; 
 import urlConParametros from './urlConParametros';
+import { MOCK_MODE } from './mockConfig';
+import { getMockData } from '../testData/mockData';
 
 /**
  * Función fetcher para realizar peticiones GET utilizando Axios.
@@ -105,6 +107,10 @@ export const useGet = ({
 return (useQuery({
     queryKey, // La queryKey es [nombreHook, {parametros}] para la v5
     queryFn: () => {
+      if (MOCK_MODE) {
+        return Promise.resolve(getMockData(nombreHook));
+      }
+
       if (url === undefined || url === null) {
         console.error('URL inválida (undefined o null):', url);
       }
